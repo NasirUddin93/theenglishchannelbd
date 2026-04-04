@@ -1,0 +1,166 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { ShoppingCart, Star, ArrowRight, Heart } from 'lucide-react';
+import { Book } from '@/types';
+import { cn } from '@/lib/utils';
+import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
+import { useWishlist } from '@/context/WishlistContext';
+import { toast } from 'sonner';
+
+interface BookCardProps {
+  book: Book;
+  viewMode?: 'grid' | 'list';
+}
+
+export default function BookCard({ book, viewMode = 'grid' }: BookCardProps) {
+  const { addToCart } = useCart();
+  const { user } = useAuth();
+  const { isInWishlist, toggleWishlist: toggleWishlistFromContext } = useWishlist();
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+
+  const isStaff = user && user.role === 'staff';
+  const isInList = isInWishlist(book.id);
+
+  const toggleWishlist = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (isStaff) {
+      toast.error('Staff members cannot use wishlist');
+      return;
+    }
+
+    if (!user) {
+      toast.error('Please login to add to wishlist');
+      return;
+    }
+
+    setWishlistLoading(true);
+    try {
+      const added = await toggleWishlistFromContext(book.id);
+      toast.success(added ? 'Added to wishlist' : 'Removed from wishlist');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update wishlist');
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
+
+  if (viewMode === 'list') {
+    return (
+      <div className="group flex gap-6 p-4 bg-white rounded-2xl border border-gray-100 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/5 transition-all duration-300">
+        <Link href={`/book/${book.id}`} className="shrink-0 w-32 h-48 rounded-xl overflow-hidden shadow-md group-hover:shadow-lg transition-all relative">
+          <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          {!isStaff && (
+            <button 
+              onClick={toggleWishlist}
+              className={cn(
+                "absolute top-2 right-2 p-2 rounded-full backdrop-blur-md transition-all z-10",
+                isInList ? "bg-orange-600 text-white" : "bg-white/80 text-gray-400 hover:text-orange-600"
+              )}
+            >
+              <Heart className={cn("w-4 h-4", isInList && "fill-current")} />
+            </button>
+          )}
+        </Link>
+        <div className="flex flex-col justify-between py-2 flex-1">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="px-2 py-0.5 bg-orange-50 text-orange-600 text-[10px] font-bold uppercase tracking-wider rounded-full">{book.category}</span>
+              {book.isNewArrival && <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider rounded-full">New</span>}
+            </div>
+            <Link href={`/book/${book.id}`}>
+              <h3 className="font-serif text-xl font-bold text-gray-900 mb-1 group-hover:text-orange-600 transition-colors">{book.title}</h3>
+            </Link>
+            <p className="text-sm text-gray-500 mb-3 italic">by {book.author}</p>
+            <p className="text-sm text-gray-400 line-clamp-2 mb-4 leading-relaxed">{book.description}</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-xl font-bold text-gray-900">৳{book.price.toFixed(2)}</span>
+              <p className="text-xs text-gray-700 font-semibold">Stock: {book.stock}</p>
+            </div>
+            {!isStaff && (
+              <button 
+                onClick={() => addToCart(book)}
+                disabled={book.stock === 0}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all active:scale-95",
+                  book.stock === 0 
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+                    : "bg-gray-900 text-white hover:bg-orange-600"
+                )}
+              >
+                <ShoppingCart className="w-4 h-4" />
+                <span>Add to Cart</span>
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="group flex flex-col bg-white rounded-2xl border border-gray-100 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/5 transition-all duration-300 overflow-hidden relative">
+      {!isStaff && (
+        <button 
+          onClick={toggleWishlist}
+          className={cn(
+            "absolute top-3 right-3 p-2.5 rounded-full backdrop-blur-md transition-all z-10 shadow-sm",
+            isInList ? "bg-orange-600 text-white" : "bg-white/90 text-gray-400 hover:text-orange-600"
+          )}
+        >
+          <Heart className={cn("w-4 h-4", isInList && "fill-current")} />
+        </button>
+      )}
+      <Link href={`/book/${book.id}`} className="relative aspect-[2/3] overflow-hidden">
+        <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+          <div className="p-3 bg-white rounded-full text-gray-900 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+            <ArrowRight className="w-6 h-6" />
+          </div>
+        </div>
+        {book.isFeatured && (
+          <div className="absolute top-3 left-3 px-2 py-1 bg-white/90 backdrop-blur-sm text-orange-600 text-[10px] font-bold uppercase tracking-wider rounded shadow-sm">Featured</div>
+        )}
+      </Link>
+      <div className="p-5 flex flex-col flex-1">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{book.category}</span>
+          <div className="flex items-center gap-1 text-orange-400">
+            <Star className="w-3 h-3 fill-current" />
+            <span className="text-[10px] font-bold text-gray-600">4.8</span>
+          </div>
+        </div>
+        <Link href={`/book/${book.id}`}>
+          <h3 className="font-serif text-lg font-bold text-gray-900 mb-1 group-hover:text-orange-600 transition-colors line-clamp-1">{book.title}</h3>
+        </Link>
+        <p className="text-xs text-gray-500 mb-4 italic">by {book.author}</p>
+        <div className="mt-auto flex items-center justify-between">
+          <div>
+            <span className="text-lg font-bold text-gray-900">৳{book.price.toFixed(2)}</span>
+            <p className="text-xs text-gray-700 font-semibold mt-0.5">Stock: {book.stock}</p>
+          </div>
+          {!isStaff && (
+            <button 
+              onClick={() => addToCart(book)}
+              disabled={book.stock === 0}
+              className={cn(
+                "p-2.5 rounded-xl transition-all active:scale-90",
+                book.stock === 0 
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed" 
+                  : "bg-gray-50 text-gray-900 hover:bg-orange-600 hover:text-white"
+              )}
+            >
+              <ShoppingCart className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
