@@ -24,7 +24,7 @@ class WishlistController extends Controller
             ->limit($perPage)
             ->get();
 
-        return response()->json($wishlistItems)->header('Cache-Control', 'public, max-age=60');
+        return response()->json($wishlistItems);
     }
 
     public function toggle(Request $request)
@@ -63,8 +63,13 @@ class WishlistController extends Controller
     public function check(Request $request)
     {
         $bookId = $request->query('book_id');
+        $user = $request->user();
 
-        $exists = Wishlist::where('user_id', $request->user()->id)
+        if (!$user) {
+            return response()->json(['in_wishlist' => false]);
+        }
+
+        $exists = Wishlist::where('user_id', $user->id)
             ->where('book_id', $bookId)
             ->exists();
 
@@ -74,35 +79,45 @@ class WishlistController extends Controller
     public function checkBatch(Request $request)
     {
         $bookIds = $request->query('book_ids');
-        
+
         if (!$bookIds) {
             return response()->json(['wishlist' => []]);
         }
-        
+
         $idsArray = array_filter(array_map('intval', explode(',', $bookIds)));
-        
+
         if (empty($idsArray)) {
             return response()->json(['wishlist' => []]);
         }
-        
-        $userId = $request->user()->id;
-        
+
+        $user = $request->user();
+
+        // If no user, return all false
+        if (!$user) {
+            $result = [];
+            foreach ($idsArray as $id) {
+                $result[$id] = false;
+            }
+            return response()->json(['wishlist' => $result]);
+        }
+
+        $userId = $user->id;
         $cacheKey = "wishlist_batch_{$userId}_" . md5(implode(',', $idsArray));
-        
+
         $wishlistData = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($userId, $idsArray) {
             $wishlistItems = Wishlist::where('user_id', $userId)
                 ->whereIn('book_id', $idsArray)
                 ->pluck('book_id')
                 ->toArray();
-            
+
             $result = [];
             foreach ($idsArray as $id) {
                 $result[$id] = in_array($id, $wishlistItems);
             }
-            
+
             return $result;
         });
-        
+
         return response()->json(['wishlist' => $wishlistData]);
     }
 }

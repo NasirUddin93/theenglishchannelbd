@@ -1,4 +1,4 @@
-// File: /home/nasir-uddin/Data/Projects/theenglishchannelbd/frontend/src/app/checkout/page.tsx
+// File: D:\Github test\theenglishchannelbd\frontend\src\app\checkout\page.tsx
 import * as entry from '../../../../src/app/checkout/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

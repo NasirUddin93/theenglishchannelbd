@@ -126,7 +126,7 @@ class BookController extends Controller
     public function categories()
     {
         $categories = Cache::remember('categories_with_count', now()->addMinutes(30), function () {
-            return Category::withCount('books')->get();
+            return Category::where('type', 'book')->withCount('books')->get();
         });
 
         return response()->json($categories);

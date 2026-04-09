@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { api } from '@/lib/api';
+import { useAuth } from './AuthContext';
 
 interface WishlistContextType {
   wishlistMap: Record<string, boolean>;
@@ -13,20 +14,40 @@ interface WishlistContextType {
 const WishlistContext = createContext<WishlistContextType | null>(null);
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [wishlistMap, setWishlistMap] = useState<Record<string, boolean>>({});
 
+  // Listen for logout event and clear wishlist
+  useEffect(() => {
+    const handleClearWishlist = () => {
+      setWishlistMap({});
+    };
+
+    window.addEventListener('wishlist-clear', handleClearWishlist);
+    return () => window.removeEventListener('wishlist-clear', handleClearWishlist);
+  }, []);
+  
   const checkWishlist = useCallback(async (bookIds: string[]) => {
-    if (bookIds.length === 0) return;
-    
+    if (!user || bookIds.length === 0) {
+      // Clear wishlist when user is not logged in
+      setWishlistMap({});
+      return;
+    }
+
     try {
-      const res = await api.get<{ wishlist: Record<string, boolean> }>('/wishlist/check-batch', { 
-        book_ids: bookIds.join(',') 
+      const res = await api.get<{ wishlist: Record<string, boolean> }>('/wishlist/check-batch', {
+        book_ids: bookIds.join(',')
       });
       setWishlistMap(prev => ({ ...prev, ...(res.wishlist || {}) }));
-    } catch (err) {
+    } catch (err: any) {
+      // Silently handle 401 errors (user logged out)
+      if (err?.message?.includes('401') || err?.message?.includes('Unauthenticated')) {
+        setWishlistMap({});
+        return;
+      }
       console.error('Failed to check wishlist:', err);
     }
-  }, []);
+  }, [user]);
 
   const toggleWishlist = useCallback(async (bookId: string): Promise<boolean> => {
     try {
@@ -35,7 +56,11 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       });
       setWishlistMap(prev => ({ ...prev, [bookId]: res.action === 'added' }));
       return res.action === 'added';
-    } catch (err) {
+    } catch (err: any) {
+      // Handle 401 errors (user not authenticated)
+      if (err?.message?.includes('401') || err?.message?.includes('Unauthenticated')) {
+        throw new Error('Please log in to use the wishlist');
+      }
       console.error('Failed to toggle wishlist:', err);
       throw err;
     }

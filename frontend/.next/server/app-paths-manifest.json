@@ -1,7 +1,8 @@
 {
-  "/page": "app/page.js",
-  "/book/[id]/page": "app/book/[id]/page.js",
-  "/auth/page": "app/auth/page.js",
-  "/cart/page": "app/cart/page.js",
-  "/checkout/page": "app/checkout/page.js"
+  "/staff/gallery/page": "app/staff/gallery/page.js",
+  "/gallery/page": "app/gallery/page.js",
+  "/courses/page": "app/courses/page.js",
+  "/staff/page": "app/staff/page.js",
+  "/courses/[slug]/page": "app/courses/[slug]/page.js",
+  "/profile/page": "app/profile/page.js"
 }

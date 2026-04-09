@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Book as BookIcon, Search, ShoppingCart, User, LogOut, Menu, X } from 'lucide-react';
+import { Book as BookIcon, Search, ShoppingCart, User, LogOut, Menu, X, Images } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { cn } from '../lib/utils';
@@ -41,12 +41,17 @@ export default function Navbar() {
             <div className="p-2 bg-orange-100 rounded-lg group-hover:bg-orange-200 transition-colors">
               <BookIcon className="w-6 h-6 text-orange-600" />
             </div>
-            <span className="font-serif text-xl font-bold tracking-tight text-gray-900">Lumina Books</span>
+            <span className="font-serif text-xl font-bold tracking-tight text-gray-900">The English Channel BD</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
             <Link href="/" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">Home</Link>
-            <Link href="/shop" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">Shop</Link>
+            <Link href="/shop" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">Books</Link>
+            <Link href="/courses" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">Courses</Link>
+            <Link href="/gallery" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors flex items-center gap-1">
+              <Images className="w-4 h-4" />
+              <span>Gallery</span>
+            </Link>
             <Link href="/about" className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors">About</Link>
             {isStaff && (
               <Link href="/staff" className="text-sm font-bold text-orange-600 hover:text-orange-700 transition-colors flex items-center gap-1">
@@ -100,7 +105,12 @@ export default function Navbar() {
       )}>
         <div className="px-4 pt-2 pb-6 space-y-4">
           <Link href="/" onClick={() => setIsMenuOpen(false)} className="block text-base font-medium text-gray-600 hover:text-orange-600">Home</Link>
-          <Link href="/shop" onClick={() => setIsMenuOpen(false)} className="block text-base font-medium text-gray-600 hover:text-orange-600">Shop</Link>
+          <Link href="/shop" onClick={() => setIsMenuOpen(false)} className="block text-base font-medium text-gray-600 hover:text-orange-600">Books</Link>
+          <Link href="/courses" onClick={() => setIsMenuOpen(false)} className="block text-base font-medium text-gray-600 hover:text-orange-600">Courses</Link>
+          <Link href="/gallery" onClick={() => setIsMenuOpen(false)} className="block text-base font-medium text-gray-600 hover:text-orange-600 flex items-center gap-2">
+            <Images className="w-4 h-4" />
+            <span>Gallery</span>
+          </Link>
           <Link href="/about" onClick={() => setIsMenuOpen(false)} className="block text-base font-medium text-gray-600 hover:text-orange-600">About</Link>
           {isStaff && (
             <Link href="/staff" onClick={() => setIsMenuOpen(false)} className="block text-base font-bold text-orange-600">Staff Panel</Link>

@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
-import { Trash2, Plus, Minus, ArrowRight, ShoppingBag } from 'lucide-react';
+import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, GraduationCap } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 
 export default function Cart() {
-  const { cart, removeFromCart, updateQuantity, totalPrice, totalItems } = useCart();
+  const { cart, removeFromCart, removeFromCartCourse, updateQuantity, totalPrice, totalItems } = useCart();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
@@ -28,13 +28,21 @@ export default function Cart() {
           <ShoppingBag className="w-12 h-12" />
         </div>
         <h2 className="text-3xl font-serif font-bold text-gray-900 mb-4">Your cart is empty</h2>
-        <p className="text-gray-500 mb-8 max-w-md">Looks like you haven't added any books to your collection yet. Start browsing our library!</p>
-        <Link href="/shop" className="px-8 py-4 bg-orange-600 text-white rounded-2xl font-bold hover:bg-orange-700 transition-all shadow-lg shadow-orange-600/20">
-          Browse Books
-        </Link>
+        <p className="text-gray-500 mb-8 max-w-md">Looks like you haven't added any books or courses to your collection yet. Start browsing!</p>
+        <div className="flex gap-4">
+          <Link href="/shop" className="px-8 py-4 bg-orange-600 text-white rounded-2xl font-bold hover:bg-orange-700 transition-all shadow-lg shadow-orange-600/20">
+            Browse Books
+          </Link>
+          <Link href="/courses" className="px-8 py-4 bg-gray-900 text-white rounded-2xl font-bold hover:bg-gray-800 transition-all shadow-lg shadow-gray-900/20">
+            Browse Courses
+          </Link>
+        </div>
       </div>
     );
   }
+
+  const bookItems = cart.filter(item => item.type === 'book');
+  const courseItems = cart.filter(item => item.type === 'course');
 
   return (
     <div className="space-y-12 pb-20">
@@ -51,46 +59,72 @@ export default function Cart() {
           <AnimatePresence mode="popLayout">
             {cart.map((item) => (
               <motion.div
-                key={item.bookId}
+                key={item.bookId || item.courseId}
                 layout
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 className="flex items-center gap-6 p-6 bg-white rounded-3xl border border-gray-100 shadow-sm"
               >
-                <div className="w-24 aspect-[2/3] rounded-xl overflow-hidden shrink-0">
-                  <img src={item.coverUrl} alt={item.title} className="w-full h-full object-cover" />
-                </div>
+                 <div className={cn(
+                   "rounded-xl overflow-hidden shrink-0 relative",
+                   item.type === 'course' ? "w-32 aspect-video" : "w-24 aspect-[2/3]"
+                 )}>
+                   <img src={item.coverUrl} alt={item.title} className="w-full h-full object-cover" />
+                   {item.type === 'course' && (
+                     <div className="absolute inset-0 bg-gradient-to-br from-orange-500/80 to-amber-500/80 flex items-center justify-center">
+                       <GraduationCap className="w-8 h-8 text-white" />
+                     </div>
+                   )}
+                 </div>
                 <div className="flex-1 min-w-0">
-                  <Link href={`/book/${item.bookId}`} className="font-serif text-xl font-bold text-gray-900 hover:text-orange-600 transition-colors block truncate">
-                    {item.title}
-                  </Link>
+                  {item.type === 'course' ? (
+                    <Link href={`/courses/${item.slug}`} className="font-serif text-xl font-bold text-gray-900 hover:text-orange-600 transition-colors block truncate">
+                      {item.title}
+                    </Link>
+                  ) : (
+                    <Link href={`/book/${item.bookId}`} className="font-serif text-xl font-bold text-gray-900 hover:text-orange-600 transition-colors block truncate">
+                      {item.title}
+                    </Link>
+                  )}
                   <p className="text-gray-500 text-sm mb-2">{item.author}</p>
-                  <p className="text-xs text-gray-700 font-semibold mb-2">Stock: {item.stock}</p>
+                  {item.type === 'course' && (
+                    <p className="text-xs text-orange-600 font-semibold mb-2 flex items-center gap-1">
+                      <GraduationCap className="w-3 h-3" />
+                      Course Enrollment
+                    </p>
+                  )}
+                  {item.type === 'book' && (
+                    <p className="text-xs text-gray-700 font-semibold mb-2">Stock: {item.stock}</p>
+                  )}
                   <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-1 border border-gray-100">
-                      <button 
-                        onClick={() => updateQuantity(item.bookId, item.quantity - 1)}
-                        className="p-1 hover:bg-white hover:text-orange-600 rounded-lg transition-all"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="w-8 text-center font-bold text-gray-900">{item.quantity}</span>
-                      <button 
-                        onClick={() => updateQuantity(item.bookId, item.quantity + 1)}
-                        disabled={item.quantity >= item.stock}
-                        className={cn(
-                          "p-1 rounded-lg transition-all",
-                          item.quantity >= item.stock 
-                            ? "text-gray-300 cursor-not-allowed" 
-                            : "hover:bg-white hover:text-orange-600"
-                        )}
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
+                    {item.type === 'book' ? (
+                      <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-1 border border-gray-100">
+                        <button 
+                          onClick={() => updateQuantity(item.bookId!, item.quantity - 1)}
+                          className="p-1 hover:bg-white hover:text-orange-600 rounded-lg transition-all"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="w-8 text-center font-bold text-gray-900">{item.quantity}</span>
+                        <button 
+                          onClick={() => updateQuantity(item.bookId!, item.quantity + 1)}
+                          disabled={item.quantity >= item.stock}
+                          className={cn(
+                            "p-1 rounded-lg transition-all",
+                            item.quantity >= item.stock 
+                              ? "text-gray-300 cursor-not-allowed" 
+                              : "hover:bg-white hover:text-orange-600"
+                          )}
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-gray-400">Quantity: 1</span>
+                    )}
                     <button 
-                      onClick={() => removeFromCart(item.bookId)}
+                      onClick={() => item.type === 'course' ? removeFromCartCourse(item.courseId!) : removeFromCart(item.bookId!)}
                       className="p-2 text-gray-400 hover:text-red-600 transition-colors"
                     >
                       <Trash2 className="w-5 h-5" />
@@ -98,8 +132,8 @@ export default function Cart() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-xl font-bold text-gray-900">${(item.price * item.quantity).toFixed(2)}</p>
-                  <p className="text-xs text-gray-400">${item.price.toFixed(2)} each</p>
+                  <p className="text-xl font-bold text-gray-900">৳{(item.price * item.quantity).toFixed(2)}</p>
+                  <p className="text-xs text-gray-400">৳{item.price.toFixed(2)} each</p>
                 </div>
               </motion.div>
             ))}
@@ -113,7 +147,7 @@ export default function Cart() {
             <div className="space-y-4">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
-                <span className="font-bold text-gray-900">${totalPrice.toFixed(2)}</span>
+                <span className="font-bold text-gray-900">৳{totalPrice.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Shipping</span>
@@ -122,7 +156,7 @@ export default function Cart() {
               <div className="pt-4 border-t border-gray-100 flex justify-between items-end">
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total Amount</p>
-                  <p className="text-3xl font-bold text-gray-900">${totalPrice.toFixed(2)}</p>
+                  <p className="text-3xl font-bold text-gray-900">৳{totalPrice.toFixed(2)}</p>
                 </div>
               </div>
             </div>

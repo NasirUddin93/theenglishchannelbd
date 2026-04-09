@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
-import { CreditCard, Truck, CheckCircle2, ArrowRight, ArrowLeft, ShieldCheck, ShoppingBag, Tag } from 'lucide-react';
+import { CreditCard, Truck, CheckCircle2, ArrowRight, ArrowLeft, ShieldCheck, ShoppingBag, Tag, GraduationCap } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { MOCK_PROMO_CODES } from '@/lib/mockData';
@@ -17,6 +17,10 @@ export default function Checkout() {
   const { user } = useAuth();
   const router = useRouter();
   
+  const hasBooks = cart.some(item => item.type === 'book');
+  const hasCourses = cart.some(item => item.type === 'course');
+  const onlyCourses = hasCourses && !hasBooks;
+
   const [step, setStep] = useState<'shipping' | 'payment' | 'success'>('shipping');
   const [loading, setLoading] = useState(false);
   const [shippingData, setShippingData] = useState({
@@ -53,6 +57,12 @@ export default function Checkout() {
       }));
     }
   }, [user]);
+
+  useEffect(() => {
+    if (onlyCourses && step === 'shipping') {
+      setStep('payment');
+    }
+  }, [onlyCourses, step]);
 
   const detectCardType = (number: string): 'visa' | 'mastercard' | 'amex' | 'discover' | null => {
     const cleaned = number.replace(/\s/g, '');
@@ -200,26 +210,79 @@ export default function Checkout() {
     }
 
     setLoading(true);
-    
+
+    // Prepare order payload for API
+    const hasOnlyCourses = cart.every(item => item.type === 'course');
+    const orderPayload = {
+      payment_method: paymentMethod,
+      items: cart.map(item => ({
+        type: item.type,
+        book_id: item.type === 'book' ? parseInt(item.bookId) : null,
+        course_id: item.type === 'course' ? parseInt(item.courseId) : null,
+        quantity: item.quantity || 1,
+        price: item.price,
+      })),
+      ...(hasOnlyCourses ? {
+        // Course-only order: minimal required fields
+        shipping_address: 'N/A - Course Enrollment',
+        city: 'N/A',
+        phone: user.phone || '0000000000',
+      } : {
+        // Mixed order: include shipping details
+        shipping_address: shippingData.address,
+        city: shippingData.city,
+        state: shippingData.state,
+        postal_code: shippingData.zipCode,
+        phone: shippingData.phone,
+      }),
+    };
+
+    console.log('[Checkout] Sending order to API:', orderPayload);
+
+    try {
+      // Save order to database via API
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(orderPayload),
+      });
+
+      const responseData = await response.json();
+      
+      if (!response.ok) {
+        console.error('[Checkout] API Error:', response.status, responseData);
+        console.error('[Checkout] Response message:', responseData.message);
+      } else {
+        console.log('[Checkout] Order saved to database successfully:', responseData);
+      }
+    } catch (error) {
+      console.error('[Checkout] Error saving order to database:', error);
+    }
+
+    // Also save to localStorage for immediate use
     setTimeout(() => {
       const orderData = {
         id: `LMN-${Math.floor(Math.random() * 1000000)}`,
         userId: user.uid,
         items: cart,
         total: finalTotal,
-        status: 'pending',
+        status: hasOnlyCourses ? 'completed' : 'pending',
         paymentMethod,
-        shippingAddress: shippingData,
+        shippingAddress: hasOnlyCourses ? null : shippingData,
         createdAt: new Date().toISOString(),
-        discount: appliedDiscount
+        discount: appliedDiscount,
+        type: hasOnlyCourses ? 'course-enrollment' : 'mixed',
       };
-      
+
       const existingOrders = JSON.parse(localStorage.getItem('lumina_orders') || '[]');
       localStorage.setItem('lumina_orders', JSON.stringify([orderData, ...existingOrders]));
-      
+
       clearCart();
       setStep('success');
-      // notify other parts of the app that orders changed
       try { window.dispatchEvent(new Event('orders-changed')); } catch (err) {}
       setLoading(false);
     }, 1500);
@@ -232,7 +295,10 @@ export default function Checkout() {
           <ShoppingBag className="w-12 h-12" />
         </div>
         <h2 className="text-3xl font-serif font-bold text-gray-900 mb-4">Your cart is empty</h2>
-        <Link href="/shop" className="text-orange-600 font-bold hover:underline">Go back to shop</Link>
+        <div className="flex gap-4">
+          <Link href="/shop" className="text-orange-600 font-bold hover:underline">Go back to shop</Link>
+          <Link href="/courses" className="text-orange-600 font-bold hover:underline">Browse courses</Link>
+        </div>
       </div>
     );
   }
@@ -263,7 +329,7 @@ export default function Checkout() {
       </div>
 
       <AnimatePresence mode="wait">
-        {step === 'shipping' && (
+        {!onlyCourses && step === 'shipping' && (
           <motion.div
             key="shipping"
             initial={{ opacity: 0, x: 20 }}
@@ -371,6 +437,12 @@ export default function Checkout() {
             <div className="lg:col-span-8 space-y-8">
               <div className="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm space-y-8">
                 <h2 className="text-2xl font-serif font-bold text-gray-900">Payment Method</h2>
+                {onlyCourses && (
+                  <div className="flex items-center gap-3 p-4 bg-orange-50 rounded-2xl border border-orange-100">
+                    <GraduationCap className="w-5 h-5 text-orange-600" />
+                    <p className="text-sm text-orange-700 font-medium">Course enrollment — no shipping required. Access will be available immediately after payment.</p>
+                  </div>
+                )}
                 <div className="space-y-4">
                   {[
                     { id: 'card', label: 'Credit / Debit Card', icon: CreditCard, desc: 'Secure payment with Stripe' },
@@ -483,13 +555,20 @@ export default function Checkout() {
               </div>
 
               <div className="flex justify-between">
-                <button 
-                  onClick={() => setStep('shipping')}
-                  className="flex items-center gap-2 text-gray-500 font-bold hover:text-gray-900 transition-colors"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span>Back to Shipping</span>
-                </button>
+                {!onlyCourses ? (
+                  <button 
+                    onClick={() => setStep('shipping')}
+                    className="flex items-center gap-2 text-gray-500 font-bold hover:text-gray-900 transition-colors"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Back to Shipping</span>
+                  </button>
+                ) : (
+                  <Link href="/cart" className="flex items-center gap-2 text-gray-500 font-bold hover:text-gray-900 transition-colors">
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Back to Cart</span>
+                  </Link>
+                )}
                 <button 
                   onClick={handlePlaceOrder}
                   disabled={loading}
@@ -531,17 +610,33 @@ export default function Checkout() {
             <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-8">
               <CheckCircle2 className="w-12 h-12" />
             </div>
-            <h1 className="font-serif text-5xl font-bold text-gray-900">Order Confirmed!</h1>
-            <p className="text-xl text-gray-500">Thank you for your purchase. We've sent a confirmation email to <span className="text-gray-900 font-bold">{shippingData.email}</span>.</p>
+            {onlyCourses ? (
+              <>
+                <h1 className="font-serif text-5xl font-bold text-gray-900">Enrollment Confirmed!</h1>
+                <p className="text-xl text-gray-500">Thank you for enrolling. You now have access to your courses. Check your email at <span className="text-gray-900 font-bold">{shippingData.email}</span> for details.</p>
+              </>
+            ) : (
+              <>
+                <h1 className="font-serif text-5xl font-bold text-gray-900">Order Confirmed!</h1>
+                <p className="text-xl text-gray-500">Thank you for your purchase. We've sent a confirmation email to <span className="text-gray-900 font-bold">{shippingData.email}</span>.</p>
+              </>
+            )}
             <div className="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm space-y-4">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400 font-bold uppercase tracking-widest">Order Number</span>
                 <span className="text-gray-900 font-bold">#LMN-{Math.floor(Math.random() * 1000000)}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400 font-bold uppercase tracking-widest">Estimated Delivery</span>
-                <span className="text-gray-900 font-bold">3-5 Business Days</span>
-              </div>
+              {onlyCourses ? (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400 font-bold uppercase tracking-widest">Access</span>
+                  <span className="text-green-600 font-bold">Available Now</span>
+                </div>
+              ) : (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400 font-bold uppercase tracking-widest">Estimated Delivery</span>
+                  <span className="text-gray-900 font-bold">3-5 Business Days</span>
+                </div>
+              )}
             </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/profile" className="px-8 py-4 bg-gray-900 text-white rounded-2xl font-bold hover:bg-black transition-all">
@@ -580,13 +675,21 @@ function OrderSummary({
       <h3 className="text-2xl font-serif font-bold text-gray-900">Order Summary</h3>
       <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
         {cart.map(item => (
-          <div key={item.bookId} className="flex gap-4">
-            <div className="w-12 h-16 rounded-lg overflow-hidden shrink-0">
+          <div key={item.bookId || item.courseId} className="flex gap-4">
+            <div className="w-12 h-16 rounded-lg overflow-hidden shrink-0 relative">
               <img src={item.coverUrl} className="w-full h-full object-cover" />
+              {item.type === 'course' && (
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/80 to-amber-500/80 flex items-center justify-center">
+                  <GraduationCap className="w-4 h-4 text-white" />
+                </div>
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-gray-900 truncate">{item.title}</p>
               <p className="text-xs text-gray-400">Qty: {item.quantity}</p>
+              {item.type === 'course' && (
+                <p className="text-[10px] text-orange-600 font-semibold">Course</p>
+              )}
             </div>
             <p className="text-sm font-bold text-gray-900">৳{(item.price * item.quantity).toFixed(2)}</p>
           </div>
@@ -635,7 +738,7 @@ function OrderSummary({
           <div className="pt-4 flex justify-between items-end">
             <div>
               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total</p>
-              <p className="text-3xl font-bold text-gray-900">${finalTotal.toFixed(2)}</p>
+              <p className="text-3xl font-bold text-gray-900">৳{finalTotal.toFixed(2)}</p>
             </div>
           </div>
         </div>

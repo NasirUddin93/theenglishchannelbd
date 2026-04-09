@@ -1,0 +1,3623 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Apr 09, 2026 at 04:53 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `lumina_books_db`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `about_pages`
+--
+
+CREATE TABLE `about_pages` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(255) NOT NULL DEFAULT 'About Us',
+  `hero_description` text NOT NULL,
+  `our_story` text NOT NULL,
+  `our_mission` text NOT NULL,
+  `our_values` text NOT NULL,
+  `contact_email` varchar(255) DEFAULT NULL,
+  `contact_phone` varchar(255) DEFAULT NULL,
+  `contact_address` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `about_pages`
+--
+
+INSERT INTO `about_pages` (`id`, `title`, `hero_description`, `our_story`, `our_mission`, `our_values`, `contact_email`, `contact_phone`, `contact_address`, `created_at`, `updated_at`) VALUES
+(1, 'Updated About TTT', 'Updated description', 'Updated story', 'To connect readers with exceptional books while fostering a love for reading across all ages and backgrounds.', 'We believe in quality over quantity, carefully curating our collection to ensure every book meets our high standards. Our commitment to customer satisfaction drives everything we do.', 'contact@luminabooks.com', '+1 (555) 123-4567', '123 Book Street, Reading City, RC 12345', '2026-04-02 00:24:02', '2026-04-02 23:22:32');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `books`
+--
+
+CREATE TABLE `books` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `category_id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `author` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `stock` int(11) NOT NULL DEFAULT 0,
+  `isbn` varchar(255) DEFAULT NULL,
+  `publisher` varchar(255) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `preview_content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`preview_content`)),
+  `preview_images` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`preview_images`)),
+  `pages` int(11) DEFAULT NULL,
+  `language` varchar(255) NOT NULL DEFAULT 'English',
+  `is_featured` tinyint(1) NOT NULL DEFAULT 0,
+  `status` varchar(255) NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `books`
+--
+
+INSERT INTO `books` (`id`, `category_id`, `title`, `author`, `description`, `price`, `stock`, `isbn`, `publisher`, `image`, `preview_content`, `preview_images`, `pages`, `language`, `is_featured`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 'The Great Gatsby', 'F. Scott Fitzgerald', 'A story of the mysteriously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan.', 12.99, 50, '978-0743273565', 'Scribner', NULL, NULL, NULL, 180, 'English', 1, 'approved', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(2, 1, 'To Kill a Mockingbird', 'Harper Lee', 'The unforgettable novel of a childhood in a sleepy Southern town and the crisis of conscience that rocked it.', 14.99, 45, '978-0061120084', 'Harper Perennial', NULL, NULL, NULL, 336, 'English', 1, 'approved', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(4, 2, 'A Brief History of Time', 'Stephen Hawking', 'An exploration of cosmology and the nature of the universe.', 18.99, 30, '978-0553380163', 'Bantam', NULL, NULL, NULL, 212, 'English', 1, 'approved', '2026-04-01 11:26:29', '2026-04-02 10:54:54'),
+(5, 2, 'The Selfish Gene', 'Richard Dawkins', 'A groundbreaking work on evolutionary biology and genetics.', 16.99, 25, '978-0198788607', 'Oxford University Press', NULL, NULL, NULL, 360, 'English', 0, 'approved', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(6, 3, 'Clean Code', 'Robert C. Martin', 'A handbook of agile software craftsmanship for writing clean, maintainable code.', 39.99, 40, '978-0132350884', 'Prentice Hall', NULL, NULL, NULL, 464, 'English', 1, 'approved', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(7, 3, 'Design Patterns', 'Gang of Four', 'Elements of reusable object-oriented software design patterns.', 44.99, 20, '978-0201633610', 'Addison-Wesley', NULL, NULL, NULL, 395, 'English', 0, 'approved', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(8, 3, 'The Pragmatic Programmer', 'David Thomas & Andrew Hunt', 'Your journey to mastery in software development.', 42.99, 35, '978-0135957059', 'Addison-Wesley', NULL, NULL, NULL, 352, 'English', 1, 'approved', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(9, 4, 'Sapiens: A Brief History of Humankind', 'Yuval Noah Harari', 'A groundbreaking narrative of humanity\'s creation and evolution.', 22.99, 55, '978-0062316097', 'Harper', NULL, NULL, NULL, 464, 'English', 1, 'approved', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(10, 4, 'Guns, Germs, and Steel', 'Jared Diamond', 'The fates of human societies and why history unfolded as it did.', 19.99, 28, '978-0393354324', 'W. W. Norton', NULL, NULL, NULL, 528, 'English', 0, 'approved', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(11, 5, 'Atomic Habits', 'James Clear', 'An easy and proven way to build good habits and break bad ones.', 16.99, 70, '978-0735211292', 'Avery', NULL, NULL, NULL, 320, 'English', 1, 'approved', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(12, 5, 'The Lean Startup', 'Eric Ries', 'How today\'s entrepreneurs use continuous innovation to create radically successful businesses.', 17.99, 32, '978-0307887894', 'Crown Business', NULL, NULL, NULL, 336, 'English', 0, 'approved', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(13, 6, 'Thinking, Fast and Slow', 'Daniel Kahneman', 'A groundbreaking tour of the mind and the two systems that drive the way we think.', 15.99, 42, '978-0374533557', 'Farrar, Straus and Giroux', NULL, NULL, NULL, 499, 'English', 0, 'approved', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(14, 6, 'The Power of Now', 'Eckhart Tolle', 'A guide to spiritual enlightenment and living in the present moment.', 13.99, 38, '978-1577314806', 'New World Library', NULL, NULL, NULL, 236, 'English', 0, 'approved', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(15, 1, 'The Alchemist', 'Paulo Coelho', 'A magical story about following your dreams and listening to your heart.', 14.99, 65, '978-0062315007', 'HarperOne', NULL, NULL, NULL, 208, 'English', 1, 'approved', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(16, 2, 'Cosmos', 'Carl Sagan', 'A personal voyage through the universe and our place in it.', 20.99, 22, '978-0345539434', 'Ballantine Books', NULL, NULL, NULL, 432, 'English', 0, 'approved', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(19, 7, 'AA', 'AA', 'fwefwef', 234.00, 234, NULL, NULL, 'book-covers/Rhd6rBxOgtLRlUTL6sMAonre2CMuJoB7nAMnR4YM.webp', NULL, '[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/FSNP1qW6KMMg2fpgSgBfOXRjf1qiVV3zV8YBv4Zs.png\",\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/qd5AwSxArGJ5V1iNbSbo0hTW1Cx6DbDccqH456Nb.png\"]', NULL, 'English', 0, 'approved', '2026-04-02 02:46:35', '2026-04-05 22:08:53'),
+(23, 1, 'CCSF', 'efvwef', 'wcfwfwef', 234.00, 3, NULL, NULL, 'book-covers/D93j9E0o03pV9WzAdVz5KG0bQEhzcwR6jITAivXe.webp', NULL, '[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/N2RmOVbgxo9eGmAwcPsUV6Z8IC1AIzJzIecBFkhe.jpg\"]', NULL, 'English', 0, 'approved', '2026-04-02 08:29:53', '2026-04-05 21:56:03'),
+(24, 1, '1984', 'George Orwell', 'A dystopian social science fiction novel and cautionary tale about the dangers of totalitarianism.', 11.99, 50, '978-0451524935', 'Signet Classic', NULL, NULL, '[]', 328, 'English', 0, 'approved', '2026-04-02 10:54:54', '2026-04-03 08:58:50'),
+(25, 1, 'The Catcher in the Rye', 'J.D. Salinger', 'A teenage boy\'s account of his experiences in New York City after being expelled from prep school.', 13.99, 48, '978-0316769174', 'Little, Brown', NULL, NULL, NULL, 277, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 12:45:10'),
+(26, 1, 'Pride and Prejudice', 'Jane Austen', 'A romantic novel of manners and marriage among the landed gentry of Georgian England.', 11.99, 55, '978-0141439518', 'Penguin Classics', NULL, NULL, NULL, 432, 'English', 1, 'approved', '2026-04-02 11:46:15', '2026-04-03 02:18:14'),
+(27, 1, 'Wuthering Heights', 'Emily Brontë', 'A tale of love and revenge amid the Yorkshire moors, spanning two generations.', 12.99, 35, '978-0141439556', 'Penguin Classics', NULL, NULL, NULL, 352, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-03 02:20:27'),
+(28, 1, 'The Hobbit', 'J.R.R. Tolkien', 'A fantasy adventure of a reluctant hobbit hero embarking on an unexpected quest.', 15.99, 62, '978-0547928227', 'Houghton Mifflin Harcourt', NULL, NULL, NULL, 310, 'English', 1, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(29, 1, 'The Lord of the Rings', 'J.R.R. Tolkien', 'An epic fantasy journey through Middle-earth to destroy an ancient evil ring.', 29.99, 58, '978-0544003415', 'Houghton Mifflin Harcourt', NULL, NULL, NULL, 1178, 'English', 1, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(30, 1, 'Jane Eyre', 'Charlotte Brontë', 'A gothic romance about a poor orphan girl and her relationship with a mysterious man.', 12.99, 42, '978-0141441146', 'Penguin Classics', NULL, NULL, NULL, 477, 'English', 1, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(31, 1, 'Moby Dick', 'Herman Melville', 'An epic adventure about a captain\'s obsessive hunt for a white whale.', 16.99, 28, '978-0142437247', 'Penguin Classics', NULL, NULL, NULL, 736, 'English', 0, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(32, 1, 'The Count of Monte Cristo', 'Alexandre Dumas', 'A tale of adventure and revenge about an unjustly imprisoned man and his escape and transformation.', 17.99, 51, '978-0140449266', 'Penguin Classics', NULL, NULL, NULL, 928, 'English', 1, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(33, 2, 'The God Delusion', 'Richard Dawkins', 'A rational examination of religious faith and the case for atheism.', 17.99, 33, '978-0618680009', 'Houghton Mifflin', NULL, NULL, NULL, 406, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(34, 2, 'A Brief History of Nearly Everything', 'Bill Bryson', 'A hilarious and fascinating journey through natural history and scientific discovery.', 18.99, 44, '978-0767908185', 'Broadway', NULL, NULL, NULL, 544, 'English', 0, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(35, 2, 'The Magic of Reality', 'Richard Dawkins', 'A beautifully illustrated exploration of the science behind apparently magical phenomena.', 25.99, 26, '978-1451675023', 'Free Press', NULL, NULL, NULL, 272, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(36, 3, 'Python Cookbook', 'David Beazley & Brian K. Jones', 'Recipes and solutions for common Python programming tasks.', 36.99, 37, '978-1449357337', 'O\'Reilly', NULL, NULL, NULL, 704, 'English', 0, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(37, 3, 'JavaScript: The Good Parts', 'Douglas Crockford', 'A comprehensive guide to the best programming practices in JavaScript.', 29.99, 41, '978-0596517748', 'O\'Reilly', NULL, NULL, NULL, 176, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(38, 3, 'Structure and Interpretation of Computer Programs', 'Hal Abelson, Jerry Sussman, Julie Sussman', 'A legendary MIT textbook on computer programming fundamentals.', 68.99, 15, '978-0262510875', 'MIT Press', NULL, NULL, NULL, 688, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(39, 3, 'The C Programming Language', 'Brian W. Kernighan & Dennis M. Ritchie', 'The definitive guide to C programming from two of its creators.', 34.99, 29, '978-0131103627', 'Prentice Hall', NULL, NULL, NULL, 274, 'English', 0, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(40, 3, 'Code: The Hidden Language of Computer Hardware and Software', 'Charles Petzold', 'An exploration of the history and principles that underlie all digital technology.', 24.99, 39, '978-0735611313', 'Prentice Hall', NULL, NULL, NULL, 400, 'English', 1, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(41, 3, 'Refactoring: Improving the Design of Existing Code', 'Martin Fowler', 'Techniques for restructuring code to improve its design without changing behavior.', 51.99, 22, '978-0201485677', 'Addison-Wesley', NULL, NULL, NULL, 464, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(42, 4, 'The Silk Road: Connecting Cultures and Commerce', 'Peter Frankopan', 'A fascinating exploration of the trade routes that shaped world history.', 21.99, 34, '978-0374246326', 'Farrar, Straus and Giroux', NULL, NULL, NULL, 448, 'English', 1, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(43, 4, 'The Fall of the Roman Empire', 'Christopher Kelly', 'A gripping account of Rome\'s transformation and the barbarian invasions.', 19.99, 30, '978-0393327588', 'W. W. Norton', NULL, NULL, NULL, 432, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(44, 4, 'The American Civil War: A Military History', 'John Keegan', 'A comprehensive military analysis of America\'s bloodiest conflict.', 24.99, 27, '978-0394746739', 'Knopf', NULL, NULL, NULL, 536, 'English', 0, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(45, 4, 'Empires of the Atlantic World', 'David Cannadine', 'A comparative history of the British and American imperial experiences.', 23.99, 31, '978-0300107173', 'Yale University Press', NULL, NULL, NULL, 640, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(46, 5, 'Good to Great', 'Jim Collins', 'Why some companies make the leap and other don\'t - and how to transform your business.', 27.99, 45, '978-0066620992', 'HarperBusiness', NULL, NULL, NULL, 320, 'English', 1, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(47, 5, 'The Innovators', 'Walter Isaacson', 'How a group of hackers, geniuses, and geeks created the digital revolution.', 19.99, 38, '978-1476708690', 'Simon & Schuster', NULL, NULL, NULL, 656, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(48, 5, 'Zero to One', 'Peter Thiel & Blake Masters', 'Notes on startups, or how to build the future - lessons from the PayPal founder.', 16.99, 52, '978-0804139298', 'Crown Business', NULL, NULL, NULL, 224, 'English', 1, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(49, 5, 'Crushing It!', 'Gary Vaynerchuk', 'How to leverage social media to build your personal brand and business.', 17.99, 43, '978-0061914516', 'HarperStudio', NULL, NULL, NULL, 272, 'English', 0, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(50, 5, 'The Art of the Deal', 'Donald Trump & Tony Schwartz', 'Behind-the-scenes stories and strategies from a legendary dealmaker.', 16.99, 25, '978-0345409041', 'Ballantine', NULL, NULL, NULL, 355, 'English', 0, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(51, 6, 'Mindset: The New Psychology of Success', 'Carol S. Dweck', 'How a simple change of mindset can improve your success in business and life.', 17.99, 67, '978-0345472328', 'Ballantine', NULL, NULL, NULL, 288, 'English', 1, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(52, 6, 'The 7 Habits of Highly Effective People', 'Stephen Covey', 'Principles for personal transformation and achieving your goals.', 18.99, 59, '978-1451639619', 'Free Press', NULL, NULL, NULL, 432, 'English', 1, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(53, 6, 'Man\'s Search for Meaning', 'Viktor Frankl', 'A Holocaust survivor\'s reflections on meaning, freedom, and human resilience.', 15.99, 53, '978-0807014271', 'Beacon Press', NULL, NULL, NULL, 165, 'English', 1, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(54, 6, 'Flow: The Psychology of Optimal Experience', 'Mihaly Csikszentmihalyi', 'The science of happiness and how to achieve deep engagement in work and life.', 17.99, 36, '978-0061339202', 'Harper Perennial', NULL, NULL, NULL, 464, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(55, 6, 'The Four Agreements', 'Don Miguel Ruiz', 'A practical guide to personal freedom and fulfillment through ancient wisdom.', 14.99, 61, '978-1878424310', 'Amber-Allen Publishing', NULL, NULL, NULL, 160, 'English', 1, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(56, 1, 'The Odyssey', 'Homer', 'An ancient Greek epic about a hero\'s long journey home after the Trojan War.', 13.99, 32, '978-0143039952', 'Penguin Classics', NULL, NULL, NULL, 448, 'English', 0, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(57, 1, 'Frankenstein', 'Mary Shelley', 'A Gothic horror novel about a scientist and his monstrous creation.', 11.99, 40, '978-0486282114', 'Dover', NULL, NULL, NULL, 288, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(58, 1, 'Dracula', 'Bram Stoker', 'A classic Gothic vampire novel told through letters, diary entries, and newspaper clippings.', 12.99, 38, '978-0486411095', 'Dover', NULL, NULL, NULL, 432, 'English', 1, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(59, 1, 'The Strange Case of Dr Jekyll and Mr Hyde', 'Robert Louis Stevenson', 'A novella about a doctor\'s descent into madness through a dual personality.', 9.99, 50, '978-0486264685', 'Dover', NULL, NULL, NULL, 80, 'English', 0, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(60, 1, 'The Picture of Dorian Gray', 'Oscar Wilde', 'A novel about vanity and corruption featuring a man whose portrait ages instead of him.', 10.99, 46, '978-0486274867', 'Dover', NULL, NULL, NULL, 128, 'English', 0, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(61, 2, 'The Right Stuff', 'Tom Wolfe', 'The epic story of American test pilots and the early space program.', 18.99, 29, '978-0374248573', 'Farrar, Straus and Giroux', NULL, NULL, NULL, 464, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(62, 2, 'Pale Blue Dot', 'Carl Sagan', 'A meditation on human existence and our place in the universe.', 17.99, 33, '978-0345376596', 'Ballantine', NULL, NULL, NULL, 384, 'English', 1, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(63, 3, 'Introduction to Algorithms', 'Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein', 'The definitive comprehensive textbook on computer algorithms and data structures.', 89.99, 18, '978-0262033848', 'MIT Press', NULL, NULL, NULL, 1312, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(64, 3, 'Domain-Driven Design', 'Eric Evans', 'A guide to tackling complexity in software architecture through domain-driven design.', 54.99, 20, '978-0321125675', 'Addison-Wesley', NULL, NULL, NULL, 560, 'English', 0, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(65, 3, 'Test Driven Development', 'Kent Beck', 'By Example - a practical guide to writing better code through testing.', 44.99, 24, '978-0321146533', 'Addison-Wesley', NULL, NULL, NULL, 240, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(66, 4, 'The French Revolution', 'Thomas Carlyle', 'A vivid narrative history of one of history\'s most transformative events.', 22.99, 26, '978-0486424569', 'Dover', NULL, NULL, NULL, 720, 'English', 0, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(67, 4, 'Napoleon: A Life', 'Andrew Roberts', 'A comprehensive biography of the French military leader and emperor.', 25.99, 35, '978-0393247602', 'W. W. Norton', NULL, NULL, NULL, 926, 'English', 1, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(68, 5, 'Venture Capitalists at War', 'Dan Senor & Saul Singer', 'The story of Israeli entrepreneurs and their impact on global innovation.', 20.99, 28, '978-0446556286', 'Twelve', NULL, NULL, NULL, 400, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(69, 5, 'The Startup Way', 'Eric Ries', 'How modern companies use entrepreneurial management to transform culture and drive growth.', 18.99, 41, '978-0385539578', 'Crown Business', NULL, NULL, NULL, 336, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(70, 6, 'Emotional Intelligence', 'Daniel Goleman', 'Why it can matter more than IQ - a groundbreaking exploration of emotions and success.', 17.99, 54, '978-0553375305', 'Bantam', NULL, NULL, NULL, 368, 'English', 1, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(71, 6, 'Radical Acceptance', 'Tara Brach', 'Embracing your life with the heart of a Buddha - finding peace through acceptance.', 17.99, 32, '978-0553380163', 'Bantam', NULL, NULL, NULL, 336, 'English', 0, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(72, 1, 'The Name of the Wind', 'Patrick Rothfuss', 'The first book in an epic fantasy series about a legendary figure retelling his past.', 18.99, 56, '978-0756404741', 'DAW Books', NULL, NULL, NULL, 662, 'English', 1, 'draft', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(73, 1, 'American Gods', 'Neil Gaiman', 'A dark fantasy mixing mythology with modern America in an epic road trip narrative.', 17.99, 47, '978-0380789023', 'William Morrow', NULL, NULL, NULL, 635, 'English', 1, 'approved', '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(75, 8, 'dd', 'dd', 'rgrg', 23.00, 7, NULL, NULL, 'book-covers/ar4BszueLprxCnpzM4joQZe410epUeku201rBIy3.webp', NULL, '[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/3eIBdaeuVa0JlmEblWfog3Ywhs9bGzbdaQPf0Ysj.png\"]', NULL, 'English', 0, 'approved', '2026-04-02 22:08:26', '2026-04-05 22:10:47'),
+(76, 7, 'rrr', 'rr', 'vegrgerg', 43.00, 43, NULL, NULL, 'book-covers/Iw2Sbf1m53tEVFSrBcSVMbdakfqKvmDqsXWk82Se.jpg', NULL, '[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/WQbSCXdhjFVtrfTZozUa4XKqOVuQTihWoye5G1xg.png\"]', NULL, 'English', 0, 'approved', '2026-04-02 23:15:56', '2026-04-05 21:56:03'),
+(77, 1, 't4t', 't4', '43t4433', 45.00, 44, NULL, NULL, 'book-covers/q9Vxmjx0hxCYixfOnRXunJ5gBPTpJwC8mrvQQ3G8.png', NULL, '[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/RzADfo4CsVv5QqUsQV3GV41V0EEzDSBepTFKP5EL.png\",\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/zN8NVmT1Wi0qGXheQZmnd336juIBIryTT2O40qOp.png\"]', NULL, 'English', 0, 'approved', '2026-04-03 02:28:07', '2026-04-05 21:56:03'),
+(78, 1, 'AAAAAAAAAAAAAA', 'AAAAAAAAAAAAA', 'AAAAAAAAAAAAAA', 22.00, 22, NULL, NULL, 'book-covers/zIYEXqfYco7ULod5SLP2ZijYmx52vHDgNr5oaQtl.webp', NULL, NULL, NULL, 'English', 0, 'approved', '2026-04-05 22:11:20', '2026-04-05 22:11:20'),
+(79, 3, 'aaaa', 'aaa', 'aaa', 4234.00, 2424, NULL, NULL, 'book-covers/wpqgx1kenFZupU3prV5JHQ6XZKhxydPBLSQlyHb7.png', NULL, NULL, NULL, 'English', 0, 'approved', '2026-04-09 08:19:52', '2026-04-09 08:19:52');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cache`
+--
+
+CREATE TABLE `cache` (
+  `key` varchar(255) NOT NULL,
+  `value` mediumtext NOT NULL,
+  `expiration` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `cache`
+--
+
+INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
+('laravel-cache-books_11c30b08410df7f1f4affc734c081c6a', 'O:28:\"Illuminate\\Http\\JsonResponse\":11:{s:7:\"headers\";O:50:\"Symfony\\Component\\HttpFoundation\\ResponseHeaderBag\":5:{s:10:\"\0*\0headers\";a:3:{s:13:\"cache-control\";a:1:{i:0;s:19:\"max-age=300, public\";}s:4:\"date\";a:1:{i:0;s:29:\"Thu, 09 Apr 2026 14:34:33 GMT\";}s:12:\"content-type\";a:1:{i:0;s:16:\"application/json\";}}s:15:\"\0*\0cacheControl\";a:2:{s:7:\"max-age\";s:3:\"300\";s:6:\"public\";b:1;}s:23:\"\0*\0computedCacheControl\";a:2:{s:7:\"max-age\";s:3:\"300\";s:6:\"public\";b:1;}s:10:\"\0*\0cookies\";a:0:{}s:14:\"\0*\0headerNames\";a:3:{s:13:\"cache-control\";s:13:\"Cache-Control\";s:4:\"date\";s:4:\"Date\";s:12:\"content-type\";s:12:\"Content-Type\";}}s:10:\"\0*\0content\";s:5084:\"{\"current_page\":1,\"data\":[{\"id\":79,\"title\":\"aaaa\",\"author\":\"aaa\",\"price\":\"4234.00\",\"stock\":2424,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/wpqgx1kenFZupU3prV5JHQ6XZKhxydPBLSQlyHb7.png\",\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":3,\"created_at\":\"2026-04-09T14:19:52.000000Z\",\"category\":{\"id\":3,\"name\":\"Technology\",\"slug\":\"technology\"}},{\"id\":78,\"title\":\"AAAAAAAAAAAAAA\",\"author\":\"AAAAAAAAAAAAA\",\"price\":\"22.00\",\"stock\":22,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/zIYEXqfYco7ULod5SLP2ZijYmx52vHDgNr5oaQtl.webp\",\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-06T04:11:20.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":77,\"title\":\"t4t\",\"author\":\"t4\",\"price\":\"45.00\",\"stock\":44,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/q9Vxmjx0hxCYixfOnRXunJ5gBPTpJwC8mrvQQ3G8.png\",\"preview_images\":[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/RzADfo4CsVv5QqUsQV3GV41V0EEzDSBepTFKP5EL.png\",\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/zN8NVmT1Wi0qGXheQZmnd336juIBIryTT2O40qOp.png\"],\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-03T08:28:07.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":76,\"title\":\"rrr\",\"author\":\"rr\",\"price\":\"43.00\",\"stock\":43,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/Iw2Sbf1m53tEVFSrBcSVMbdakfqKvmDqsXWk82Se.jpg\",\"preview_images\":[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/WQbSCXdhjFVtrfTZozUa4XKqOVuQTihWoye5G1xg.png\"],\"status\":\"approved\",\"is_featured\":false,\"category_id\":7,\"created_at\":\"2026-04-03T05:15:56.000000Z\",\"category\":{\"id\":7,\"name\":\"Pokemon\",\"slug\":\"pokemon\"}},{\"id\":75,\"title\":\"dd\",\"author\":\"dd\",\"price\":\"23.00\",\"stock\":7,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/ar4BszueLprxCnpzM4joQZe410epUeku201rBIy3.webp\",\"preview_images\":[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/3eIBdaeuVa0JlmEblWfog3Ywhs9bGzbdaQPf0Ysj.png\"],\"status\":\"approved\",\"is_featured\":false,\"category_id\":8,\"created_at\":\"2026-04-03T04:08:26.000000Z\",\"category\":{\"id\":8,\"name\":\"AAA\",\"slug\":\"aaa\"}},{\"id\":25,\"title\":\"The Catcher in the Rye\",\"author\":\"J.D. Salinger\",\"price\":\"13.99\",\"stock\":48,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":26,\"title\":\"Pride and Prejudice\",\"author\":\"Jane Austen\",\"price\":\"11.99\",\"stock\":55,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":27,\"title\":\"Wuthering Heights\",\"author\":\"Emily Bront\\u00eb\",\"price\":\"12.99\",\"stock\":35,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":28,\"title\":\"The Hobbit\",\"author\":\"J.R.R. Tolkien\",\"price\":\"15.99\",\"stock\":62,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":29,\"title\":\"The Lord of the Rings\",\"author\":\"J.R.R. Tolkien\",\"price\":\"29.99\",\"stock\":58,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":30,\"title\":\"Jane Eyre\",\"author\":\"Charlotte Bront\\u00eb\",\"price\":\"12.99\",\"stock\":42,\"image\":null,\"preview_images\":null,\"status\":\"draft\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":31,\"title\":\"Moby Dick\",\"author\":\"Herman Melville\",\"price\":\"16.99\",\"stock\":28,\"image\":null,\"preview_images\":null,\"status\":\"draft\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}}],\"first_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=1\",\"from\":1,\"last_page\":6,\"last_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=6\",\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=1\",\"label\":\"1\",\"page\":1,\"active\":true},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"label\":\"2\",\"page\":2,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=3\",\"label\":\"3\",\"page\":3,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=4\",\"label\":\"4\",\"page\":4,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=5\",\"label\":\"5\",\"page\":5,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=6\",\"label\":\"6\",\"page\":6,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"label\":\"Next &raquo;\",\"page\":2,\"active\":false}],\"next_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"path\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books\",\"per_page\":12,\"prev_page_url\":null,\"to\":12,\"total\":72}\";s:10:\"\0*\0version\";s:3:\"1.0\";s:13:\"\0*\0statusCode\";i:200;s:13:\"\0*\0statusText\";s:2:\"OK\";s:10:\"\0*\0charset\";N;s:7:\"\0*\0data\";s:5084:\"{\"current_page\":1,\"data\":[{\"id\":79,\"title\":\"aaaa\",\"author\":\"aaa\",\"price\":\"4234.00\",\"stock\":2424,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/wpqgx1kenFZupU3prV5JHQ6XZKhxydPBLSQlyHb7.png\",\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":3,\"created_at\":\"2026-04-09T14:19:52.000000Z\",\"category\":{\"id\":3,\"name\":\"Technology\",\"slug\":\"technology\"}},{\"id\":78,\"title\":\"AAAAAAAAAAAAAA\",\"author\":\"AAAAAAAAAAAAA\",\"price\":\"22.00\",\"stock\":22,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/zIYEXqfYco7ULod5SLP2ZijYmx52vHDgNr5oaQtl.webp\",\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-06T04:11:20.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":77,\"title\":\"t4t\",\"author\":\"t4\",\"price\":\"45.00\",\"stock\":44,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/q9Vxmjx0hxCYixfOnRXunJ5gBPTpJwC8mrvQQ3G8.png\",\"preview_images\":[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/RzADfo4CsVv5QqUsQV3GV41V0EEzDSBepTFKP5EL.png\",\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/zN8NVmT1Wi0qGXheQZmnd336juIBIryTT2O40qOp.png\"],\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-03T08:28:07.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":76,\"title\":\"rrr\",\"author\":\"rr\",\"price\":\"43.00\",\"stock\":43,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/Iw2Sbf1m53tEVFSrBcSVMbdakfqKvmDqsXWk82Se.jpg\",\"preview_images\":[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/WQbSCXdhjFVtrfTZozUa4XKqOVuQTihWoye5G1xg.png\"],\"status\":\"approved\",\"is_featured\":false,\"category_id\":7,\"created_at\":\"2026-04-03T05:15:56.000000Z\",\"category\":{\"id\":7,\"name\":\"Pokemon\",\"slug\":\"pokemon\"}},{\"id\":75,\"title\":\"dd\",\"author\":\"dd\",\"price\":\"23.00\",\"stock\":7,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/ar4BszueLprxCnpzM4joQZe410epUeku201rBIy3.webp\",\"preview_images\":[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/3eIBdaeuVa0JlmEblWfog3Ywhs9bGzbdaQPf0Ysj.png\"],\"status\":\"approved\",\"is_featured\":false,\"category_id\":8,\"created_at\":\"2026-04-03T04:08:26.000000Z\",\"category\":{\"id\":8,\"name\":\"AAA\",\"slug\":\"aaa\"}},{\"id\":25,\"title\":\"The Catcher in the Rye\",\"author\":\"J.D. Salinger\",\"price\":\"13.99\",\"stock\":48,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":26,\"title\":\"Pride and Prejudice\",\"author\":\"Jane Austen\",\"price\":\"11.99\",\"stock\":55,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":27,\"title\":\"Wuthering Heights\",\"author\":\"Emily Bront\\u00eb\",\"price\":\"12.99\",\"stock\":35,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":28,\"title\":\"The Hobbit\",\"author\":\"J.R.R. Tolkien\",\"price\":\"15.99\",\"stock\":62,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":29,\"title\":\"The Lord of the Rings\",\"author\":\"J.R.R. Tolkien\",\"price\":\"29.99\",\"stock\":58,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":30,\"title\":\"Jane Eyre\",\"author\":\"Charlotte Bront\\u00eb\",\"price\":\"12.99\",\"stock\":42,\"image\":null,\"preview_images\":null,\"status\":\"draft\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":31,\"title\":\"Moby Dick\",\"author\":\"Herman Melville\",\"price\":\"16.99\",\"stock\":28,\"image\":null,\"preview_images\":null,\"status\":\"draft\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}}],\"first_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=1\",\"from\":1,\"last_page\":6,\"last_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=6\",\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=1\",\"label\":\"1\",\"page\":1,\"active\":true},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"label\":\"2\",\"page\":2,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=3\",\"label\":\"3\",\"page\":3,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=4\",\"label\":\"4\",\"page\":4,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=5\",\"label\":\"5\",\"page\":5,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=6\",\"label\":\"6\",\"page\":6,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"label\":\"Next &raquo;\",\"page\":2,\"active\":false}],\"next_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"path\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books\",\"per_page\":12,\"prev_page_url\":null,\"to\":12,\"total\":72}\";s:11:\"\0*\0callback\";N;s:18:\"\0*\0encodingOptions\";i:0;s:8:\"original\";O:42:\"Illuminate\\Pagination\\LengthAwarePaginator\":12:{s:8:\"\0*\0items\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:12:{i:0;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:79;s:5:\"title\";s:4:\"aaaa\";s:6:\"author\";s:3:\"aaa\";s:5:\"price\";s:7:\"4234.00\";s:5:\"stock\";i:2424;s:5:\"image\";s:86:\"http://127.0.0.1:8000/storage/book-covers/wpqgx1kenFZupU3prV5JHQ6XZKhxydPBLSQlyHb7.png\";s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:3;s:10:\"created_at\";s:19:\"2026-04-09 14:19:52\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:79;s:5:\"title\";s:4:\"aaaa\";s:6:\"author\";s:3:\"aaa\";s:5:\"price\";s:7:\"4234.00\";s:5:\"stock\";i:2424;s:5:\"image\";s:56:\"book-covers/wpqgx1kenFZupU3prV5JHQ6XZKhxydPBLSQlyHb7.png\";s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:3;s:10:\"created_at\";s:19:\"2026-04-09 14:19:52\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:3;s:4:\"name\";s:10:\"Technology\";s:4:\"slug\";s:10:\"technology\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:3;s:4:\"name\";s:10:\"Technology\";s:4:\"slug\";s:10:\"technology\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:1;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:78;s:5:\"title\";s:14:\"AAAAAAAAAAAAAA\";s:6:\"author\";s:13:\"AAAAAAAAAAAAA\";s:5:\"price\";s:5:\"22.00\";s:5:\"stock\";i:22;s:5:\"image\";s:87:\"http://127.0.0.1:8000/storage/book-covers/zIYEXqfYco7ULod5SLP2ZijYmx52vHDgNr5oaQtl.webp\";s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-06 04:11:20\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:78;s:5:\"title\";s:14:\"AAAAAAAAAAAAAA\";s:6:\"author\";s:13:\"AAAAAAAAAAAAA\";s:5:\"price\";s:5:\"22.00\";s:5:\"stock\";i:22;s:5:\"image\";s:57:\"book-covers/zIYEXqfYco7ULod5SLP2ZijYmx52vHDgNr5oaQtl.webp\";s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-06 04:11:20\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:1;s:4:\"name\";s:7:\"Fiction\";s:4:\"slug\";s:7:\"fiction\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:1;s:4:\"name\";s:7:\"Fiction\";s:4:\"slug\";s:7:\"fiction\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:2;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:77;s:5:\"title\";s:3:\"t4t\";s:6:\"author\";s:2:\"t4\";s:5:\"price\";s:5:\"45.00\";s:5:\"stock\";i:44;s:5:\"image\";s:86:\"http://127.0.0.1:8000/storage/book-covers/q9Vxmjx0hxCYixfOnRXunJ5gBPTpJwC8mrvQQ3G8.png\";s:14:\"preview_images\";s:189:\"[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/RzADfo4CsVv5QqUsQV3GV41V0EEzDSBepTFKP5EL.png\",\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/zN8NVmT1Wi0qGXheQZmnd336juIBIryTT2O40qOp.png\"]\";s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-03 08:28:07\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:77;s:5:\"title\";s:3:\"t4t\";s:6:\"author\";s:2:\"t4\";s:5:\"price\";s:5:\"45.00\";s:5:\"stock\";i:44;s:5:\"image\";s:56:\"book-covers/q9Vxmjx0hxCYixfOnRXunJ5gBPTpJwC8mrvQQ3G8.png\";s:14:\"preview_images\";s:189:\"[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/RzADfo4CsVv5QqUsQV3GV41V0EEzDSBepTFKP5EL.png\",\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/zN8NVmT1Wi0qGXheQZmnd336juIBIryTT2O40qOp.png\"]\";s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-03 08:28:07\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:204;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:3;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:76;s:5:\"title\";s:3:\"rrr\";s:6:\"author\";s:2:\"rr\";s:5:\"price\";s:5:\"43.00\";s:5:\"stock\";i:43;s:5:\"image\";s:86:\"http://127.0.0.1:8000/storage/book-covers/Iw2Sbf1m53tEVFSrBcSVMbdakfqKvmDqsXWk82Se.jpg\";s:14:\"preview_images\";s:95:\"[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/WQbSCXdhjFVtrfTZozUa4XKqOVuQTihWoye5G1xg.png\"]\";s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:7;s:10:\"created_at\";s:19:\"2026-04-03 05:15:56\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:76;s:5:\"title\";s:3:\"rrr\";s:6:\"author\";s:2:\"rr\";s:5:\"price\";s:5:\"43.00\";s:5:\"stock\";i:43;s:5:\"image\";s:56:\"book-covers/Iw2Sbf1m53tEVFSrBcSVMbdakfqKvmDqsXWk82Se.jpg\";s:14:\"preview_images\";s:95:\"[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/WQbSCXdhjFVtrfTZozUa4XKqOVuQTihWoye5G1xg.png\"]\";s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:7;s:10:\"created_at\";s:19:\"2026-04-03 05:15:56\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:7;s:4:\"name\";s:7:\"Pokemon\";s:4:\"slug\";s:7:\"pokemon\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:7;s:4:\"name\";s:7:\"Pokemon\";s:4:\"slug\";s:7:\"pokemon\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:4;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:75;s:5:\"title\";s:2:\"dd\";s:6:\"author\";s:2:\"dd\";s:5:\"price\";s:5:\"23.00\";s:5:\"stock\";i:7;s:5:\"image\";s:87:\"http://127.0.0.1:8000/storage/book-covers/ar4BszueLprxCnpzM4joQZe410epUeku201rBIy3.webp\";s:14:\"preview_images\";s:95:\"[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/3eIBdaeuVa0JlmEblWfog3Ywhs9bGzbdaQPf0Ysj.png\"]\";s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:8;s:10:\"created_at\";s:19:\"2026-04-03 04:08:26\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:75;s:5:\"title\";s:2:\"dd\";s:6:\"author\";s:2:\"dd\";s:5:\"price\";s:5:\"23.00\";s:5:\"stock\";i:7;s:5:\"image\";s:57:\"book-covers/ar4BszueLprxCnpzM4joQZe410epUeku201rBIy3.webp\";s:14:\"preview_images\";s:95:\"[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/3eIBdaeuVa0JlmEblWfog3Ywhs9bGzbdaQPf0Ysj.png\"]\";s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:8;s:10:\"created_at\";s:19:\"2026-04-03 04:08:26\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:8;s:4:\"name\";s:3:\"AAA\";s:4:\"slug\";s:3:\"aaa\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:8;s:4:\"name\";s:3:\"AAA\";s:4:\"slug\";s:3:\"aaa\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:5;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:25;s:5:\"title\";s:22:\"The Catcher in the Rye\";s:6:\"author\";s:13:\"J.D. Salinger\";s:5:\"price\";s:5:\"13.99\";s:5:\"stock\";i:48;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:25;s:5:\"title\";s:22:\"The Catcher in the Rye\";s:6:\"author\";s:13:\"J.D. Salinger\";s:5:\"price\";s:5:\"13.99\";s:5:\"stock\";i:48;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:204;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:6;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:26;s:5:\"title\";s:19:\"Pride and Prejudice\";s:6:\"author\";s:11:\"Jane Austen\";s:5:\"price\";s:5:\"11.99\";s:5:\"stock\";i:55;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:26;s:5:\"title\";s:19:\"Pride and Prejudice\";s:6:\"author\";s:11:\"Jane Austen\";s:5:\"price\";s:5:\"11.99\";s:5:\"stock\";i:55;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:204;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:7;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:27;s:5:\"title\";s:17:\"Wuthering Heights\";s:6:\"author\";s:13:\"Emily Brontë\";s:5:\"price\";s:5:\"12.99\";s:5:\"stock\";i:35;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:27;s:5:\"title\";s:17:\"Wuthering Heights\";s:6:\"author\";s:13:\"Emily Brontë\";s:5:\"price\";s:5:\"12.99\";s:5:\"stock\";i:35;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:204;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:8;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:28;s:5:\"title\";s:10:\"The Hobbit\";s:6:\"author\";s:14:\"J.R.R. Tolkien\";s:5:\"price\";s:5:\"15.99\";s:5:\"stock\";i:62;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:28;s:5:\"title\";s:10:\"The Hobbit\";s:6:\"author\";s:14:\"J.R.R. Tolkien\";s:5:\"price\";s:5:\"15.99\";s:5:\"stock\";i:62;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:204;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:9;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:29;s:5:\"title\";s:21:\"The Lord of the Rings\";s:6:\"author\";s:14:\"J.R.R. Tolkien\";s:5:\"price\";s:5:\"29.99\";s:5:\"stock\";i:58;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:29;s:5:\"title\";s:21:\"The Lord of the Rings\";s:6:\"author\";s:14:\"J.R.R. Tolkien\";s:5:\"price\";s:5:\"29.99\";s:5:\"stock\";i:58;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:204;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:10;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:30;s:5:\"title\";s:9:\"Jane Eyre\";s:6:\"author\";s:17:\"Charlotte Brontë\";s:5:\"price\";s:5:\"12.99\";s:5:\"stock\";i:42;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:5:\"draft\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:30;s:5:\"title\";s:9:\"Jane Eyre\";s:6:\"author\";s:17:\"Charlotte Brontë\";s:5:\"price\";s:5:\"12.99\";s:5:\"stock\";i:42;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:5:\"draft\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:204;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:11;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:31;s:5:\"title\";s:9:\"Moby Dick\";s:6:\"author\";s:15:\"Herman Melville\";s:5:\"price\";s:5:\"16.99\";s:5:\"stock\";i:28;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:5:\"draft\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:31;s:5:\"title\";s:9:\"Moby Dick\";s:6:\"author\";s:15:\"Herman Melville\";s:5:\"price\";s:5:\"16.99\";s:5:\"stock\";i:28;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:5:\"draft\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:204;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}s:10:\"\0*\0perPage\";i:12;s:14:\"\0*\0currentPage\";i:1;s:7:\"\0*\0path\";s:31:\"http://127.0.0.1:8000/api/books\";s:8:\"\0*\0query\";a:0:{}s:11:\"\0*\0fragment\";N;s:11:\"\0*\0pageName\";s:4:\"page\";s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:10:\"onEachSide\";i:3;s:10:\"\0*\0options\";a:2:{s:4:\"path\";s:31:\"http://127.0.0.1:8000/api/books\";s:8:\"pageName\";s:4:\"page\";}s:8:\"\0*\0total\";i:72;s:11:\"\0*\0lastPage\";i:6;}s:9:\"exception\";N;}', 1775745573);
+INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
+('laravel-cache-books_36876c703cf00b7a646d541c65cc80f3', 'O:28:\"Illuminate\\Http\\JsonResponse\":11:{s:7:\"headers\";O:50:\"Symfony\\Component\\HttpFoundation\\ResponseHeaderBag\":5:{s:10:\"\0*\0headers\";a:3:{s:13:\"cache-control\";a:1:{i:0;s:19:\"max-age=300, public\";}s:4:\"date\";a:1:{i:0;s:29:\"Wed, 08 Apr 2026 15:04:51 GMT\";}s:12:\"content-type\";a:1:{i:0;s:16:\"application/json\";}}s:15:\"\0*\0cacheControl\";a:2:{s:7:\"max-age\";s:3:\"300\";s:6:\"public\";b:1;}s:23:\"\0*\0computedCacheControl\";a:2:{s:7:\"max-age\";s:3:\"300\";s:6:\"public\";b:1;}s:10:\"\0*\0cookies\";a:0:{}s:14:\"\0*\0headerNames\";a:3:{s:13:\"cache-control\";s:13:\"Cache-Control\";s:4:\"date\";s:4:\"Date\";s:12:\"content-type\";s:12:\"Content-Type\";}}s:10:\"\0*\0content\";s:4371:\"{\"current_page\":1,\"data\":[{\"id\":59,\"title\":\"The Strange Case of Dr Jekyll and Mr Hyde\",\"author\":\"Robert Louis Stevenson\",\"price\":\"9.99\",\"stock\":50,\"image\":null,\"preview_images\":null,\"status\":\"draft\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":60,\"title\":\"The Picture of Dorian Gray\",\"author\":\"Oscar Wilde\",\"price\":\"10.99\",\"stock\":46,\"image\":null,\"preview_images\":null,\"status\":\"draft\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":24,\"title\":\"1984\",\"author\":\"George Orwell\",\"price\":\"11.99\",\"stock\":50,\"image\":null,\"preview_images\":[],\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T16:54:54.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":26,\"title\":\"Pride and Prejudice\",\"author\":\"Jane Austen\",\"price\":\"11.99\",\"stock\":55,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":57,\"title\":\"Frankenstein\",\"author\":\"Mary Shelley\",\"price\":\"11.99\",\"stock\":40,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":1,\"title\":\"The Great Gatsby\",\"author\":\"F. Scott Fitzgerald\",\"price\":\"12.99\",\"stock\":50,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":27,\"title\":\"Wuthering Heights\",\"author\":\"Emily Bront\\u00eb\",\"price\":\"12.99\",\"stock\":35,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":30,\"title\":\"Jane Eyre\",\"author\":\"Charlotte Bront\\u00eb\",\"price\":\"12.99\",\"stock\":42,\"image\":null,\"preview_images\":null,\"status\":\"draft\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":58,\"title\":\"Dracula\",\"author\":\"Bram Stoker\",\"price\":\"12.99\",\"stock\":38,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":14,\"title\":\"The Power of Now\",\"author\":\"Eckhart Tolle\",\"price\":\"13.99\",\"stock\":38,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":6,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":6,\"name\":\"Self-Help\",\"slug\":\"self-help\"}},{\"id\":25,\"title\":\"The Catcher in the Rye\",\"author\":\"J.D. Salinger\",\"price\":\"13.99\",\"stock\":48,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":56,\"title\":\"The Odyssey\",\"author\":\"Homer\",\"price\":\"13.99\",\"stock\":32,\"image\":null,\"preview_images\":null,\"status\":\"draft\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}}],\"first_page_url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=1\",\"from\":1,\"last_page\":6,\"last_page_url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=6\",\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=1\",\"label\":\"1\",\"page\":1,\"active\":true},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=2\",\"label\":\"2\",\"page\":2,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=3\",\"label\":\"3\",\"page\":3,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=4\",\"label\":\"4\",\"page\":4,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=5\",\"label\":\"5\",\"page\":5,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=6\",\"label\":\"6\",\"page\":6,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=2\",\"label\":\"Next &raquo;\",\"page\":2,\"active\":false}],\"next_page_url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=2\",\"path\":\"http:\\/\\/localhost:8000\\/api\\/books\",\"per_page\":12,\"prev_page_url\":null,\"to\":12,\"total\":71}\";s:10:\"\0*\0version\";s:3:\"1.0\";s:13:\"\0*\0statusCode\";i:200;s:13:\"\0*\0statusText\";s:2:\"OK\";s:10:\"\0*\0charset\";N;s:7:\"\0*\0data\";s:4371:\"{\"current_page\":1,\"data\":[{\"id\":59,\"title\":\"The Strange Case of Dr Jekyll and Mr Hyde\",\"author\":\"Robert Louis Stevenson\",\"price\":\"9.99\",\"stock\":50,\"image\":null,\"preview_images\":null,\"status\":\"draft\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":60,\"title\":\"The Picture of Dorian Gray\",\"author\":\"Oscar Wilde\",\"price\":\"10.99\",\"stock\":46,\"image\":null,\"preview_images\":null,\"status\":\"draft\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":24,\"title\":\"1984\",\"author\":\"George Orwell\",\"price\":\"11.99\",\"stock\":50,\"image\":null,\"preview_images\":[],\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T16:54:54.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":26,\"title\":\"Pride and Prejudice\",\"author\":\"Jane Austen\",\"price\":\"11.99\",\"stock\":55,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":57,\"title\":\"Frankenstein\",\"author\":\"Mary Shelley\",\"price\":\"11.99\",\"stock\":40,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":1,\"title\":\"The Great Gatsby\",\"author\":\"F. Scott Fitzgerald\",\"price\":\"12.99\",\"stock\":50,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":27,\"title\":\"Wuthering Heights\",\"author\":\"Emily Bront\\u00eb\",\"price\":\"12.99\",\"stock\":35,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":30,\"title\":\"Jane Eyre\",\"author\":\"Charlotte Bront\\u00eb\",\"price\":\"12.99\",\"stock\":42,\"image\":null,\"preview_images\":null,\"status\":\"draft\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":58,\"title\":\"Dracula\",\"author\":\"Bram Stoker\",\"price\":\"12.99\",\"stock\":38,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":14,\"title\":\"The Power of Now\",\"author\":\"Eckhart Tolle\",\"price\":\"13.99\",\"stock\":38,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":6,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":6,\"name\":\"Self-Help\",\"slug\":\"self-help\"}},{\"id\":25,\"title\":\"The Catcher in the Rye\",\"author\":\"J.D. Salinger\",\"price\":\"13.99\",\"stock\":48,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":56,\"title\":\"The Odyssey\",\"author\":\"Homer\",\"price\":\"13.99\",\"stock\":32,\"image\":null,\"preview_images\":null,\"status\":\"draft\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}}],\"first_page_url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=1\",\"from\":1,\"last_page\":6,\"last_page_url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=6\",\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=1\",\"label\":\"1\",\"page\":1,\"active\":true},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=2\",\"label\":\"2\",\"page\":2,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=3\",\"label\":\"3\",\"page\":3,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=4\",\"label\":\"4\",\"page\":4,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=5\",\"label\":\"5\",\"page\":5,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=6\",\"label\":\"6\",\"page\":6,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=2\",\"label\":\"Next &raquo;\",\"page\":2,\"active\":false}],\"next_page_url\":\"http:\\/\\/localhost:8000\\/api\\/books?page=2\",\"path\":\"http:\\/\\/localhost:8000\\/api\\/books\",\"per_page\":12,\"prev_page_url\":null,\"to\":12,\"total\":71}\";s:11:\"\0*\0callback\";N;s:18:\"\0*\0encodingOptions\";i:0;s:8:\"original\";O:42:\"Illuminate\\Pagination\\LengthAwarePaginator\":12:{s:8:\"\0*\0items\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:12:{i:0;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:59;s:5:\"title\";s:41:\"The Strange Case of Dr Jekyll and Mr Hyde\";s:6:\"author\";s:22:\"Robert Louis Stevenson\";s:5:\"price\";s:4:\"9.99\";s:5:\"stock\";i:50;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:5:\"draft\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:59;s:5:\"title\";s:41:\"The Strange Case of Dr Jekyll and Mr Hyde\";s:6:\"author\";s:22:\"Robert Louis Stevenson\";s:5:\"price\";s:4:\"9.99\";s:5:\"stock\";i:50;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:5:\"draft\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:1;s:4:\"name\";s:7:\"Fiction\";s:4:\"slug\";s:7:\"fiction\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:1;s:4:\"name\";s:7:\"Fiction\";s:4:\"slug\";s:7:\"fiction\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:1;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:60;s:5:\"title\";s:26:\"The Picture of Dorian Gray\";s:6:\"author\";s:11:\"Oscar Wilde\";s:5:\"price\";s:5:\"10.99\";s:5:\"stock\";i:46;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:5:\"draft\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:60;s:5:\"title\";s:26:\"The Picture of Dorian Gray\";s:6:\"author\";s:11:\"Oscar Wilde\";s:5:\"price\";s:5:\"10.99\";s:5:\"stock\";i:46;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:5:\"draft\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:2;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:24;s:5:\"title\";s:4:\"1984\";s:6:\"author\";s:13:\"George Orwell\";s:5:\"price\";s:5:\"11.99\";s:5:\"stock\";i:50;s:5:\"image\";N;s:14:\"preview_images\";s:2:\"[]\";s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 16:54:54\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:24;s:5:\"title\";s:4:\"1984\";s:6:\"author\";s:13:\"George Orwell\";s:5:\"price\";s:5:\"11.99\";s:5:\"stock\";i:50;s:5:\"image\";N;s:14:\"preview_images\";s:2:\"[]\";s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 16:54:54\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:3;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:26;s:5:\"title\";s:19:\"Pride and Prejudice\";s:6:\"author\";s:11:\"Jane Austen\";s:5:\"price\";s:5:\"11.99\";s:5:\"stock\";i:55;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:26;s:5:\"title\";s:19:\"Pride and Prejudice\";s:6:\"author\";s:11:\"Jane Austen\";s:5:\"price\";s:5:\"11.99\";s:5:\"stock\";i:55;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:4;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:57;s:5:\"title\";s:12:\"Frankenstein\";s:6:\"author\";s:12:\"Mary Shelley\";s:5:\"price\";s:5:\"11.99\";s:5:\"stock\";i:40;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:57;s:5:\"title\";s:12:\"Frankenstein\";s:6:\"author\";s:12:\"Mary Shelley\";s:5:\"price\";s:5:\"11.99\";s:5:\"stock\";i:40;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:5;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:1;s:5:\"title\";s:16:\"The Great Gatsby\";s:6:\"author\";s:19:\"F. Scott Fitzgerald\";s:5:\"price\";s:5:\"12.99\";s:5:\"stock\";i:50;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:1;s:5:\"title\";s:16:\"The Great Gatsby\";s:6:\"author\";s:19:\"F. Scott Fitzgerald\";s:5:\"price\";s:5:\"12.99\";s:5:\"stock\";i:50;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:6;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:27;s:5:\"title\";s:17:\"Wuthering Heights\";s:6:\"author\";s:13:\"Emily Brontë\";s:5:\"price\";s:5:\"12.99\";s:5:\"stock\";i:35;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:27;s:5:\"title\";s:17:\"Wuthering Heights\";s:6:\"author\";s:13:\"Emily Brontë\";s:5:\"price\";s:5:\"12.99\";s:5:\"stock\";i:35;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:7;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:30;s:5:\"title\";s:9:\"Jane Eyre\";s:6:\"author\";s:17:\"Charlotte Brontë\";s:5:\"price\";s:5:\"12.99\";s:5:\"stock\";i:42;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:5:\"draft\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:30;s:5:\"title\";s:9:\"Jane Eyre\";s:6:\"author\";s:17:\"Charlotte Brontë\";s:5:\"price\";s:5:\"12.99\";s:5:\"stock\";i:42;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:5:\"draft\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:8;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:58;s:5:\"title\";s:7:\"Dracula\";s:6:\"author\";s:11:\"Bram Stoker\";s:5:\"price\";s:5:\"12.99\";s:5:\"stock\";i:38;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:58;s:5:\"title\";s:7:\"Dracula\";s:6:\"author\";s:11:\"Bram Stoker\";s:5:\"price\";s:5:\"12.99\";s:5:\"stock\";i:38;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:9;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:14;s:5:\"title\";s:16:\"The Power of Now\";s:6:\"author\";s:13:\"Eckhart Tolle\";s:5:\"price\";s:5:\"13.99\";s:5:\"stock\";i:38;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:6;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:14;s:5:\"title\";s:16:\"The Power of Now\";s:6:\"author\";s:13:\"Eckhart Tolle\";s:5:\"price\";s:5:\"13.99\";s:5:\"stock\";i:38;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:6;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:6;s:4:\"name\";s:9:\"Self-Help\";s:4:\"slug\";s:9:\"self-help\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:6;s:4:\"name\";s:9:\"Self-Help\";s:4:\"slug\";s:9:\"self-help\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:10;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:25;s:5:\"title\";s:22:\"The Catcher in the Rye\";s:6:\"author\";s:13:\"J.D. Salinger\";s:5:\"price\";s:5:\"13.99\";s:5:\"stock\";i:48;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:25;s:5:\"title\";s:22:\"The Catcher in the Rye\";s:6:\"author\";s:13:\"J.D. Salinger\";s:5:\"price\";s:5:\"13.99\";s:5:\"stock\";i:48;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:11;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:56;s:5:\"title\";s:11:\"The Odyssey\";s:6:\"author\";s:5:\"Homer\";s:5:\"price\";s:5:\"13.99\";s:5:\"stock\";i:32;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:5:\"draft\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:56;s:5:\"title\";s:11:\"The Odyssey\";s:6:\"author\";s:5:\"Homer\";s:5:\"price\";s:5:\"13.99\";s:5:\"stock\";i:32;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:5:\"draft\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}s:10:\"\0*\0perPage\";i:12;s:14:\"\0*\0currentPage\";i:1;s:7:\"\0*\0path\";s:31:\"http://localhost:8000/api/books\";s:8:\"\0*\0query\";a:0:{}s:11:\"\0*\0fragment\";N;s:11:\"\0*\0pageName\";s:4:\"page\";s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:10:\"onEachSide\";i:3;s:10:\"\0*\0options\";a:2:{s:4:\"path\";s:31:\"http://localhost:8000/api/books\";s:8:\"pageName\";s:4:\"page\";}s:8:\"\0*\0total\";i:71;s:11:\"\0*\0lastPage\";i:6;}s:9:\"exception\";N;}', 1775660991);
+INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
+('laravel-cache-books_79d9dc05b18adeb2e08b29b70dc0aeaa', 'O:28:\"Illuminate\\Http\\JsonResponse\":11:{s:7:\"headers\";O:50:\"Symfony\\Component\\HttpFoundation\\ResponseHeaderBag\":5:{s:10:\"\0*\0headers\";a:3:{s:13:\"cache-control\";a:1:{i:0;s:19:\"max-age=300, public\";}s:4:\"date\";a:1:{i:0;s:29:\"Thu, 09 Apr 2026 14:36:15 GMT\";}s:12:\"content-type\";a:1:{i:0;s:16:\"application/json\";}}s:15:\"\0*\0cacheControl\";a:2:{s:7:\"max-age\";s:3:\"300\";s:6:\"public\";b:1;}s:23:\"\0*\0computedCacheControl\";a:2:{s:7:\"max-age\";s:3:\"300\";s:6:\"public\";b:1;}s:10:\"\0*\0cookies\";a:0:{}s:14:\"\0*\0headerNames\";a:3:{s:13:\"cache-control\";s:13:\"Cache-Control\";s:4:\"date\";s:4:\"Date\";s:12:\"content-type\";s:12:\"Content-Type\";}}s:10:\"\0*\0content\";s:5091:\"{\"current_page\":1,\"data\":[{\"id\":79,\"title\":\"aaaa\",\"author\":\"aaa\",\"price\":\"4234.00\",\"stock\":2424,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/wpqgx1kenFZupU3prV5JHQ6XZKhxydPBLSQlyHb7.png\",\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":3,\"created_at\":\"2026-04-09T14:19:52.000000Z\",\"category\":{\"id\":3,\"name\":\"Technology\",\"slug\":\"technology\"}},{\"id\":78,\"title\":\"AAAAAAAAAAAAAA\",\"author\":\"AAAAAAAAAAAAA\",\"price\":\"22.00\",\"stock\":22,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/zIYEXqfYco7ULod5SLP2ZijYmx52vHDgNr5oaQtl.webp\",\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-06T04:11:20.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":77,\"title\":\"t4t\",\"author\":\"t4\",\"price\":\"45.00\",\"stock\":44,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/q9Vxmjx0hxCYixfOnRXunJ5gBPTpJwC8mrvQQ3G8.png\",\"preview_images\":[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/RzADfo4CsVv5QqUsQV3GV41V0EEzDSBepTFKP5EL.png\",\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/zN8NVmT1Wi0qGXheQZmnd336juIBIryTT2O40qOp.png\"],\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-03T08:28:07.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":76,\"title\":\"rrr\",\"author\":\"rr\",\"price\":\"43.00\",\"stock\":43,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/Iw2Sbf1m53tEVFSrBcSVMbdakfqKvmDqsXWk82Se.jpg\",\"preview_images\":[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/WQbSCXdhjFVtrfTZozUa4XKqOVuQTihWoye5G1xg.png\"],\"status\":\"approved\",\"is_featured\":false,\"category_id\":7,\"created_at\":\"2026-04-03T05:15:56.000000Z\",\"category\":{\"id\":7,\"name\":\"Pokemon\",\"slug\":\"pokemon\"}},{\"id\":75,\"title\":\"dd\",\"author\":\"dd\",\"price\":\"23.00\",\"stock\":7,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/ar4BszueLprxCnpzM4joQZe410epUeku201rBIy3.webp\",\"preview_images\":[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/3eIBdaeuVa0JlmEblWfog3Ywhs9bGzbdaQPf0Ysj.png\"],\"status\":\"approved\",\"is_featured\":false,\"category_id\":8,\"created_at\":\"2026-04-03T04:08:26.000000Z\",\"category\":{\"id\":8,\"name\":\"AAA\",\"slug\":\"aaa\"}},{\"id\":73,\"title\":\"American Gods\",\"author\":\"Neil Gaiman\",\"price\":\"17.99\",\"stock\":47,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":71,\"title\":\"Radical Acceptance\",\"author\":\"Tara Brach\",\"price\":\"17.99\",\"stock\":32,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":6,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":6,\"name\":\"Self-Help\",\"slug\":\"self-help\"}},{\"id\":69,\"title\":\"The Startup Way\",\"author\":\"Eric Ries\",\"price\":\"18.99\",\"stock\":41,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":5,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":5,\"name\":\"Business\",\"slug\":\"business\"}},{\"id\":68,\"title\":\"Venture Capitalists at War\",\"author\":\"Dan Senor & Saul Singer\",\"price\":\"20.99\",\"stock\":28,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":5,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":5,\"name\":\"Business\",\"slug\":\"business\"}},{\"id\":65,\"title\":\"Test Driven Development\",\"author\":\"Kent Beck\",\"price\":\"44.99\",\"stock\":24,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":3,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":3,\"name\":\"Technology\",\"slug\":\"technology\"}},{\"id\":63,\"title\":\"Introduction to Algorithms\",\"author\":\"Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein\",\"price\":\"89.99\",\"stock\":18,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":3,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":3,\"name\":\"Technology\",\"slug\":\"technology\"}},{\"id\":61,\"title\":\"The Right Stuff\",\"author\":\"Tom Wolfe\",\"price\":\"18.99\",\"stock\":29,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":2,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":2,\"name\":\"Science\",\"slug\":\"science\"}}],\"first_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=1\",\"from\":1,\"last_page\":5,\"last_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=5\",\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=1\",\"label\":\"1\",\"page\":1,\"active\":true},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"label\":\"2\",\"page\":2,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=3\",\"label\":\"3\",\"page\":3,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=4\",\"label\":\"4\",\"page\":4,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=5\",\"label\":\"5\",\"page\":5,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"label\":\"Next &raquo;\",\"page\":2,\"active\":false}],\"next_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"path\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books\",\"per_page\":12,\"prev_page_url\":null,\"to\":12,\"total\":53}\";s:10:\"\0*\0version\";s:3:\"1.0\";s:13:\"\0*\0statusCode\";i:200;s:13:\"\0*\0statusText\";s:2:\"OK\";s:10:\"\0*\0charset\";N;s:7:\"\0*\0data\";s:5091:\"{\"current_page\":1,\"data\":[{\"id\":79,\"title\":\"aaaa\",\"author\":\"aaa\",\"price\":\"4234.00\",\"stock\":2424,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/wpqgx1kenFZupU3prV5JHQ6XZKhxydPBLSQlyHb7.png\",\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":3,\"created_at\":\"2026-04-09T14:19:52.000000Z\",\"category\":{\"id\":3,\"name\":\"Technology\",\"slug\":\"technology\"}},{\"id\":78,\"title\":\"AAAAAAAAAAAAAA\",\"author\":\"AAAAAAAAAAAAA\",\"price\":\"22.00\",\"stock\":22,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/zIYEXqfYco7ULod5SLP2ZijYmx52vHDgNr5oaQtl.webp\",\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-06T04:11:20.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":77,\"title\":\"t4t\",\"author\":\"t4\",\"price\":\"45.00\",\"stock\":44,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/q9Vxmjx0hxCYixfOnRXunJ5gBPTpJwC8mrvQQ3G8.png\",\"preview_images\":[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/RzADfo4CsVv5QqUsQV3GV41V0EEzDSBepTFKP5EL.png\",\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/zN8NVmT1Wi0qGXheQZmnd336juIBIryTT2O40qOp.png\"],\"status\":\"approved\",\"is_featured\":false,\"category_id\":1,\"created_at\":\"2026-04-03T08:28:07.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":76,\"title\":\"rrr\",\"author\":\"rr\",\"price\":\"43.00\",\"stock\":43,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/Iw2Sbf1m53tEVFSrBcSVMbdakfqKvmDqsXWk82Se.jpg\",\"preview_images\":[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/WQbSCXdhjFVtrfTZozUa4XKqOVuQTihWoye5G1xg.png\"],\"status\":\"approved\",\"is_featured\":false,\"category_id\":7,\"created_at\":\"2026-04-03T05:15:56.000000Z\",\"category\":{\"id\":7,\"name\":\"Pokemon\",\"slug\":\"pokemon\"}},{\"id\":75,\"title\":\"dd\",\"author\":\"dd\",\"price\":\"23.00\",\"stock\":7,\"image\":\"http:\\/\\/127.0.0.1:8000\\/storage\\/book-covers\\/ar4BszueLprxCnpzM4joQZe410epUeku201rBIy3.webp\",\"preview_images\":[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/3eIBdaeuVa0JlmEblWfog3Ywhs9bGzbdaQPf0Ysj.png\"],\"status\":\"approved\",\"is_featured\":false,\"category_id\":8,\"created_at\":\"2026-04-03T04:08:26.000000Z\",\"category\":{\"id\":8,\"name\":\"AAA\",\"slug\":\"aaa\"}},{\"id\":73,\"title\":\"American Gods\",\"author\":\"Neil Gaiman\",\"price\":\"17.99\",\"stock\":47,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":71,\"title\":\"Radical Acceptance\",\"author\":\"Tara Brach\",\"price\":\"17.99\",\"stock\":32,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":6,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":6,\"name\":\"Self-Help\",\"slug\":\"self-help\"}},{\"id\":69,\"title\":\"The Startup Way\",\"author\":\"Eric Ries\",\"price\":\"18.99\",\"stock\":41,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":5,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":5,\"name\":\"Business\",\"slug\":\"business\"}},{\"id\":68,\"title\":\"Venture Capitalists at War\",\"author\":\"Dan Senor & Saul Singer\",\"price\":\"20.99\",\"stock\":28,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":5,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":5,\"name\":\"Business\",\"slug\":\"business\"}},{\"id\":65,\"title\":\"Test Driven Development\",\"author\":\"Kent Beck\",\"price\":\"44.99\",\"stock\":24,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":3,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":3,\"name\":\"Technology\",\"slug\":\"technology\"}},{\"id\":63,\"title\":\"Introduction to Algorithms\",\"author\":\"Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein\",\"price\":\"89.99\",\"stock\":18,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":3,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":3,\"name\":\"Technology\",\"slug\":\"technology\"}},{\"id\":61,\"title\":\"The Right Stuff\",\"author\":\"Tom Wolfe\",\"price\":\"18.99\",\"stock\":29,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":false,\"category_id\":2,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":2,\"name\":\"Science\",\"slug\":\"science\"}}],\"first_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=1\",\"from\":1,\"last_page\":5,\"last_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=5\",\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=1\",\"label\":\"1\",\"page\":1,\"active\":true},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"label\":\"2\",\"page\":2,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=3\",\"label\":\"3\",\"page\":3,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=4\",\"label\":\"4\",\"page\":4,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=5\",\"label\":\"5\",\"page\":5,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"label\":\"Next &raquo;\",\"page\":2,\"active\":false}],\"next_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"path\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books\",\"per_page\":12,\"prev_page_url\":null,\"to\":12,\"total\":53}\";s:11:\"\0*\0callback\";N;s:18:\"\0*\0encodingOptions\";i:0;s:8:\"original\";O:42:\"Illuminate\\Pagination\\LengthAwarePaginator\":12:{s:8:\"\0*\0items\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:12:{i:0;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:79;s:5:\"title\";s:4:\"aaaa\";s:6:\"author\";s:3:\"aaa\";s:5:\"price\";s:7:\"4234.00\";s:5:\"stock\";i:2424;s:5:\"image\";s:86:\"http://127.0.0.1:8000/storage/book-covers/wpqgx1kenFZupU3prV5JHQ6XZKhxydPBLSQlyHb7.png\";s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:3;s:10:\"created_at\";s:19:\"2026-04-09 14:19:52\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:79;s:5:\"title\";s:4:\"aaaa\";s:6:\"author\";s:3:\"aaa\";s:5:\"price\";s:7:\"4234.00\";s:5:\"stock\";i:2424;s:5:\"image\";s:56:\"book-covers/wpqgx1kenFZupU3prV5JHQ6XZKhxydPBLSQlyHb7.png\";s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:3;s:10:\"created_at\";s:19:\"2026-04-09 14:19:52\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:3;s:4:\"name\";s:10:\"Technology\";s:4:\"slug\";s:10:\"technology\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:3;s:4:\"name\";s:10:\"Technology\";s:4:\"slug\";s:10:\"technology\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:1;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:78;s:5:\"title\";s:14:\"AAAAAAAAAAAAAA\";s:6:\"author\";s:13:\"AAAAAAAAAAAAA\";s:5:\"price\";s:5:\"22.00\";s:5:\"stock\";i:22;s:5:\"image\";s:87:\"http://127.0.0.1:8000/storage/book-covers/zIYEXqfYco7ULod5SLP2ZijYmx52vHDgNr5oaQtl.webp\";s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-06 04:11:20\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:78;s:5:\"title\";s:14:\"AAAAAAAAAAAAAA\";s:6:\"author\";s:13:\"AAAAAAAAAAAAA\";s:5:\"price\";s:5:\"22.00\";s:5:\"stock\";i:22;s:5:\"image\";s:57:\"book-covers/zIYEXqfYco7ULod5SLP2ZijYmx52vHDgNr5oaQtl.webp\";s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-06 04:11:20\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:1;s:4:\"name\";s:7:\"Fiction\";s:4:\"slug\";s:7:\"fiction\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:1;s:4:\"name\";s:7:\"Fiction\";s:4:\"slug\";s:7:\"fiction\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:2;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:77;s:5:\"title\";s:3:\"t4t\";s:6:\"author\";s:2:\"t4\";s:5:\"price\";s:5:\"45.00\";s:5:\"stock\";i:44;s:5:\"image\";s:86:\"http://127.0.0.1:8000/storage/book-covers/q9Vxmjx0hxCYixfOnRXunJ5gBPTpJwC8mrvQQ3G8.png\";s:14:\"preview_images\";s:189:\"[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/RzADfo4CsVv5QqUsQV3GV41V0EEzDSBepTFKP5EL.png\",\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/zN8NVmT1Wi0qGXheQZmnd336juIBIryTT2O40qOp.png\"]\";s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-03 08:28:07\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:77;s:5:\"title\";s:3:\"t4t\";s:6:\"author\";s:2:\"t4\";s:5:\"price\";s:5:\"45.00\";s:5:\"stock\";i:44;s:5:\"image\";s:56:\"book-covers/q9Vxmjx0hxCYixfOnRXunJ5gBPTpJwC8mrvQQ3G8.png\";s:14:\"preview_images\";s:189:\"[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/RzADfo4CsVv5QqUsQV3GV41V0EEzDSBepTFKP5EL.png\",\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/zN8NVmT1Wi0qGXheQZmnd336juIBIryTT2O40qOp.png\"]\";s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-03 08:28:07\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:204;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:3;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:76;s:5:\"title\";s:3:\"rrr\";s:6:\"author\";s:2:\"rr\";s:5:\"price\";s:5:\"43.00\";s:5:\"stock\";i:43;s:5:\"image\";s:86:\"http://127.0.0.1:8000/storage/book-covers/Iw2Sbf1m53tEVFSrBcSVMbdakfqKvmDqsXWk82Se.jpg\";s:14:\"preview_images\";s:95:\"[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/WQbSCXdhjFVtrfTZozUa4XKqOVuQTihWoye5G1xg.png\"]\";s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:7;s:10:\"created_at\";s:19:\"2026-04-03 05:15:56\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:76;s:5:\"title\";s:3:\"rrr\";s:6:\"author\";s:2:\"rr\";s:5:\"price\";s:5:\"43.00\";s:5:\"stock\";i:43;s:5:\"image\";s:56:\"book-covers/Iw2Sbf1m53tEVFSrBcSVMbdakfqKvmDqsXWk82Se.jpg\";s:14:\"preview_images\";s:95:\"[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/WQbSCXdhjFVtrfTZozUa4XKqOVuQTihWoye5G1xg.png\"]\";s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:7;s:10:\"created_at\";s:19:\"2026-04-03 05:15:56\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:7;s:4:\"name\";s:7:\"Pokemon\";s:4:\"slug\";s:7:\"pokemon\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:7;s:4:\"name\";s:7:\"Pokemon\";s:4:\"slug\";s:7:\"pokemon\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:4;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:75;s:5:\"title\";s:2:\"dd\";s:6:\"author\";s:2:\"dd\";s:5:\"price\";s:5:\"23.00\";s:5:\"stock\";i:7;s:5:\"image\";s:87:\"http://127.0.0.1:8000/storage/book-covers/ar4BszueLprxCnpzM4joQZe410epUeku201rBIy3.webp\";s:14:\"preview_images\";s:95:\"[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/3eIBdaeuVa0JlmEblWfog3Ywhs9bGzbdaQPf0Ysj.png\"]\";s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:8;s:10:\"created_at\";s:19:\"2026-04-03 04:08:26\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:75;s:5:\"title\";s:2:\"dd\";s:6:\"author\";s:2:\"dd\";s:5:\"price\";s:5:\"23.00\";s:5:\"stock\";i:7;s:5:\"image\";s:57:\"book-covers/ar4BszueLprxCnpzM4joQZe410epUeku201rBIy3.webp\";s:14:\"preview_images\";s:95:\"[\"http:\\/\\/localhost:8000\\/storage\\/book-covers\\/3eIBdaeuVa0JlmEblWfog3Ywhs9bGzbdaQPf0Ysj.png\"]\";s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:8;s:10:\"created_at\";s:19:\"2026-04-03 04:08:26\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:8;s:4:\"name\";s:3:\"AAA\";s:4:\"slug\";s:3:\"aaa\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:8;s:4:\"name\";s:3:\"AAA\";s:4:\"slug\";s:3:\"aaa\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:5;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:73;s:5:\"title\";s:13:\"American Gods\";s:6:\"author\";s:11:\"Neil Gaiman\";s:5:\"price\";s:5:\"17.99\";s:5:\"stock\";i:47;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:73;s:5:\"title\";s:13:\"American Gods\";s:6:\"author\";s:11:\"Neil Gaiman\";s:5:\"price\";s:5:\"17.99\";s:5:\"stock\";i:47;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:204;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:6;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:71;s:5:\"title\";s:18:\"Radical Acceptance\";s:6:\"author\";s:10:\"Tara Brach\";s:5:\"price\";s:5:\"17.99\";s:5:\"stock\";i:32;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:6;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:71;s:5:\"title\";s:18:\"Radical Acceptance\";s:6:\"author\";s:10:\"Tara Brach\";s:5:\"price\";s:5:\"17.99\";s:5:\"stock\";i:32;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:6;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:6;s:4:\"name\";s:9:\"Self-Help\";s:4:\"slug\";s:9:\"self-help\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:6;s:4:\"name\";s:9:\"Self-Help\";s:4:\"slug\";s:9:\"self-help\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:7;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:69;s:5:\"title\";s:15:\"The Startup Way\";s:6:\"author\";s:9:\"Eric Ries\";s:5:\"price\";s:5:\"18.99\";s:5:\"stock\";i:41;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:5;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:69;s:5:\"title\";s:15:\"The Startup Way\";s:6:\"author\";s:9:\"Eric Ries\";s:5:\"price\";s:5:\"18.99\";s:5:\"stock\";i:41;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:5;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:5;s:4:\"name\";s:8:\"Business\";s:4:\"slug\";s:8:\"business\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:5;s:4:\"name\";s:8:\"Business\";s:4:\"slug\";s:8:\"business\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:8;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:68;s:5:\"title\";s:26:\"Venture Capitalists at War\";s:6:\"author\";s:23:\"Dan Senor & Saul Singer\";s:5:\"price\";s:5:\"20.99\";s:5:\"stock\";i:28;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:5;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:68;s:5:\"title\";s:26:\"Venture Capitalists at War\";s:6:\"author\";s:23:\"Dan Senor & Saul Singer\";s:5:\"price\";s:5:\"20.99\";s:5:\"stock\";i:28;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:5;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:842;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:9;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:65;s:5:\"title\";s:23:\"Test Driven Development\";s:6:\"author\";s:9:\"Kent Beck\";s:5:\"price\";s:5:\"44.99\";s:5:\"stock\";i:24;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:3;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:65;s:5:\"title\";s:23:\"Test Driven Development\";s:6:\"author\";s:9:\"Kent Beck\";s:5:\"price\";s:5:\"44.99\";s:5:\"stock\";i:24;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:3;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:10;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:63;s:5:\"title\";s:26:\"Introduction to Algorithms\";s:6:\"author\";s:72:\"Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein\";s:5:\"price\";s:5:\"89.99\";s:5:\"stock\";i:18;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:3;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:63;s:5:\"title\";s:26:\"Introduction to Algorithms\";s:6:\"author\";s:72:\"Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein\";s:5:\"price\";s:5:\"89.99\";s:5:\"stock\";i:18;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:3;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:11;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:61;s:5:\"title\";s:15:\"The Right Stuff\";s:6:\"author\";s:9:\"Tom Wolfe\";s:5:\"price\";s:5:\"18.99\";s:5:\"stock\";i:29;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:2;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:61;s:5:\"title\";s:15:\"The Right Stuff\";s:6:\"author\";s:9:\"Tom Wolfe\";s:5:\"price\";s:5:\"18.99\";s:5:\"stock\";i:29;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:0;s:11:\"category_id\";i:2;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:2;s:4:\"name\";s:7:\"Science\";s:4:\"slug\";s:7:\"science\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:2;s:4:\"name\";s:7:\"Science\";s:4:\"slug\";s:7:\"science\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}s:10:\"\0*\0perPage\";i:12;s:14:\"\0*\0currentPage\";i:1;s:7:\"\0*\0path\";s:31:\"http://127.0.0.1:8000/api/books\";s:8:\"\0*\0query\";a:0:{}s:11:\"\0*\0fragment\";N;s:11:\"\0*\0pageName\";s:4:\"page\";s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:10:\"onEachSide\";i:3;s:10:\"\0*\0options\";a:2:{s:4:\"path\";s:31:\"http://127.0.0.1:8000/api/books\";s:8:\"pageName\";s:4:\"page\";}s:8:\"\0*\0total\";i:53;s:11:\"\0*\0lastPage\";i:5;}s:9:\"exception\";N;}', 1775745675);
+INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
+('laravel-cache-books_d7b64fe8f71f0db87f7c6b54ef049e7a', 'O:28:\"Illuminate\\Http\\JsonResponse\":11:{s:7:\"headers\";O:50:\"Symfony\\Component\\HttpFoundation\\ResponseHeaderBag\":5:{s:10:\"\0*\0headers\";a:3:{s:13:\"cache-control\";a:1:{i:0;s:19:\"max-age=300, public\";}s:4:\"date\";a:1:{i:0;s:29:\"Thu, 09 Apr 2026 14:36:14 GMT\";}s:12:\"content-type\";a:1:{i:0;s:16:\"application/json\";}}s:15:\"\0*\0cacheControl\";a:2:{s:7:\"max-age\";s:3:\"300\";s:6:\"public\";b:1;}s:23:\"\0*\0computedCacheControl\";a:2:{s:7:\"max-age\";s:3:\"300\";s:6:\"public\";b:1;}s:10:\"\0*\0cookies\";a:0:{}s:14:\"\0*\0headerNames\";a:3:{s:13:\"cache-control\";s:13:\"Cache-Control\";s:4:\"date\";s:4:\"Date\";s:12:\"content-type\";s:12:\"Content-Type\";}}s:10:\"\0*\0content\";s:4071:\"{\"current_page\":1,\"data\":[{\"id\":1,\"title\":\"The Great Gatsby\",\"author\":\"F. Scott Fitzgerald\",\"price\":\"12.99\",\"stock\":50,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":2,\"title\":\"To Kill a Mockingbird\",\"author\":\"Harper Lee\",\"price\":\"14.99\",\"stock\":45,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":4,\"title\":\"A Brief History of Time\",\"author\":\"Stephen Hawking\",\"price\":\"18.99\",\"stock\":30,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":2,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":2,\"name\":\"Science\",\"slug\":\"science\"}},{\"id\":6,\"title\":\"Clean Code\",\"author\":\"Robert C. Martin\",\"price\":\"39.99\",\"stock\":40,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":3,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":3,\"name\":\"Technology\",\"slug\":\"technology\"}},{\"id\":8,\"title\":\"The Pragmatic Programmer\",\"author\":\"David Thomas & Andrew Hunt\",\"price\":\"42.99\",\"stock\":35,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":3,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":3,\"name\":\"Technology\",\"slug\":\"technology\"}},{\"id\":9,\"title\":\"Sapiens: A Brief History of Humankind\",\"author\":\"Yuval Noah Harari\",\"price\":\"22.99\",\"stock\":55,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":4,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":4,\"name\":\"History\",\"slug\":\"history\"}},{\"id\":11,\"title\":\"Atomic Habits\",\"author\":\"James Clear\",\"price\":\"16.99\",\"stock\":70,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":5,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":5,\"name\":\"Business\",\"slug\":\"business\"}},{\"id\":15,\"title\":\"The Alchemist\",\"author\":\"Paulo Coelho\",\"price\":\"14.99\",\"stock\":65,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":26,\"title\":\"Pride and Prejudice\",\"author\":\"Jane Austen\",\"price\":\"11.99\",\"stock\":55,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":28,\"title\":\"The Hobbit\",\"author\":\"J.R.R. Tolkien\",\"price\":\"15.99\",\"stock\":62,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":29,\"title\":\"The Lord of the Rings\",\"author\":\"J.R.R. Tolkien\",\"price\":\"29.99\",\"stock\":58,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":32,\"title\":\"The Count of Monte Cristo\",\"author\":\"Alexandre Dumas\",\"price\":\"17.99\",\"stock\":51,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}}],\"first_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=1\",\"from\":1,\"last_page\":2,\"last_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=1\",\"label\":\"1\",\"page\":1,\"active\":true},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"label\":\"2\",\"page\":2,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"label\":\"Next &raquo;\",\"page\":2,\"active\":false}],\"next_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"path\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books\",\"per_page\":12,\"prev_page_url\":null,\"to\":12,\"total\":20}\";s:10:\"\0*\0version\";s:3:\"1.0\";s:13:\"\0*\0statusCode\";i:200;s:13:\"\0*\0statusText\";s:2:\"OK\";s:10:\"\0*\0charset\";N;s:7:\"\0*\0data\";s:4071:\"{\"current_page\":1,\"data\":[{\"id\":1,\"title\":\"The Great Gatsby\",\"author\":\"F. Scott Fitzgerald\",\"price\":\"12.99\",\"stock\":50,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":2,\"title\":\"To Kill a Mockingbird\",\"author\":\"Harper Lee\",\"price\":\"14.99\",\"stock\":45,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":4,\"title\":\"A Brief History of Time\",\"author\":\"Stephen Hawking\",\"price\":\"18.99\",\"stock\":30,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":2,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":2,\"name\":\"Science\",\"slug\":\"science\"}},{\"id\":6,\"title\":\"Clean Code\",\"author\":\"Robert C. Martin\",\"price\":\"39.99\",\"stock\":40,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":3,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":3,\"name\":\"Technology\",\"slug\":\"technology\"}},{\"id\":8,\"title\":\"The Pragmatic Programmer\",\"author\":\"David Thomas & Andrew Hunt\",\"price\":\"42.99\",\"stock\":35,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":3,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":3,\"name\":\"Technology\",\"slug\":\"technology\"}},{\"id\":9,\"title\":\"Sapiens: A Brief History of Humankind\",\"author\":\"Yuval Noah Harari\",\"price\":\"22.99\",\"stock\":55,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":4,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":4,\"name\":\"History\",\"slug\":\"history\"}},{\"id\":11,\"title\":\"Atomic Habits\",\"author\":\"James Clear\",\"price\":\"16.99\",\"stock\":70,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":5,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":5,\"name\":\"Business\",\"slug\":\"business\"}},{\"id\":15,\"title\":\"The Alchemist\",\"author\":\"Paulo Coelho\",\"price\":\"14.99\",\"stock\":65,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-01T17:26:29.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":26,\"title\":\"Pride and Prejudice\",\"author\":\"Jane Austen\",\"price\":\"11.99\",\"stock\":55,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":28,\"title\":\"The Hobbit\",\"author\":\"J.R.R. Tolkien\",\"price\":\"15.99\",\"stock\":62,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":29,\"title\":\"The Lord of the Rings\",\"author\":\"J.R.R. Tolkien\",\"price\":\"29.99\",\"stock\":58,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}},{\"id\":32,\"title\":\"The Count of Monte Cristo\",\"author\":\"Alexandre Dumas\",\"price\":\"17.99\",\"stock\":51,\"image\":null,\"preview_images\":null,\"status\":\"approved\",\"is_featured\":true,\"category_id\":1,\"created_at\":\"2026-04-02T17:46:15.000000Z\",\"category\":{\"id\":1,\"name\":\"Fiction\",\"slug\":\"fiction\"}}],\"first_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=1\",\"from\":1,\"last_page\":2,\"last_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=1\",\"label\":\"1\",\"page\":1,\"active\":true},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"label\":\"2\",\"page\":2,\"active\":false},{\"url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"label\":\"Next &raquo;\",\"page\":2,\"active\":false}],\"next_page_url\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books?page=2\",\"path\":\"http:\\/\\/127.0.0.1:8000\\/api\\/books\",\"per_page\":12,\"prev_page_url\":null,\"to\":12,\"total\":20}\";s:11:\"\0*\0callback\";N;s:18:\"\0*\0encodingOptions\";i:0;s:8:\"original\";O:42:\"Illuminate\\Pagination\\LengthAwarePaginator\":12:{s:8:\"\0*\0items\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:12:{i:0;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:1;s:5:\"title\";s:16:\"The Great Gatsby\";s:6:\"author\";s:19:\"F. Scott Fitzgerald\";s:5:\"price\";s:5:\"12.99\";s:5:\"stock\";i:50;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:1;s:5:\"title\";s:16:\"The Great Gatsby\";s:6:\"author\";s:19:\"F. Scott Fitzgerald\";s:5:\"price\";s:5:\"12.99\";s:5:\"stock\";i:50;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:1;s:4:\"name\";s:7:\"Fiction\";s:4:\"slug\";s:7:\"fiction\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:1;s:4:\"name\";s:7:\"Fiction\";s:4:\"slug\";s:7:\"fiction\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:1;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:2;s:5:\"title\";s:21:\"To Kill a Mockingbird\";s:6:\"author\";s:10:\"Harper Lee\";s:5:\"price\";s:5:\"14.99\";s:5:\"stock\";i:45;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:2;s:5:\"title\";s:21:\"To Kill a Mockingbird\";s:6:\"author\";s:10:\"Harper Lee\";s:5:\"price\";s:5:\"14.99\";s:5:\"stock\";i:45;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:2;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:4;s:5:\"title\";s:23:\"A Brief History of Time\";s:6:\"author\";s:15:\"Stephen Hawking\";s:5:\"price\";s:5:\"18.99\";s:5:\"stock\";i:30;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:2;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:4;s:5:\"title\";s:23:\"A Brief History of Time\";s:6:\"author\";s:15:\"Stephen Hawking\";s:5:\"price\";s:5:\"18.99\";s:5:\"stock\";i:30;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:2;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:2;s:4:\"name\";s:7:\"Science\";s:4:\"slug\";s:7:\"science\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:2;s:4:\"name\";s:7:\"Science\";s:4:\"slug\";s:7:\"science\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:3;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:6;s:5:\"title\";s:10:\"Clean Code\";s:6:\"author\";s:16:\"Robert C. Martin\";s:5:\"price\";s:5:\"39.99\";s:5:\"stock\";i:40;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:3;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:6;s:5:\"title\";s:10:\"Clean Code\";s:6:\"author\";s:16:\"Robert C. Martin\";s:5:\"price\";s:5:\"39.99\";s:5:\"stock\";i:40;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:3;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:3;s:4:\"name\";s:10:\"Technology\";s:4:\"slug\";s:10:\"technology\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:3;s:4:\"name\";s:10:\"Technology\";s:4:\"slug\";s:10:\"technology\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:4;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:8;s:5:\"title\";s:24:\"The Pragmatic Programmer\";s:6:\"author\";s:26:\"David Thomas & Andrew Hunt\";s:5:\"price\";s:5:\"42.99\";s:5:\"stock\";i:35;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:3;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:8;s:5:\"title\";s:24:\"The Pragmatic Programmer\";s:6:\"author\";s:26:\"David Thomas & Andrew Hunt\";s:5:\"price\";s:5:\"42.99\";s:5:\"stock\";i:35;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:3;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:402;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:5;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:9;s:5:\"title\";s:37:\"Sapiens: A Brief History of Humankind\";s:6:\"author\";s:17:\"Yuval Noah Harari\";s:5:\"price\";s:5:\"22.99\";s:5:\"stock\";i:55;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:4;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:9;s:5:\"title\";s:37:\"Sapiens: A Brief History of Humankind\";s:6:\"author\";s:17:\"Yuval Noah Harari\";s:5:\"price\";s:5:\"22.99\";s:5:\"stock\";i:55;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:4;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:4;s:4:\"name\";s:7:\"History\";s:4:\"slug\";s:7:\"history\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:4;s:4:\"name\";s:7:\"History\";s:4:\"slug\";s:7:\"history\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:6;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:11;s:5:\"title\";s:13:\"Atomic Habits\";s:6:\"author\";s:11:\"James Clear\";s:5:\"price\";s:5:\"16.99\";s:5:\"stock\";i:70;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:5;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:11;s:5:\"title\";s:13:\"Atomic Habits\";s:6:\"author\";s:11:\"James Clear\";s:5:\"price\";s:5:\"16.99\";s:5:\"stock\";i:70;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:5;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:3:{s:2:\"id\";i:5;s:4:\"name\";s:8:\"Business\";s:4:\"slug\";s:8:\"business\";}s:11:\"\0*\0original\";a:3:{s:2:\"id\";i:5;s:4:\"name\";s:8:\"Business\";s:4:\"slug\";s:8:\"business\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:7;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:15;s:5:\"title\";s:13:\"The Alchemist\";s:6:\"author\";s:12:\"Paulo Coelho\";s:5:\"price\";s:5:\"14.99\";s:5:\"stock\";i:65;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:15;s:5:\"title\";s:13:\"The Alchemist\";s:6:\"author\";s:12:\"Paulo Coelho\";s:5:\"price\";s:5:\"14.99\";s:5:\"stock\";i:65;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:8;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:26;s:5:\"title\";s:19:\"Pride and Prejudice\";s:6:\"author\";s:11:\"Jane Austen\";s:5:\"price\";s:5:\"11.99\";s:5:\"stock\";i:55;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:26;s:5:\"title\";s:19:\"Pride and Prejudice\";s:6:\"author\";s:11:\"Jane Austen\";s:5:\"price\";s:5:\"11.99\";s:5:\"stock\";i:55;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:9;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:28;s:5:\"title\";s:10:\"The Hobbit\";s:6:\"author\";s:14:\"J.R.R. Tolkien\";s:5:\"price\";s:5:\"15.99\";s:5:\"stock\";i:62;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:28;s:5:\"title\";s:10:\"The Hobbit\";s:6:\"author\";s:14:\"J.R.R. Tolkien\";s:5:\"price\";s:5:\"15.99\";s:5:\"stock\";i:62;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:10;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:29;s:5:\"title\";s:21:\"The Lord of the Rings\";s:6:\"author\";s:14:\"J.R.R. Tolkien\";s:5:\"price\";s:5:\"29.99\";s:5:\"stock\";i:58;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:29;s:5:\"title\";s:21:\"The Lord of the Rings\";s:6:\"author\";s:14:\"J.R.R. Tolkien\";s:5:\"price\";s:5:\"29.99\";s:5:\"stock\";i:58;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:11;O:15:\"App\\Models\\Book\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:5:\"books\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:11:{s:2:\"id\";i:32;s:5:\"title\";s:25:\"The Count of Monte Cristo\";s:6:\"author\";s:15:\"Alexandre Dumas\";s:5:\"price\";s:5:\"17.99\";s:5:\"stock\";i:51;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:11:\"\0*\0original\";a:11:{s:2:\"id\";i:32;s:5:\"title\";s:25:\"The Count of Monte Cristo\";s:6:\"author\";s:15:\"Alexandre Dumas\";s:5:\"price\";s:5:\"17.99\";s:5:\"stock\";i:51;s:5:\"image\";N;s:14:\"preview_images\";N;s:6:\"status\";s:8:\"approved\";s:11:\"is_featured\";i:1;s:11:\"category_id\";i:1;s:10:\"created_at\";s:19:\"2026-04-02 17:46:15\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:4:{s:5:\"price\";s:9:\"decimal:2\";s:11:\"is_featured\";s:7:\"boolean\";s:15:\"preview_content\";s:5:\"array\";s:14:\"preview_images\";s:5:\"array\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:8:\"category\";r:83;}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:15:{i:0;s:11:\"category_id\";i:1;s:5:\"title\";i:2;s:6:\"author\";i:3;s:11:\"description\";i:4;s:5:\"price\";i:5;s:5:\"stock\";i:6;s:4:\"isbn\";i:7;s:9:\"publisher\";i:8;s:5:\"image\";i:9;s:5:\"pages\";i:10;s:8:\"language\";i:11;s:11:\"is_featured\";i:12;s:6:\"status\";i:13;s:15:\"preview_content\";i:14;s:14:\"preview_images\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}s:10:\"\0*\0perPage\";i:12;s:14:\"\0*\0currentPage\";i:1;s:7:\"\0*\0path\";s:31:\"http://127.0.0.1:8000/api/books\";s:8:\"\0*\0query\";a:0:{}s:11:\"\0*\0fragment\";N;s:11:\"\0*\0pageName\";s:4:\"page\";s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:10:\"onEachSide\";i:3;s:10:\"\0*\0options\";a:2:{s:4:\"path\";s:31:\"http://127.0.0.1:8000/api/books\";s:8:\"pageName\";s:4:\"page\";}s:8:\"\0*\0total\";i:20;s:11:\"\0*\0lastPage\";i:2;}s:9:\"exception\";N;}', 1775745674);
+INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
+('laravel-cache-categories_with_count', 'O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:9:{i:0;O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:8:{s:2:\"id\";i:1;s:4:\"name\";s:7:\"Fiction\";s:4:\"slug\";s:7:\"fiction\";s:11:\"description\";s:28:\"Fictional novels and stories\";s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";s:10:\"updated_at\";s:19:\"2026-04-01 17:26:29\";s:11:\"books_count\";i:22;}s:11:\"\0*\0original\";a:8:{s:2:\"id\";i:1;s:4:\"name\";s:7:\"Fiction\";s:4:\"slug\";s:7:\"fiction\";s:11:\"description\";s:28:\"Fictional novels and stories\";s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";s:10:\"updated_at\";s:19:\"2026-04-01 17:26:29\";s:11:\"books_count\";i:22;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:1;O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:8:{s:2:\"id\";i:2;s:4:\"name\";s:7:\"Science\";s:4:\"slug\";s:7:\"science\";s:11:\"description\";s:29:\"Scientific books and research\";s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";s:10:\"updated_at\";s:19:\"2026-04-01 17:26:29\";s:11:\"books_count\";i:8;}s:11:\"\0*\0original\";a:8:{s:2:\"id\";i:2;s:4:\"name\";s:7:\"Science\";s:4:\"slug\";s:7:\"science\";s:11:\"description\";s:29:\"Scientific books and research\";s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";s:10:\"updated_at\";s:19:\"2026-04-01 17:26:29\";s:11:\"books_count\";i:8;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:2;O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:8:{s:2:\"id\";i:3;s:4:\"name\";s:10:\"Technology\";s:4:\"slug\";s:10:\"technology\";s:11:\"description\";s:26:\"Programming and tech books\";s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";s:10:\"updated_at\";s:19:\"2026-04-01 17:26:29\";s:11:\"books_count\";i:13;}s:11:\"\0*\0original\";a:8:{s:2:\"id\";i:3;s:4:\"name\";s:10:\"Technology\";s:4:\"slug\";s:10:\"technology\";s:11:\"description\";s:26:\"Programming and tech books\";s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";s:10:\"updated_at\";s:19:\"2026-04-01 17:26:29\";s:11:\"books_count\";i:13;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:3;O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:8:{s:2:\"id\";i:4;s:4:\"name\";s:7:\"History\";s:4:\"slug\";s:7:\"history\";s:11:\"description\";s:32:\"Historical accounts and analysis\";s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";s:10:\"updated_at\";s:19:\"2026-04-01 17:26:29\";s:11:\"books_count\";i:8;}s:11:\"\0*\0original\";a:8:{s:2:\"id\";i:4;s:4:\"name\";s:7:\"History\";s:4:\"slug\";s:7:\"history\";s:11:\"description\";s:32:\"Historical accounts and analysis\";s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";s:10:\"updated_at\";s:19:\"2026-04-01 17:26:29\";s:11:\"books_count\";i:8;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:4;O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:8:{s:2:\"id\";i:5;s:4:\"name\";s:8:\"Business\";s:4:\"slug\";s:8:\"business\";s:11:\"description\";s:29:\"Business and entrepreneurship\";s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";s:10:\"updated_at\";s:19:\"2026-04-01 17:26:29\";s:11:\"books_count\";i:9;}s:11:\"\0*\0original\";a:8:{s:2:\"id\";i:5;s:4:\"name\";s:8:\"Business\";s:4:\"slug\";s:8:\"business\";s:11:\"description\";s:29:\"Business and entrepreneurship\";s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";s:10:\"updated_at\";s:19:\"2026-04-01 17:26:29\";s:11:\"books_count\";i:9;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:5;O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:8:{s:2:\"id\";i:6;s:4:\"name\";s:9:\"Self-Help\";s:4:\"slug\";s:9:\"self-help\";s:11:\"description\";s:26:\"Personal development books\";s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";s:10:\"updated_at\";s:19:\"2026-04-01 17:26:29\";s:11:\"books_count\";i:9;}s:11:\"\0*\0original\";a:8:{s:2:\"id\";i:6;s:4:\"name\";s:9:\"Self-Help\";s:4:\"slug\";s:9:\"self-help\";s:11:\"description\";s:26:\"Personal development books\";s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-01 17:26:29\";s:10:\"updated_at\";s:19:\"2026-04-01 17:26:29\";s:11:\"books_count\";i:9;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:6;O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:8:{s:2:\"id\";i:7;s:4:\"name\";s:7:\"Pokemon\";s:4:\"slug\";s:7:\"pokemon\";s:11:\"description\";N;s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-02 06:37:25\";s:10:\"updated_at\";s:19:\"2026-04-02 06:37:25\";s:11:\"books_count\";i:2;}s:11:\"\0*\0original\";a:8:{s:2:\"id\";i:7;s:4:\"name\";s:7:\"Pokemon\";s:4:\"slug\";s:7:\"pokemon\";s:11:\"description\";N;s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-02 06:37:25\";s:10:\"updated_at\";s:19:\"2026-04-02 06:37:25\";s:11:\"books_count\";i:2;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:7;O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:8:{s:2:\"id\";i:8;s:4:\"name\";s:3:\"AAA\";s:4:\"slug\";s:3:\"aaa\";s:11:\"description\";N;s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-02 09:30:26\";s:10:\"updated_at\";s:19:\"2026-04-02 09:30:26\";s:11:\"books_count\";i:1;}s:11:\"\0*\0original\";a:8:{s:2:\"id\";i:8;s:4:\"name\";s:3:\"AAA\";s:4:\"slug\";s:3:\"aaa\";s:11:\"description\";N;s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-02 09:30:26\";s:10:\"updated_at\";s:19:\"2026-04-02 09:30:26\";s:11:\"books_count\";i:1;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:8;O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:8:{s:2:\"id\";i:10;s:4:\"name\";s:4:\"Sifi\";s:4:\"slug\";s:4:\"sifi\";s:11:\"description\";N;s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-03 14:59:20\";s:10:\"updated_at\";s:19:\"2026-04-03 14:59:20\";s:11:\"books_count\";i:0;}s:11:\"\0*\0original\";a:8:{s:2:\"id\";i:10;s:4:\"name\";s:4:\"Sifi\";s:4:\"slug\";s:4:\"sifi\";s:11:\"description\";N;s:4:\"type\";s:4:\"book\";s:10:\"created_at\";s:19:\"2026-04-03 14:59:20\";s:10:\"updated_at\";s:19:\"2026-04-03 14:59:20\";s:11:\"books_count\";i:0;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"name\";i:1;s:4:\"slug\";i:2;s:11:\"description\";i:3;s:4:\"type\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}', 1775747608),
+('laravel-cache-wishlist_batch_1_266351cd066e4bcec590888fdbae418f', 'a:16:{i:1;b:0;i:2;b:0;i:4;b:0;i:6;b:0;i:8;b:0;i:9;b:0;i:11;b:0;i:15;b:0;i:26;b:0;i:28;b:0;i:29;b:0;i:32;b:0;i:78;b:0;i:77;b:0;i:76;b:0;i:75;b:0;}', 1775669262),
+('laravel-cache-wishlist_batch_1_6fee0a841325e7fe1f7a32fcbc98d55a', 'a:71:{i:78;b:0;i:77;b:0;i:76;b:0;i:75;b:0;i:25;b:0;i:26;b:0;i:27;b:0;i:28;b:0;i:29;b:0;i:30;b:0;i:31;b:0;i:32;b:0;i:33;b:0;i:34;b:0;i:35;b:0;i:36;b:0;i:37;b:0;i:38;b:0;i:39;b:0;i:40;b:0;i:41;b:0;i:42;b:0;i:43;b:0;i:44;b:0;i:45;b:0;i:46;b:0;i:47;b:0;i:48;b:0;i:49;b:0;i:50;b:0;i:51;b:0;i:52;b:0;i:53;b:0;i:54;b:0;i:55;b:0;i:56;b:0;i:57;b:0;i:58;b:0;i:59;b:0;i:60;b:0;i:61;b:0;i:62;b:0;i:63;b:0;i:64;b:0;i:65;b:0;i:66;b:0;i:67;b:0;i:68;b:0;i:69;b:0;i:70;b:0;i:71;b:0;i:72;b:0;i:73;b:0;i:24;b:0;i:23;b:0;i:19;b:0;i:1;b:0;i:2;b:0;i:4;b:0;i:5;b:0;i:6;b:0;i:7;b:0;i:8;b:0;i:9;b:0;i:10;b:0;i:11;b:0;i:12;b:0;i:13;b:0;i:14;b:0;i:15;b:0;i:16;b:0;}', 1775669880),
+('laravel-cache-wishlist_batch_1_7421e1ebe8fbf312e8054d71d473d08c', 'a:71:{i:59;b:0;i:60;b:0;i:24;b:0;i:26;b:0;i:57;b:0;i:1;b:0;i:27;b:0;i:30;b:0;i:58;b:0;i:14;b:0;i:25;b:0;i:56;b:0;i:2;b:0;i:15;b:0;i:55;b:0;i:13;b:0;i:28;b:0;i:53;b:0;i:5;b:0;i:11;b:0;i:31;b:0;i:48;b:0;i:50;b:0;i:12;b:0;i:32;b:0;i:33;b:0;i:49;b:0;i:51;b:0;i:54;b:0;i:62;b:0;i:70;b:0;i:71;b:0;i:73;b:0;i:4;b:0;i:34;b:0;i:52;b:0;i:61;b:0;i:69;b:0;i:72;b:0;i:10;b:0;i:43;b:0;i:47;b:0;i:16;b:0;i:68;b:0;i:42;b:0;i:78;b:0;i:9;b:0;i:66;b:0;i:75;b:0;i:45;b:0;i:40;b:0;i:44;b:0;i:35;b:0;i:67;b:0;i:46;b:0;i:29;b:0;i:37;b:0;i:39;b:0;i:36;b:0;i:6;b:0;i:8;b:0;i:76;b:0;i:7;b:0;i:65;b:0;i:77;b:0;i:41;b:0;i:64;b:0;i:38;b:0;i:63;b:0;i:19;b:0;i:23;b:0;}', 1775660993),
+('laravel-cache-wishlist_batch_11_266351cd066e4bcec590888fdbae418f', 'a:16:{i:1;b:0;i:2;b:0;i:4;b:0;i:6;b:0;i:8;b:0;i:9;b:0;i:11;b:0;i:15;b:0;i:26;b:0;i:28;b:0;i:29;b:0;i:32;b:0;i:78;b:0;i:77;b:0;i:76;b:0;i:75;b:0;}', 1775723077),
+('laravel-cache-wishlist_batch_11_6fee0a841325e7fe1f7a32fcbc98d55a', 'a:71:{i:78;b:0;i:77;b:0;i:76;b:0;i:75;b:0;i:25;b:0;i:26;b:0;i:27;b:0;i:28;b:0;i:29;b:0;i:30;b:0;i:31;b:0;i:32;b:0;i:33;b:0;i:34;b:0;i:35;b:0;i:36;b:0;i:37;b:0;i:38;b:0;i:39;b:0;i:40;b:0;i:41;b:0;i:42;b:0;i:43;b:0;i:44;b:0;i:45;b:0;i:46;b:0;i:47;b:0;i:48;b:0;i:49;b:0;i:50;b:0;i:51;b:0;i:52;b:0;i:53;b:0;i:54;b:0;i:55;b:0;i:56;b:0;i:57;b:0;i:58;b:0;i:59;b:0;i:60;b:0;i:61;b:0;i:62;b:0;i:63;b:0;i:64;b:0;i:65;b:0;i:66;b:0;i:67;b:0;i:68;b:0;i:69;b:0;i:70;b:0;i:71;b:0;i:72;b:0;i:73;b:0;i:24;b:0;i:23;b:0;i:19;b:0;i:1;b:0;i:2;b:0;i:4;b:0;i:5;b:0;i:6;b:0;i:7;b:0;i:8;b:0;i:9;b:0;i:10;b:0;i:11;b:0;i:12;b:0;i:13;b:0;i:14;b:0;i:15;b:0;i:16;b:0;}', 1775720305),
+('laravel-cache-wishlist_batch_12_266351cd066e4bcec590888fdbae418f', 'a:16:{i:1;b:0;i:2;b:0;i:4;b:0;i:6;b:0;i:8;b:0;i:9;b:0;i:11;b:0;i:15;b:0;i:26;b:0;i:28;b:0;i:29;b:0;i:32;b:0;i:78;b:0;i:77;b:0;i:76;b:0;i:75;b:0;}', 1775726324),
+('laravel-cache-wishlist_batch_2_266351cd066e4bcec590888fdbae418f', 'a:16:{i:1;b:0;i:2;b:1;i:4;b:1;i:6;b:0;i:8;b:0;i:9;b:0;i:11;b:0;i:15;b:0;i:26;b:0;i:28;b:0;i:29;b:0;i:32;b:0;i:78;b:1;i:77;b:0;i:76;b:0;i:75;b:0;}', 1775726389),
+('laravel-cache-wishlist_batch_2_6fee0a841325e7fe1f7a32fcbc98d55a', 'a:71:{i:78;b:0;i:77;b:0;i:76;b:0;i:75;b:0;i:25;b:0;i:26;b:0;i:27;b:0;i:28;b:0;i:29;b:0;i:30;b:0;i:31;b:0;i:32;b:0;i:33;b:0;i:34;b:0;i:35;b:0;i:36;b:0;i:37;b:0;i:38;b:0;i:39;b:0;i:40;b:0;i:41;b:0;i:42;b:0;i:43;b:0;i:44;b:0;i:45;b:0;i:46;b:0;i:47;b:0;i:48;b:0;i:49;b:0;i:50;b:0;i:51;b:0;i:52;b:0;i:53;b:0;i:54;b:0;i:55;b:0;i:56;b:0;i:57;b:0;i:58;b:0;i:59;b:0;i:60;b:0;i:61;b:0;i:62;b:0;i:63;b:0;i:64;b:0;i:65;b:0;i:66;b:0;i:67;b:0;i:68;b:0;i:69;b:0;i:70;b:0;i:71;b:0;i:72;b:0;i:73;b:0;i:24;b:0;i:23;b:1;i:19;b:0;i:1;b:1;i:2;b:1;i:4;b:1;i:5;b:0;i:6;b:0;i:7;b:0;i:8;b:0;i:9;b:0;i:10;b:0;i:11;b:0;i:12;b:0;i:13;b:0;i:14;b:0;i:15;b:0;i:16;b:0;}', 1775660512);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cache_locks`
+--
+
+CREATE TABLE `cache_locks` (
+  `key` varchar(255) NOT NULL,
+  `owner` varchar(255) NOT NULL,
+  `expiration` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `categories`
+--
+
+CREATE TABLE `categories` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `type` varchar(255) NOT NULL DEFAULT 'book',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`id`, `name`, `slug`, `description`, `type`, `created_at`, `updated_at`) VALUES
+(1, 'Fiction', 'fiction', 'Fictional novels and stories', 'book', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(2, 'Science', 'science', 'Scientific books and research', 'book', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(3, 'Technology', 'technology', 'Programming and tech books', 'book', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(4, 'History', 'history', 'Historical accounts and analysis', 'book', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(5, 'Business', 'business', 'Business and entrepreneurship', 'book', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(6, 'Self-Help', 'self-help', 'Personal development books', 'book', '2026-04-01 11:26:29', '2026-04-01 11:26:29'),
+(7, 'Pokemon', 'pokemon', NULL, 'book', '2026-04-02 00:37:25', '2026-04-02 00:37:25'),
+(8, 'AAA', 'aaa', NULL, 'book', '2026-04-02 03:30:26', '2026-04-02 03:30:26'),
+(10, 'Sifi', 'sifi', NULL, 'book', '2026-04-03 08:59:20', '2026-04-03 08:59:20'),
+(11, 'Writing', 'writing', NULL, 'course', '2026-04-05 23:37:49', '2026-04-05 23:37:49'),
+(12, 'Literature', 'literature', NULL, 'course', '2026-04-05 23:37:49', '2026-04-05 23:37:49'),
+(13, 'Language', 'language', NULL, 'course', '2026-04-05 23:37:49', '2026-04-05 23:37:49'),
+(14, 'hi', 'hi', NULL, 'course', '2026-04-05 23:43:00', '2026-04-05 23:43:00'),
+(15, 'bye', 'bye', NULL, 'course', '2026-04-05 23:52:09', '2026-04-05 23:52:09'),
+(16, 'IELTS Preparation', 'ielts-preparation', NULL, 'course', '2026-04-06 02:49:22', '2026-04-06 02:49:22'),
+(17, 'Academic English', 'academic-english', NULL, 'course', '2026-04-06 02:49:22', '2026-04-06 02:49:22'),
+(18, 'Business Communication', 'business-communication', NULL, 'course', '2026-04-06 02:49:22', '2026-04-06 02:49:22'),
+(19, 'Creative Writing', 'creative-writing', NULL, 'course', '2026-04-06 02:49:22', '2026-04-06 02:49:22'),
+(20, 'Spoken English', 'spoken-english', NULL, 'course', '2026-04-06 02:49:22', '2026-04-06 02:49:22');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `courses`
+--
+
+CREATE TABLE `courses` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `instructor` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `syllabus` text DEFAULT NULL,
+  `price` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `duration_hours` int(11) NOT NULL DEFAULT 0,
+  `lessons_count` int(11) NOT NULL DEFAULT 0,
+  `level` varchar(255) NOT NULL DEFAULT 'beginner',
+  `image` varchar(255) DEFAULT NULL,
+  `preview_video` varchar(255) DEFAULT NULL,
+  `is_featured` tinyint(1) NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `category` varchar(255) NOT NULL DEFAULT 'general',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `courses`
+--
+
+INSERT INTO `courses` (`id`, `title`, `slug`, `instructor`, `description`, `syllabus`, `price`, `duration_hours`, `lessons_count`, `level`, `image`, `preview_video`, `is_featured`, `is_active`, `category`, `created_at`, `updated_at`) VALUES
+(1, 'IELTS Band 8+ Complete Preparation', 'ielts-band-8-complete', 'Dr. Sarah Mitchell', 'Master all four IELTS modules with proven strategies, practice tests, and expert feedback. Achieve your target band score with our comprehensive preparation program.', NULL, 79.99, 40, 25, 'intermediate', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', 1, 1, 'ielts-preparation', '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(2, 'Academic Writing for University Students', 'academic-writing-university', 'Prof. James Anderson', 'Learn to write research papers, essays, and dissertations at university level. Master APA, MLA, and Chicago citation styles.', NULL, 59.99, 30, 25, 'advanced', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', 1, 1, 'academic-english', '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(3, 'Business English for Corporate Professionals', 'business-english-corporate', 'Rachel Thompson', 'Develop professional communication skills for the corporate world. Master presentations, negotiations, and business correspondence.', NULL, 69.99, 35, 25, 'intermediate', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', 1, 1, 'business-communication', '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(4, 'Creative Writing: From Idea to Publication', 'creative-writing-publication', 'Emma Richardson', 'Transform your creative ideas into polished manuscripts. Learn fiction writing, character development, and the publishing process.', NULL, 49.99, 28, 25, 'beginner', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', 0, 1, 'creative-writing', '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(5, 'Spoken English Fluency Masterclass', 'spoken-english-fluency', 'Michael Davis', 'Speak English confidently in any situation. Improve pronunciation, fluency, and natural conversation skills.', NULL, 39.99, 25, 25, 'beginner', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', 1, 1, 'spoken-english', '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(6, 'IELTS Writing Intensive Course', 'ielts-writing-intensive', 'Dr. Sarah Mitchell', 'Focused IELTS writing preparation with band-specific strategies, model answers, and personalized feedback techniques.', NULL, 45.99, 20, 25, 'intermediate', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', 0, 1, 'ielts-preparation', '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(7, 'English Grammar Complete Guide', 'english-grammar-complete', 'Prof. James Anderson', 'Master English grammar from basic to advanced levels. Perfect for students, professionals, and test preparation.', NULL, 34.99, 22, 25, 'beginner', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', 0, 1, 'academic-english', '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(8, 'Business Presentation Excellence', 'business-presentation-excellence', 'Rachel Thompson', 'Create and deliver impactful business presentations that persuade, inform, and inspire your audience.', NULL, 54.99, 18, 25, 'intermediate', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', 0, 1, 'business-communication', '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(9, 'Short Story Writing Workshop', 'short-story-writing', 'Emma Richardson', 'Learn the craft of short story writing from concept to completion. Write compelling stories that captivate readers.', NULL, 29.99, 15, 25, 'beginner', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', 0, 1, 'creative-writing', '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(10, 'English for Travel & Tourism', 'english-travel-tourism', 'Michael Davis', 'Essential English for travelers and tourism professionals. Navigate airports, hotels, restaurants, and tourist spots with confidence.', NULL, 24.99, 12, 25, 'beginner', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', 0, 1, 'spoken-english', '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(13, 'B', 'b', 'B', 'B', NULL, 33.00, 0, 3, 'beginner', NULL, 'https://youtu.be/kZhAj8--t8w?si=3weAK0DDDqC3jbXo', 0, 1, 'language', '2026-04-06 04:38:11', '2026-04-06 04:38:11'),
+(14, 'Tinker Course', 'tinker-course-1775472572', 'Test', 'Test', NULL, 10.00, 1, 1, 'beginner', NULL, NULL, 0, 1, 'language', '2026-04-06 04:49:32', '2026-04-06 04:49:32'),
+(15, '4t', '4t', '4t', '4t', NULL, 44.00, 0, 3, 'beginner', NULL, 'https://youtu.be/kZhAj8--t8w?si=3weAK0DDDqC3jbXo', 0, 1, 'language', '2026-04-06 05:20:21', '2026-04-06 05:20:21'),
+(16, 'Verification Course', 'verification-course-1775474525', 'Verification Instructor', 'Verification Description', NULL, 10.00, 1, 2, 'beginner', NULL, NULL, 0, 1, 'language', '2026-04-06 05:22:05', '2026-04-06 05:22:05'),
+(18, 'qqq', 'qqq', 'qq', 'qqq', NULL, 112.00, 0, 3, 'beginner', NULL, 'https://youtu.be/kZhAj8--t8w?si=3weAK0DDDqC3jbXo', 0, 1, 'language', '2026-04-06 05:31:35', '2026-04-06 05:31:35'),
+(19, 'ssss', 'ssss', 's', 's', NULL, 33.00, 0, 3, 'beginner', NULL, 'https://youtu.be/kZhAj8--t8w?si=3weAK0DDDqC3jbXo', 0, 1, 'language', '2026-04-06 05:41:31', '2026-04-06 05:41:31'),
+(20, 'tbtbttbtbt', 'tbtbttbtbt', 'bttbtbtb', 'bbtb', NULL, 555.00, 0, 1, 'beginner', NULL, 'https://youtu.be/kZhAj8--t8w?si=3weAK0DDDqC3jbXo', 0, 1, 'language', '2026-04-06 06:31:45', '2026-04-06 06:31:45'),
+(24, 'bfvfvfvfv', 'bfvfvfvfv', 'b', 'fv', NULL, 4.00, 0, 2, 'beginner', 'http://localhost:8000/storage/courses/thumbnails/kr2k37Tl1L9pr66U3kGQ.png', 'https://youtu.be/kZhAj8--t8w?si=3weAK0DDDqC3jbXo', 0, 1, 'language', '2026-04-06 07:26:27', '2026-04-06 07:26:27'),
+(25, 'AB', 'ab-course', 'AB Instructor', 'This is a comprehensive test course named AB with full curriculum, quizzes, and resources.', NULL, 100.00, 5, 6, 'beginner', 'https://placehold.co/600x400/orange/white?text=AB+Course', 'https://www.youtube.com/embed/dQw4w9WgXcQ', 1, 1, 'language', '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(26, 'TEST', 'test', 't', 't', NULL, 55.00, 0, 3, 'beginner', 'http://localhost:8000/storage/courses/thumbnails/9YlzYEljudcmRjphnGhJ.jpg', 'http://localhost:8000/storage/courses/videos/fLsMHEoAKvKcTvqT8RqH.mp4', 0, 1, 'language', '2026-04-07 01:11:56', '2026-04-07 01:11:56'),
+(27, 'Complete Web Development Bootcamp', 'complete-web-development-bootcamp', 'Sharar Hossain', 'Learn HTML, CSS, JavaScript, React, Node.js and more. Build real-world projects and master modern web development from scratch.', NULL, 2999.00, 12, 8, 'beginner', 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 1, 1, 'programming', '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(28, 'TEST2', 'test2', 'T', 'rgrgrg', NULL, 5.00, 0, 3, 'beginner', 'http://localhost:8000/storage/courses/thumbnails/Q8NnldtVC9nckUgO83Ev.jpeg', 'http://localhost:8000/storage/courses/videos/wQEDEKAH3F3wPKQqgZ7X.mp4', 0, 1, 'language', '2026-04-07 10:30:04', '2026-04-07 10:47:06'),
+(29, 'ttttttttttttt', 'ttttttttttttt', 'tttttttt', 'tttttttt', NULL, 0.00, 0, 1, 'beginner', 'http://localhost:8000/storage/courses/thumbnails/C5PJFFc7DieVA1pfLmmC.png', 'http://localhost:8000/storage/courses/videos/PQAvtEEOXeW6Y4bt1haD.mp4', 0, 1, 'language', '2026-04-09 07:35:28', '2026-04-09 07:35:28'),
+(30, 'ewfdewf', 'ewfdewf', 'dfewf', 'sdcsdcsc', NULL, 33.00, 0, 2, 'beginner', 'http://localhost:8000/storage/courses/thumbnails/R9BZR0seXc6ittKH4rZX.png', 'http://localhost:8000/storage/courses/videos/fYKiE479g2kZU43vWLv3.mp4', 0, 1, 'language', '2026-04-09 08:51:39', '2026-04-09 08:51:39');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `course_lessons`
+--
+
+CREATE TABLE `course_lessons` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `section_id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `type` varchar(255) NOT NULL DEFAULT 'video',
+  `description` text DEFAULT NULL,
+  `video_url` varchar(255) DEFAULT NULL,
+  `video_file` varchar(255) DEFAULT NULL,
+  `duration_minutes` int(11) NOT NULL DEFAULT 0,
+  `order` int(11) NOT NULL DEFAULT 0,
+  `is_free_preview` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `course_lessons`
+--
+
+INSERT INTO `course_lessons` (`id`, `section_id`, `title`, `type`, `description`, `video_url`, `video_file`, `duration_minutes`, `order`, `is_free_preview`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Understanding IELTS Listening Format', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 35, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(2, 1, 'Section 1: Everyday Conversations', 'video', NULL, NULL, NULL, 29, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(3, 1, 'Section 2: Monologues & Presentations', 'video', NULL, NULL, NULL, 22, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(4, 1, 'Section 3: Academic Discussions', 'video', NULL, NULL, NULL, 15, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(5, 1, 'Section 4: Academic Lectures', 'video', NULL, NULL, NULL, 45, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(6, 2, 'Skimming & Scanning Techniques', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 44, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(7, 2, 'True/False/Not Given Strategies', 'video', NULL, NULL, NULL, 32, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(8, 2, 'Matching Headings & Information', 'video', NULL, NULL, NULL, 27, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(9, 2, 'Summary Completion Practice', 'video', NULL, NULL, NULL, 40, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(10, 2, 'Time Management for Reading', 'video', NULL, NULL, NULL, 36, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(11, 3, 'Describing Graphs & Charts', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 42, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(12, 3, 'Process Diagrams', 'video', NULL, NULL, NULL, 40, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(13, 3, 'Maps & Plans', 'video', NULL, NULL, NULL, 39, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(14, 3, 'Comparative Data Analysis', 'video', NULL, NULL, NULL, 42, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(15, 3, 'Band 8+ Vocabulary for Task 1', 'video', NULL, NULL, NULL, 44, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(16, 4, 'Essay Structure & Planning', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 36, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(17, 4, 'Opinion Essays', 'video', NULL, NULL, NULL, 14, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(18, 4, 'Discussion Essays', 'video', NULL, NULL, NULL, 39, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(19, 4, 'Problem-Solution Essays', 'video', NULL, NULL, NULL, 36, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(20, 4, 'Advanced Cohesion & Coherence', 'video', NULL, NULL, NULL, 40, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(21, 5, 'Part 1: Introduction & Interview', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 33, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(22, 5, 'Part 2: Long Turn Strategy', 'video', NULL, NULL, NULL, 42, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(23, 5, 'Part 3: Discussion Skills', 'video', NULL, NULL, NULL, 23, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(24, 5, 'Pronunciation & Intonation', 'video', NULL, NULL, NULL, 18, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(25, 5, 'Fluency & Coherence Techniques', 'video', NULL, NULL, NULL, 26, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(26, 6, 'Choosing a Research Topic', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 38, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(27, 6, 'Literature Review Methods', 'video', NULL, NULL, NULL, 33, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(28, 6, 'Research Design & Methodology', 'video', NULL, NULL, NULL, 33, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(29, 6, 'Data Collection Techniques', 'video', NULL, NULL, NULL, 35, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(30, 6, 'Ethical Considerations', 'video', NULL, NULL, NULL, 24, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(31, 7, 'Thesis Statement Development', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 33, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(32, 7, 'Argumentative Essay Structure', 'video', NULL, NULL, NULL, 34, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(33, 7, 'Critical Analysis & Evaluation', 'video', NULL, NULL, NULL, 30, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(34, 7, 'Counterarguments & Rebuttals', 'video', NULL, NULL, NULL, 16, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(35, 7, 'Academic Tone & Style', 'video', NULL, NULL, NULL, 27, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(36, 8, 'Abstract & Introduction', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 25, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(37, 8, 'Methodology Section', 'video', NULL, NULL, NULL, 28, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(38, 8, 'Results & Discussion', 'video', NULL, NULL, NULL, 24, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(39, 8, 'Conclusion & Recommendations', 'video', NULL, NULL, NULL, 40, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(40, 8, 'Peer Review Process', 'video', NULL, NULL, NULL, 18, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(41, 9, 'APA Style Guide', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 11, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(42, 9, 'MLA Format Essentials', 'video', NULL, NULL, NULL, 45, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(43, 9, 'Chicago Manual of Style', 'video', NULL, NULL, NULL, 41, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(44, 9, 'Avoiding Plagiarism', 'video', NULL, NULL, NULL, 17, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(45, 9, 'Reference Management Tools', 'video', NULL, NULL, NULL, 43, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(46, 10, 'Proposal Development', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 34, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(47, 10, 'Chapter Organization', 'video', NULL, NULL, NULL, 22, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(48, 10, 'Literature Synthesis', 'video', NULL, NULL, NULL, 30, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(49, 10, 'Data Analysis Presentation', 'video', NULL, NULL, NULL, 17, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(50, 10, 'Defense Preparation', 'video', NULL, NULL, NULL, 38, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(51, 11, 'Email Structure & Etiquette', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 37, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(52, 11, 'Formal vs Informal Tone', 'video', NULL, NULL, NULL, 22, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(53, 11, 'Request & Follow-up Emails', 'video', NULL, NULL, NULL, 25, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(54, 11, 'Complaint & Resolution Emails', 'video', NULL, NULL, NULL, 22, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(55, 11, 'Email Templates Library', 'video', NULL, NULL, NULL, 10, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(56, 12, 'Agenda Setting & Preparation', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 38, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(57, 12, 'Leading Effective Meetings', 'video', NULL, NULL, NULL, 24, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(58, 12, 'Participating in Discussions', 'video', NULL, NULL, NULL, 15, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(59, 12, 'Taking Meeting Minutes', 'video', NULL, NULL, NULL, 29, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(60, 12, 'Virtual Meeting Best Practices', 'video', NULL, NULL, NULL, 22, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(61, 13, 'Structuring Your Presentation', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 41, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(62, 13, 'Visual Aids & Slides', 'video', NULL, NULL, NULL, 26, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(63, 13, 'Delivery & Body Language', 'video', NULL, NULL, NULL, 24, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(64, 13, 'Handling Q&A Sessions', 'video', NULL, NULL, NULL, 32, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(65, 13, 'Persuasive Presentations', 'video', NULL, NULL, NULL, 34, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(66, 14, 'Opening Negotiations', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 21, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(67, 14, 'Making Proposals & Counteroffers', 'video', NULL, NULL, NULL, 11, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(68, 14, 'Agreeing & Disagreeing Politely', 'video', NULL, NULL, NULL, 42, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(69, 14, 'Closing Deals Professionally', 'video', NULL, NULL, NULL, 31, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(70, 14, 'Cross-Cultural Negotiation', 'video', NULL, NULL, NULL, 18, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(71, 15, 'Executive Summaries', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 43, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(72, 15, 'Progress Reports', 'video', NULL, NULL, NULL, 12, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(73, 15, 'Financial Reports', 'video', NULL, NULL, NULL, 37, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(74, 15, 'Analytical Reports', 'video', NULL, NULL, NULL, 43, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(75, 15, 'Action Plans & Recommendations', 'video', NULL, NULL, NULL, 24, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(76, 16, 'Discovering Your Writing Style', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 13, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(77, 16, 'Daily Writing Habits', 'video', NULL, NULL, NULL, 35, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(78, 16, 'Overcoming Writer\'s Block', 'video', NULL, NULL, NULL, 34, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(79, 16, 'Reading Like a Writer', 'video', NULL, NULL, NULL, 33, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(80, 16, 'Journaling for Creativity', 'video', NULL, NULL, NULL, 30, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(81, 17, 'Creating Memorable Characters', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 14, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(82, 17, 'Character Arcs & Growth', 'video', NULL, NULL, NULL, 26, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(83, 17, 'Dialogue That Sounds Real', 'video', NULL, NULL, NULL, 35, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(84, 17, 'Character Relationships', 'video', NULL, NULL, NULL, 35, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(85, 17, 'Villains & Antagonists', 'video', NULL, NULL, NULL, 42, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(86, 18, 'Three-Act Structure', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 34, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(87, 18, 'Plot Points & Turning Points', 'video', NULL, NULL, NULL, 37, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(88, 18, 'Subplots & Weaving', 'video', NULL, NULL, NULL, 31, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(89, 18, 'Pacing & Tension', 'video', NULL, NULL, NULL, 23, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(90, 18, 'Endings That Satisfy', 'video', NULL, NULL, NULL, 24, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(91, 19, 'Sensory Details', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 43, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(92, 19, 'Creating Atmosphere', 'video', NULL, NULL, NULL, 38, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(93, 19, 'Historical Settings', 'video', NULL, NULL, NULL, 33, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(94, 19, 'Fantasy World Building', 'video', NULL, NULL, NULL, 29, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(95, 19, 'Show Don\'t Tell', 'video', NULL, NULL, NULL, 11, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(96, 20, 'Self-Editing Techniques', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 27, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(97, 20, 'Working with Editors', 'video', NULL, NULL, NULL, 25, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(98, 20, 'Query Letters & Proposals', 'video', NULL, NULL, NULL, 25, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(99, 20, 'Traditional vs Self Publishing', 'video', NULL, NULL, NULL, 23, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(100, 20, 'Marketing Your Book', 'video', NULL, NULL, NULL, 19, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(101, 21, 'Vowel Sounds Mastery', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 32, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(102, 21, 'Consonant Clusters', 'video', NULL, NULL, NULL, 17, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(103, 21, 'Word Stress Patterns', 'video', NULL, NULL, NULL, 42, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(104, 21, 'Sentence Intonation', 'video', NULL, NULL, NULL, 31, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(105, 21, 'Connected Speech', 'video', NULL, NULL, NULL, 17, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(106, 22, 'Greetings & Introductions', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 19, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(107, 22, 'Small Talk Topics', 'video', NULL, NULL, NULL, 44, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(108, 22, 'Asking for Directions', 'video', NULL, NULL, NULL, 39, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(109, 22, 'Shopping & Ordering', 'video', NULL, NULL, NULL, 10, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(110, 22, 'Making Appointments', 'video', NULL, NULL, NULL, 10, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(111, 23, 'Party Conversations', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 26, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(112, 23, 'Expressing Opinions', 'video', NULL, NULL, NULL, 35, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(113, 23, 'Agreeing & Disagreeing', 'video', NULL, NULL, NULL, 24, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(114, 23, 'Telling Stories', 'video', NULL, NULL, NULL, 15, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(115, 23, 'Humor & Idioms', 'video', NULL, NULL, NULL, 15, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(116, 24, 'Phone Conversations', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 19, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(117, 24, 'Interview Preparation', 'video', NULL, NULL, NULL, 16, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(118, 24, 'Networking Events', 'video', NULL, NULL, NULL, 23, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(119, 24, 'Giving Directions at Work', 'video', NULL, NULL, NULL, 40, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(120, 24, 'Handling Difficult Conversations', 'video', NULL, NULL, NULL, 18, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(121, 25, 'Thinking in English', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 16, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(122, 25, 'Reducing Native Language Interference', 'video', NULL, NULL, NULL, 18, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(123, 25, 'Accent Reduction Techniques', 'video', NULL, NULL, NULL, 21, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(124, 25, 'Public Speaking Basics', 'video', NULL, NULL, NULL, 41, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(125, 25, 'Debate & Discussion Skills', 'video', NULL, NULL, NULL, 29, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(126, 26, 'Understanding Task 1 Requirements', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 39, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(127, 26, 'Bar Chart Descriptions', 'video', NULL, NULL, NULL, 12, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(128, 26, 'Line Graph Analysis', 'video', NULL, NULL, NULL, 17, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(129, 26, 'Pie Chart Comparisons', 'video', NULL, NULL, NULL, 26, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(130, 26, 'Table Data Interpretation', 'video', NULL, NULL, NULL, 16, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(131, 27, 'Process Diagrams Step by Step', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 11, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(132, 27, 'Map Descriptions', 'video', NULL, NULL, NULL, 19, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(133, 27, 'Multiple Graph Combinations', 'video', NULL, NULL, NULL, 17, 3, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(134, 27, 'Overview Writing', 'video', NULL, NULL, NULL, 18, 4, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(135, 27, 'Band 7+ Vocabulary', 'video', NULL, NULL, NULL, 21, 5, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(136, 28, 'Opinion Essay Framework', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 42, 1, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(137, 28, 'Discussion Essay Structure', 'video', NULL, NULL, NULL, 24, 2, 0, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(138, 28, 'Advantage/Disadvantage Essays', 'video', NULL, NULL, NULL, 23, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(139, 28, 'Problem/Solution Essays', 'video', NULL, NULL, NULL, 30, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(140, 28, 'Two-Part Question Essays', 'video', NULL, NULL, NULL, 44, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(141, 29, 'Complex Sentence Structures', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 15, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(142, 29, 'Conditional Sentences', 'video', NULL, NULL, NULL, 24, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(143, 29, 'Relative Clauses', 'video', NULL, NULL, NULL, 44, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(144, 29, 'Passive Voice Usage', 'video', NULL, NULL, NULL, 32, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(145, 29, 'Cohesive Devices', 'video', NULL, NULL, NULL, 22, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(146, 30, 'Timed Writing Practice', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 18, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(147, 30, 'Self-Assessment Rubrics', 'video', NULL, NULL, NULL, 20, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(148, 30, 'Common Mistakes to Avoid', 'video', NULL, NULL, NULL, 43, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(149, 30, 'Band Score Improvement Tips', 'video', NULL, NULL, NULL, 15, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(150, 30, 'Mock Test Analysis', 'video', NULL, NULL, NULL, 10, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(151, 31, 'Nouns & Pronouns', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 25, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(152, 31, 'Verbs & Verb Forms', 'video', NULL, NULL, NULL, 16, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(153, 31, 'Adjectives & Adverbs', 'video', NULL, NULL, NULL, 32, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(154, 31, 'Prepositions & Conjunctions', 'video', NULL, NULL, NULL, 11, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(155, 31, 'Interjections & Articles', 'video', NULL, NULL, NULL, 13, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(156, 32, 'Present Tenses', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 26, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(157, 32, 'Past Tenses', 'video', NULL, NULL, NULL, 37, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(158, 32, 'Future Tenses', 'video', NULL, NULL, NULL, 33, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(159, 32, 'Perfect Tenses', 'video', NULL, NULL, NULL, 33, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(160, 32, 'Continuous Tenses', 'video', NULL, NULL, NULL, 20, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(161, 33, 'Simple Sentences', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 32, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(162, 33, 'Compound Sentences', 'video', NULL, NULL, NULL, 30, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(163, 33, 'Complex Sentences', 'video', NULL, NULL, NULL, 39, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(164, 33, 'Compound-Complex Sentences', 'video', NULL, NULL, NULL, 31, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(165, 33, 'Sentence Fragments & Run-ons', 'video', NULL, NULL, NULL, 36, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(166, 34, 'Conditionals & Wishes', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 23, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(167, 34, 'Reported Speech', 'video', NULL, NULL, NULL, 13, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(168, 34, 'Relative Clauses', 'video', NULL, NULL, NULL, 18, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(169, 34, 'Participles & Gerunds', 'video', NULL, NULL, NULL, 32, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(170, 34, 'Subjunctive Mood', 'video', NULL, NULL, NULL, 41, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(171, 35, 'Subject-Verb Agreement', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 35, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(172, 35, 'Pronoun Reference', 'video', NULL, NULL, NULL, 39, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(173, 35, 'Modifier Placement', 'video', NULL, NULL, NULL, 20, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(174, 35, 'Parallel Structure', 'video', NULL, NULL, NULL, 40, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(175, 35, 'Punctuation Rules', 'video', NULL, NULL, NULL, 35, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(176, 36, 'Audience Analysis', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 20, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(177, 36, 'Objective Setting', 'video', NULL, NULL, NULL, 18, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(178, 36, 'Content Organization', 'video', NULL, NULL, NULL, 40, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(179, 36, 'Story Structure', 'video', NULL, NULL, NULL, 34, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(180, 36, 'Visual Planning', 'video', NULL, NULL, NULL, 10, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(181, 37, 'PowerPoint Best Practices', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 12, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(182, 37, 'Visual Hierarchy', 'video', NULL, NULL, NULL, 24, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(183, 37, 'Color & Typography', 'video', NULL, NULL, NULL, 21, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(184, 37, 'Data Visualization', 'video', NULL, NULL, NULL, 14, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(185, 37, 'Minimal Design Principles', 'video', NULL, NULL, NULL, 37, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(186, 38, 'Voice & Projection', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 43, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(187, 38, 'Body Language', 'video', NULL, NULL, NULL, 38, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(188, 38, 'Eye Contact', 'video', NULL, NULL, NULL, 44, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(189, 38, 'Managing Nerves', 'video', NULL, NULL, NULL, 22, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(190, 38, 'Using Props & Demos', 'video', NULL, NULL, NULL, 18, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(191, 39, 'Opening Hooks', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 26, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(192, 39, 'Interactive Elements', 'video', NULL, NULL, NULL, 29, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(193, 39, 'Storytelling Techniques', 'video', NULL, NULL, NULL, 27, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(194, 39, 'Handling Interruptions', 'video', NULL, NULL, NULL, 14, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(195, 39, 'Closing Impact', 'video', NULL, NULL, NULL, 43, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(196, 40, 'Preparing for Questions', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 44, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(197, 40, 'Difficult Question Handling', 'video', NULL, NULL, NULL, 33, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(198, 40, 'Panel Presentations', 'video', NULL, NULL, NULL, 42, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(199, 40, 'Follow-up Communication', 'video', NULL, NULL, NULL, 15, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(200, 40, 'Feedback Collection', 'video', NULL, NULL, NULL, 35, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(201, 41, 'What Makes a Great Short Story', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 14, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(202, 41, 'Finding Story Ideas', 'video', NULL, NULL, NULL, 39, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(203, 41, 'Point of View Selection', 'video', NULL, NULL, NULL, 22, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(204, 41, 'Setting the Scene', 'video', NULL, NULL, NULL, 30, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(205, 41, 'Theme & Subtext', 'video', NULL, NULL, NULL, 28, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(206, 42, 'Quick Character Sketches', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 15, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(207, 42, 'Showing vs Telling', 'video', NULL, NULL, NULL, 28, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(208, 42, 'Dialogue-Driven Character', 'video', NULL, NULL, NULL, 31, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(209, 42, 'Character Motivation', 'video', NULL, NULL, NULL, 37, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(210, 42, 'Supporting Characters', 'video', NULL, NULL, NULL, 30, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(211, 43, 'Single Scene Stories', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 34, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(212, 43, 'Multiple Scene Structure', 'video', NULL, NULL, NULL, 16, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(213, 43, 'Flash Fiction Techniques', 'video', NULL, NULL, NULL, 42, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(214, 43, 'Twist Endings', 'video', NULL, NULL, NULL, 12, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(215, 43, 'Open Endings', 'video', NULL, NULL, NULL, 22, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(216, 44, 'Finding Your Voice', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 13, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(217, 44, 'Descriptive Writing', 'video', NULL, NULL, NULL, 25, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(218, 44, 'Metaphor & Simile', 'video', NULL, NULL, NULL, 22, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(219, 44, 'Rhythm & Pacing', 'video', NULL, NULL, NULL, 18, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(220, 44, 'Revision Strategies', 'video', NULL, NULL, NULL, 35, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(221, 45, 'Self-Editing Checklist', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 14, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(222, 45, 'Beta Reader Feedback', 'video', NULL, NULL, NULL, 37, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(223, 45, 'Literary Magazine Submissions', 'video', NULL, NULL, NULL, 27, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(224, 45, 'Online Publishing Platforms', 'video', NULL, NULL, NULL, 22, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(225, 45, 'Building a Portfolio', 'video', NULL, NULL, NULL, 19, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(226, 46, 'Booking Flights', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 13, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(227, 46, 'Check-in Procedures', 'video', NULL, NULL, NULL, 35, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(228, 46, 'Security & Customs', 'video', NULL, NULL, NULL, 13, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(229, 46, 'Flight Announcements', 'video', NULL, NULL, NULL, 25, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(230, 46, 'Handling Delays & Issues', 'video', NULL, NULL, NULL, 45, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(231, 47, 'Making Reservations', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 35, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(232, 47, 'Check-in & Check-out', 'video', NULL, NULL, NULL, 42, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(233, 47, 'Room Service Requests', 'video', NULL, NULL, NULL, 14, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(234, 47, 'Complaints & Requests', 'video', NULL, NULL, NULL, 33, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(235, 47, 'Hotel Facilities', 'video', NULL, NULL, NULL, 21, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(236, 48, 'Making Reservations', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 21, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(237, 48, 'Reading Menus', 'video', NULL, NULL, NULL, 30, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(238, 48, 'Ordering Food', 'video', NULL, NULL, NULL, 30, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(239, 48, 'Special Dietary Requests', 'video', NULL, NULL, NULL, 40, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(240, 48, 'Paying the Bill', 'video', NULL, NULL, NULL, 21, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(241, 49, 'Asking for Directions', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 25, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(242, 49, 'Buying Tickets', 'video', NULL, NULL, NULL, 39, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(243, 49, 'Guided Tours', 'video', NULL, NULL, NULL, 21, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(244, 49, 'Shopping & Bargaining', 'video', NULL, NULL, NULL, 12, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(245, 49, 'Emergency Situations', 'video', NULL, NULL, NULL, 12, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(246, 50, 'Tour Guide Communication', 'video', NULL, 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 39, 1, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(247, 50, 'Customer Service Skills', 'video', NULL, NULL, NULL, 37, 2, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(248, 50, 'Handling Complaints', 'video', NULL, NULL, NULL, 23, 3, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(249, 50, 'Cultural Sensitivity', 'video', NULL, NULL, NULL, 44, 4, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(250, 50, 'Professional Etiquette', 'video', NULL, NULL, NULL, 38, 5, 0, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(251, 51, 'Lesson 1', 'video', NULL, NULL, NULL, 0, 0, 0, '2026-04-06 04:49:32', '2026-04-06 04:49:32'),
+(252, 53, 'Lesson 1', 'video', NULL, NULL, NULL, 30, 0, 0, '2026-04-06 05:22:05', '2026-04-06 05:22:05'),
+(253, 53, 'Lesson 2', 'video', NULL, NULL, NULL, 30, 1, 0, '2026-04-06 05:22:05', '2026-04-06 05:22:05'),
+(254, 56, 'dvdvdv', 'video', 'dvddv', 'https://youtu.be/kZhAj8--t8w?si=3weAK0DDDqC3jbXo', NULL, 0, 0, 0, '2026-04-06 05:41:31', '2026-04-06 05:41:31'),
+(255, 56, 'scsvcdv', 'video', 's', 'https://youtu.be/kZhAj8--t8w?si=3weAK0DDDqC3jbXo', NULL, 0, 1, 0, '2026-04-06 05:41:31', '2026-04-06 05:41:31'),
+(256, 56, 's', 'video', 's', 'https://youtu.be/kZhAj8--t8w?si=3weAK0DDDqC3jbXo', NULL, 0, 2, 0, '2026-04-06 05:41:31', '2026-04-06 05:41:31'),
+(257, 57, 'rrr', 'video', 'rrr', 'https://youtu.be/kZhAj8--t8w?si=3weAK0DDDqC3jbXo', NULL, 0, 0, 0, '2026-04-06 06:31:45', '2026-04-06 06:31:45'),
+(274, 65, 'rvrv', 'video', 'vrrr', 'https://youtu.be/kZhAj8--t8w?si=3weAK0DDDqC3jbXo', NULL, 0, 0, 0, '2026-04-06 07:26:27', '2026-04-06 07:26:27'),
+(275, 66, 'fvfvf', 'video', 'vfvfv', 'https://youtu.be/kZhAj8--t8w?si=3weAK0DDDqC3jbXo', NULL, 0, 0, 1, '2026-04-06 07:26:27', '2026-04-06 07:26:27'),
+(276, 67, 'Basic English Grammar Lesson 1', 'video', 'Overview of what you will learn', 'https://www.youtube.com/embed/EngW7tLk6R8', NULL, 15, 0, 1, '2026-04-06 08:15:56', '2026-04-06 09:50:36'),
+(277, 67, 'English Pronunciation Tips', 'video', 'Tools and software needed', 'https://www.youtube.com/watch?v=8JYP_wU1JTU&list=PLSQl0a2vh4HDERCw_ddanXbsDpFWcpL-S&index=2', NULL, 30, 1, 0, '2026-04-06 08:15:56', '2026-04-06 09:50:36'),
+(278, 67, 'Vocabulary Building Techniques', 'document', 'Downloadable resources', 'https://www.youtube.com/watch?v=iy-fhpbTH9E&list=PLSQl0a2vh4HDERCw_ddanXbsDpFWcpL-S&index=3', NULL, 10, 2, 0, '2026-04-06 08:15:56', '2026-04-06 09:50:36'),
+(279, 68, 'Speaking Practice Session', 'video', 'Deep dive into core principles', 'https://www.youtube.com/watch?v=-IvwoqPh1_I&list=PLSQl0a2vh4HDERCw_ddanXbsDpFWcpL-S&index=4', NULL, 45, 0, 0, '2026-04-06 08:15:56', '2026-04-06 09:50:36'),
+(280, 68, 'Writing Skills Workshop', 'video', 'Hands-on practice', 'https://www.youtube.com/embed/6avHGTu2rIU', NULL, 60, 1, 0, '2026-04-06 08:15:56', '2026-04-06 09:50:36'),
+(281, 69, 'Advanced Listening Comprehension', 'video', 'Pro-level techniques', 'https://www.youtube.com/embed/3fumBcKCfFE', NULL, 50, 0, 0, '2026-04-06 08:15:56', '2026-04-06 09:50:36'),
+(282, 69, 'Real-World Projects', 'video', 'Apply what you learned', 'https://www.youtube.com/embed/dQw4w9WgXcQ', NULL, 90, 1, 1, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(283, 70, 'L1', 'video', 'L1', 'http://localhost:8000/storage/courses/videos/hNyX7BiPanPPGcvztcri.mp4', NULL, 0, 0, 0, '2026-04-07 01:11:56', '2026-04-07 01:11:56'),
+(284, 70, 'rfrfrfrfrf', 'video', 'rfrfrfrf', 'http://localhost:8000/storage/courses/videos/UwYqeO0QtpHahkN8wBJs.mp4', NULL, 0, 1, 0, '2026-04-07 01:11:56', '2026-04-07 01:11:56'),
+(285, 71, 'rfr', 'video', 'frfrf', 'http://localhost:8000/storage/courses/videos/RMCMz0s5R9rGCbHDcqKl.mp4', NULL, 0, 0, 0, '2026-04-07 01:11:56', '2026-04-07 01:11:56'),
+(286, 72, 'Introduction to HTML', 'video', 'Learn what HTML is and why it matters for web development.', 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4', NULL, 15, 0, 1, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(287, 72, 'HTML Elements and Attributes', 'video', 'Understanding HTML elements, tags, and attributes.', 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4', NULL, 20, 1, 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(288, 73, 'CSS Selectors and Properties', 'video', 'Learn how to select and style HTML elements with CSS.', 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4', NULL, 25, 0, 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(289, 73, 'Flexbox and Grid Layout', 'video', 'Master modern CSS layout techniques with Flexbox and Grid.', 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4', NULL, 30, 1, 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(290, 74, 'Variables and Data Types', 'video', 'Learn about JavaScript variables, constants, and data types.', 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4', NULL, 20, 0, 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(291, 74, 'Functions and Scope', 'video', 'Understanding functions, parameters, and variable scope in JavaScript.', 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4', NULL, 25, 1, 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(292, 75, '111', 'video', '111', 'http://localhost:8000/storage/courses/videos/D5JrXstFjo8B8JywwndT.mp4', NULL, 0, 0, 0, '2026-04-07 10:30:04', '2026-04-07 10:30:04'),
+(296, 75, 'rvrvrv', 'video', 'rvrv', 'http://localhost:8000/storage/courses/videos/77FmJBeLm3SgokxuReYC.mp4', NULL, 0, 1, 0, '2026-04-07 10:35:02', '2026-04-07 10:35:02'),
+(297, 76, 'a', 'video', 'a', 'http://localhost:8000/storage/courses/videos/jytwBBmL8SXS6fP7Y950.mp4', NULL, 0, 0, 0, '2026-04-07 10:47:06', '2026-04-07 10:47:06'),
+(298, 77, 'fbfbfbfbb', 'video', 'bfbfbbfbfbfb', 'http://localhost:8000/storage/courses/videos/tgHMI3IrXHwK820ocJ4R.mp4', NULL, 0, 0, 0, '2026-04-09 07:35:28', '2026-04-09 07:35:28'),
+(299, 78, 'efefe', 'video', 'efewfwe', 'http://localhost:8000/storage/courses/videos/eyia3uDbHcfT7JwvZWO0.mp4', NULL, 0, 0, 0, '2026-04-09 08:51:39', '2026-04-09 08:51:39'),
+(300, 78, 'feefef', 'video', 'efefef', 'http://localhost:8000/storage/courses/videos/SASRfuOG9WaggQMP3Ugc.mp4', NULL, 0, 1, 1, '2026-04-09 08:51:39', '2026-04-09 08:51:39');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `course_questions`
+--
+
+CREATE TABLE `course_questions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `course_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `user_name` varchar(255) NOT NULL,
+  `user_email` varchar(255) DEFAULT NULL,
+  `question` text NOT NULL,
+  `answer` text DEFAULT NULL,
+  `is_answered` tinyint(1) NOT NULL DEFAULT 0,
+  `is_approved` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `course_questions`
+--
+
+INSERT INTO `course_questions` (`id`, `course_id`, `user_id`, `user_name`, `user_email`, `question`, `answer`, `is_answered`, `is_approved`, `created_at`, `updated_at`) VALUES
+(1, 26, NULL, 'Null', 'N@gmail.com', 'hihi', 'byby', 1, 1, '2026-04-09 06:54:13', '2026-04-09 06:54:57');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `course_quizzes`
+--
+
+CREATE TABLE `course_quizzes` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `course_id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `order` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `lesson_id` bigint(20) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `course_quizzes`
+--
+
+INSERT INTO `course_quizzes` (`id`, `course_id`, `title`, `order`, `created_at`, `updated_at`, `lesson_id`) VALUES
+(1, 1, 'Quiz: Listening Mastery', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(2, 1, 'Quiz: Listening Mastery', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(3, 1, 'Quiz: Listening Mastery', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(4, 1, 'Quiz: Reading Excellence', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(5, 1, 'Quiz: Reading Excellence', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(6, 1, 'Quiz: Reading Excellence', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(7, 1, 'Quiz: Writing Task 1', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(8, 1, 'Quiz: Writing Task 1', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(9, 1, 'Quiz: Writing Task 1', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(10, 1, 'Quiz: Writing Task 2', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(11, 1, 'Quiz: Writing Task 2', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(12, 1, 'Quiz: Writing Task 2', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(13, 1, 'Quiz: Speaking Confidence', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(14, 1, 'Quiz: Speaking Confidence', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(15, 1, 'Quiz: Speaking Confidence', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(16, 2, 'Quiz: Research Fundamentals', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(17, 2, 'Quiz: Research Fundamentals', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(18, 2, 'Quiz: Research Fundamentals', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(19, 2, 'Quiz: Essay Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(20, 2, 'Quiz: Essay Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(21, 2, 'Quiz: Essay Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(22, 2, 'Quiz: Research Paper Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(23, 2, 'Quiz: Research Paper Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(24, 2, 'Quiz: Research Paper Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(25, 2, 'Quiz: Citation & Referencing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(26, 2, 'Quiz: Citation & Referencing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(27, 2, 'Quiz: Citation & Referencing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(28, 2, 'Quiz: Dissertation Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(29, 2, 'Quiz: Dissertation Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(30, 2, 'Quiz: Dissertation Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(31, 3, 'Quiz: Professional Email Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(32, 3, 'Quiz: Professional Email Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(33, 3, 'Quiz: Professional Email Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(34, 3, 'Quiz: Meeting Communication', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(35, 3, 'Quiz: Meeting Communication', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(36, 3, 'Quiz: Meeting Communication', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(37, 3, 'Quiz: Presentation Skills', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(38, 3, 'Quiz: Presentation Skills', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(39, 3, 'Quiz: Presentation Skills', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(40, 3, 'Quiz: Negotiation Language', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(41, 3, 'Quiz: Negotiation Language', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(42, 3, 'Quiz: Negotiation Language', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(43, 3, 'Quiz: Report Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(44, 3, 'Quiz: Report Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(45, 3, 'Quiz: Report Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(46, 4, 'Quiz: Finding Your Voice', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(47, 4, 'Quiz: Finding Your Voice', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(48, 4, 'Quiz: Finding Your Voice', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(49, 4, 'Quiz: Character Development', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(50, 4, 'Quiz: Character Development', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(51, 4, 'Quiz: Character Development', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(52, 4, 'Quiz: Plot & Structure', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(53, 4, 'Quiz: Plot & Structure', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(54, 4, 'Quiz: Plot & Structure', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(55, 4, 'Quiz: Setting & World Building', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(56, 4, 'Quiz: Setting & World Building', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(57, 4, 'Quiz: Setting & World Building', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(58, 4, 'Quiz: Editing & Publishing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(59, 4, 'Quiz: Editing & Publishing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(60, 4, 'Quiz: Editing & Publishing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(61, 5, 'Quiz: Pronunciation Basics', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(62, 5, 'Quiz: Pronunciation Basics', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(63, 5, 'Quiz: Pronunciation Basics', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(64, 5, 'Quiz: Daily Conversations', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(65, 5, 'Quiz: Daily Conversations', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(66, 5, 'Quiz: Daily Conversations', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(67, 5, 'Quiz: Social Situations', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(68, 5, 'Quiz: Social Situations', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(69, 5, 'Quiz: Social Situations', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(70, 5, 'Quiz: Professional Speaking', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(71, 5, 'Quiz: Professional Speaking', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(72, 5, 'Quiz: Professional Speaking', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(73, 5, 'Quiz: Advanced Fluency', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(74, 5, 'Quiz: Advanced Fluency', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(75, 5, 'Quiz: Advanced Fluency', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(76, 6, 'Quiz: Task 1 Fundamentals', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(77, 6, 'Quiz: Task 1 Fundamentals', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(78, 6, 'Quiz: Task 1 Fundamentals', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(79, 6, 'Quiz: Task 1 Advanced', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(80, 6, 'Quiz: Task 1 Advanced', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(81, 6, 'Quiz: Task 1 Advanced', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(82, 6, 'Quiz: Task 2 Essay Types', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09', NULL),
+(83, 6, 'Quiz: Task 2 Essay Types', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(84, 6, 'Quiz: Task 2 Essay Types', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(85, 6, 'Quiz: Grammar for Writing', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(86, 6, 'Quiz: Grammar for Writing', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(87, 6, 'Quiz: Grammar for Writing', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(88, 6, 'Quiz: Practice & Assessment', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(89, 6, 'Quiz: Practice & Assessment', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(90, 6, 'Quiz: Practice & Assessment', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(91, 7, 'Quiz: Parts of Speech', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(92, 7, 'Quiz: Parts of Speech', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(93, 7, 'Quiz: Parts of Speech', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(94, 7, 'Quiz: Tenses Mastery', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(95, 7, 'Quiz: Tenses Mastery', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(96, 7, 'Quiz: Tenses Mastery', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(97, 7, 'Quiz: Sentence Structure', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(98, 7, 'Quiz: Sentence Structure', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(99, 7, 'Quiz: Sentence Structure', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(100, 7, 'Quiz: Advanced Grammar', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(101, 7, 'Quiz: Advanced Grammar', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(102, 7, 'Quiz: Advanced Grammar', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(103, 7, 'Quiz: Common Errors', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(104, 7, 'Quiz: Common Errors', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(105, 7, 'Quiz: Common Errors', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(106, 8, 'Quiz: Presentation Planning', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(107, 8, 'Quiz: Presentation Planning', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(108, 8, 'Quiz: Presentation Planning', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(109, 8, 'Quiz: Slide Design', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(110, 8, 'Quiz: Slide Design', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(111, 8, 'Quiz: Slide Design', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(112, 8, 'Quiz: Delivery Techniques', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(113, 8, 'Quiz: Delivery Techniques', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(114, 8, 'Quiz: Delivery Techniques', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(115, 8, 'Quiz: Engagement Strategies', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(116, 8, 'Quiz: Engagement Strategies', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(117, 8, 'Quiz: Engagement Strategies', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(118, 8, 'Quiz: Q&A & Follow-up', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(119, 8, 'Quiz: Q&A & Follow-up', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(120, 8, 'Quiz: Q&A & Follow-up', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(121, 9, 'Quiz: Story Foundations', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(122, 9, 'Quiz: Story Foundations', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(123, 9, 'Quiz: Story Foundations', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(124, 9, 'Quiz: Character in Short Form', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(125, 9, 'Quiz: Character in Short Form', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(126, 9, 'Quiz: Character in Short Form', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(127, 9, 'Quiz: Plot in Miniature', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(128, 9, 'Quiz: Plot in Miniature', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(129, 9, 'Quiz: Plot in Miniature', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(130, 9, 'Quiz: Style & Voice', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(131, 9, 'Quiz: Style & Voice', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(132, 9, 'Quiz: Style & Voice', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(133, 9, 'Quiz: Publication Ready', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(134, 9, 'Quiz: Publication Ready', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(135, 9, 'Quiz: Publication Ready', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(136, 10, 'Quiz: Airport English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(137, 10, 'Quiz: Airport English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(138, 10, 'Quiz: Airport English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(139, 10, 'Quiz: Hotel English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(140, 10, 'Quiz: Hotel English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(141, 10, 'Quiz: Hotel English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(142, 10, 'Quiz: Restaurant English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(143, 10, 'Quiz: Restaurant English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(144, 10, 'Quiz: Restaurant English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(145, 10, 'Quiz: Tourist English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(146, 10, 'Quiz: Tourist English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(147, 10, 'Quiz: Tourist English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(148, 10, 'Quiz: Travel Industry English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(149, 10, 'Quiz: Travel Industry English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(150, 10, 'Quiz: Travel Industry English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10', NULL),
+(153, 13, 'efef', 0, '2026-04-06 04:38:11', '2026-04-06 04:38:11', NULL),
+(154, 15, 'effe', 0, '2026-04-06 05:20:21', '2026-04-06 05:20:21', NULL),
+(155, 20, '555', 0, '2026-04-06 06:31:45', '2026-04-06 06:31:45', 257),
+(166, 24, 'fvfvfvfvfv', 0, '2026-04-06 07:26:27', '2026-04-06 07:26:27', 274),
+(167, 25, 'Introduction Quiz', 0, '2026-04-06 08:15:56', '2026-04-06 08:15:56', 276),
+(168, 25, 'Core Concepts Quiz', 0, '2026-04-06 08:15:56', '2026-04-06 08:15:56', 279),
+(169, 25, 'Exercise Quiz', 0, '2026-04-06 08:15:56', '2026-04-06 08:15:56', 280),
+(170, 25, 'Advanced Quiz', 0, '2026-04-06 08:15:56', '2026-04-06 08:15:56', 281),
+(171, 25, 'Project Assessment', 0, '2026-04-06 08:15:56', '2026-04-06 08:15:56', 282),
+(173, 26, 'rfr', 0, '2026-04-07 01:11:56', '2026-04-07 01:11:56', 284),
+(174, 26, 'frfrf', 0, '2026-04-07 01:11:56', '2026-04-07 01:11:56', 285),
+(175, 26, 'Final', 0, '2026-04-07 01:11:56', '2026-04-07 01:11:56', NULL),
+(176, 26, 'Final 2', 1, '2026-04-07 01:11:56', '2026-04-07 01:11:56', NULL),
+(177, 27, 'HTML Basics Quiz', 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09', 286),
+(178, 27, 'Elements & Attributes Quiz', 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09', 287),
+(179, 27, 'CSS Selectors Quiz', 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09', 288),
+(180, 27, 'Flexbox & Grid Quiz', 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09', 289),
+(181, 27, 'Variables & Types Quiz', 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09', 290),
+(182, 27, 'Functions Quiz', 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09', 291),
+(183, 27, 'Final Assessment: HTML & CSS', 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09', NULL),
+(184, 27, 'Final Assessment: JavaScript', 1, '2026-04-07 08:51:09', '2026-04-07 08:51:09', NULL),
+(185, 28, 'AAAAAAAAAAA', 0, '2026-04-07 10:30:04', '2026-04-07 10:30:04', 292),
+(186, 28, 'final', 0, '2026-04-07 10:30:04', '2026-04-07 10:30:04', NULL),
+(187, 29, 'fbfbbffbfbfbb', 0, '2026-04-09 07:35:28', '2026-04-09 07:35:28', 298),
+(188, 29, 'f f f f', 0, '2026-04-09 07:35:28', '2026-04-09 07:35:28', NULL),
+(189, 30, 'vvevev', 0, '2026-04-09 08:51:39', '2026-04-09 08:51:39', 299),
+(190, 30, 'fvfvfv', 1, '2026-04-09 08:51:39', '2026-04-09 08:51:39', 299),
+(191, 30, 'fvfv', 2, '2026-04-09 08:51:39', '2026-04-09 08:51:39', 299),
+(192, 30, 'dvdvvv', 0, '2026-04-09 08:51:39', '2026-04-09 08:51:39', 300),
+(193, 30, 'efwefwef', 0, '2026-04-09 08:51:39', '2026-04-09 08:51:39', NULL),
+(194, 30, 'wefewfwe', 1, '2026-04-09 08:51:39', '2026-04-09 08:51:39', NULL),
+(195, 30, 'wwfwefw', 2, '2026-04-09 08:51:39', '2026-04-09 08:51:39', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `course_quiz_questions`
+--
+
+CREATE TABLE `course_quiz_questions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `quiz_id` bigint(20) UNSIGNED NOT NULL,
+  `question` text NOT NULL,
+  `options` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`options`)),
+  `correct_answer` int(11) NOT NULL,
+  `order` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `course_quiz_questions`
+--
+
+INSERT INTO `course_quiz_questions` (`id`, `quiz_id`, `question`, `options`, `correct_answer`, `order`, `created_at`, `updated_at`) VALUES
+(1, 1, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(2, 1, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(3, 1, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(4, 1, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(5, 1, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(6, 1, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(7, 2, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(8, 2, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(9, 2, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(10, 2, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(11, 2, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(12, 2, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(13, 3, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(14, 3, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(15, 3, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(16, 4, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(17, 4, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(18, 4, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(19, 4, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(20, 4, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(21, 4, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(22, 5, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(23, 5, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(24, 5, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(25, 5, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(26, 5, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(27, 5, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(28, 6, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(29, 6, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(30, 6, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(31, 7, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(32, 7, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(33, 7, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(34, 7, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(35, 7, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(36, 7, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(37, 8, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(38, 8, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(39, 8, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(40, 8, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(41, 8, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(42, 8, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(43, 9, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(44, 9, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(45, 9, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(46, 10, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(47, 10, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(48, 10, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(49, 10, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(50, 10, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(51, 10, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(52, 11, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(53, 11, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(54, 11, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(55, 11, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(56, 11, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(57, 11, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(58, 12, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(59, 12, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(60, 12, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(61, 13, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(62, 13, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(63, 13, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(64, 13, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(65, 13, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(66, 13, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(67, 14, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(68, 14, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(69, 14, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(70, 14, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(71, 14, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(72, 14, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(73, 15, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(74, 15, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(75, 15, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(76, 16, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(77, 16, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(78, 16, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(79, 16, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(80, 16, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(81, 16, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(82, 17, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(83, 17, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(84, 17, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(85, 17, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(86, 17, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(87, 17, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(88, 18, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(89, 18, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(90, 18, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(91, 19, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(92, 19, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(93, 19, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(94, 19, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(95, 19, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(96, 19, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(97, 20, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(98, 20, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(99, 20, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(100, 20, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(101, 20, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(102, 20, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(103, 21, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(104, 21, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(105, 21, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(106, 22, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(107, 22, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(108, 22, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(109, 22, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(110, 22, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(111, 22, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(112, 23, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(113, 23, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(114, 23, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(115, 23, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(116, 23, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(117, 23, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(118, 24, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(119, 24, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(120, 24, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(121, 25, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(122, 25, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(123, 25, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(124, 25, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(125, 25, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(126, 25, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(127, 26, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(128, 26, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(129, 26, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(130, 26, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(131, 26, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(132, 26, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(133, 27, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(134, 27, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(135, 27, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(136, 28, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(137, 28, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(138, 28, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(139, 28, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(140, 28, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(141, 28, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(142, 29, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(143, 29, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(144, 29, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(145, 29, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(146, 29, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(147, 29, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(148, 30, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(149, 30, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(150, 30, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(151, 31, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(152, 31, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(153, 31, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(154, 31, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(155, 31, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(156, 31, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(157, 32, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(158, 32, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(159, 32, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(160, 32, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(161, 32, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(162, 32, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(163, 33, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(164, 33, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(165, 33, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(166, 34, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(167, 34, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(168, 34, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(169, 34, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(170, 34, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(171, 34, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(172, 35, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(173, 35, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(174, 35, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(175, 35, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(176, 35, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(177, 35, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(178, 36, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(179, 36, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(180, 36, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(181, 37, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(182, 37, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(183, 37, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(184, 37, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(185, 37, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(186, 37, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(187, 38, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(188, 38, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(189, 38, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(190, 38, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(191, 38, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(192, 38, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(193, 39, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(194, 39, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(195, 39, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(196, 40, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(197, 40, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(198, 40, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(199, 40, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(200, 40, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(201, 40, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(202, 41, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(203, 41, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(204, 41, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(205, 41, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(206, 41, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(207, 41, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(208, 42, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(209, 42, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(210, 42, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(211, 43, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(212, 43, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(213, 43, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(214, 43, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(215, 43, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(216, 43, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(217, 44, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(218, 44, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09');
+INSERT INTO `course_quiz_questions` (`id`, `quiz_id`, `question`, `options`, `correct_answer`, `order`, `created_at`, `updated_at`) VALUES
+(219, 44, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(220, 44, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(221, 44, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(222, 44, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(223, 45, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(224, 45, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(225, 45, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(226, 46, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(227, 46, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(228, 46, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(229, 46, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(230, 46, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(231, 46, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(232, 47, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(233, 47, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(234, 47, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(235, 47, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(236, 47, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(237, 47, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(238, 48, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(239, 48, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(240, 48, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(241, 49, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(242, 49, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(243, 49, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(244, 49, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(245, 49, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(246, 49, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(247, 50, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(248, 50, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(249, 50, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(250, 50, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(251, 50, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(252, 50, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(253, 51, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(254, 51, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(255, 51, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(256, 52, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(257, 52, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(258, 52, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(259, 52, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(260, 52, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(261, 52, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(262, 53, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(263, 53, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(264, 53, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(265, 53, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(266, 53, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(267, 53, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(268, 54, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(269, 54, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(270, 54, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(271, 55, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(272, 55, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(273, 55, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(274, 55, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(275, 55, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(276, 55, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(277, 56, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(278, 56, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(279, 56, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(280, 56, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(281, 56, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(282, 56, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(283, 57, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(284, 57, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(285, 57, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(286, 58, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(287, 58, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(288, 58, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(289, 58, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(290, 58, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(291, 58, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(292, 59, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(293, 59, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(294, 59, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(295, 59, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(296, 59, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(297, 59, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(298, 60, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(299, 60, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(300, 60, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(301, 61, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(302, 61, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(303, 61, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(304, 61, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(305, 61, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(306, 61, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(307, 62, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(308, 62, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(309, 62, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(310, 62, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(311, 62, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(312, 62, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(313, 63, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(314, 63, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(315, 63, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(316, 64, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(317, 64, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(318, 64, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(319, 64, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(320, 64, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(321, 64, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(322, 65, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(323, 65, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(324, 65, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(325, 65, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(326, 65, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(327, 65, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(328, 66, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(329, 66, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(330, 66, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(331, 67, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(332, 67, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(333, 67, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(334, 67, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(335, 67, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(336, 67, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(337, 68, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(338, 68, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(339, 68, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(340, 68, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(341, 68, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(342, 68, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(343, 69, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(344, 69, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(345, 69, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(346, 70, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(347, 70, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(348, 70, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(349, 70, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(350, 70, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(351, 70, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(352, 71, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(353, 71, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(354, 71, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(355, 71, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(356, 71, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(357, 71, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(358, 72, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(359, 72, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(360, 72, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(361, 73, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(362, 73, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(363, 73, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(364, 73, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(365, 73, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(366, 73, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(367, 74, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(368, 74, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(369, 74, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(370, 74, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(371, 74, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(372, 74, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(373, 75, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(374, 75, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(375, 75, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(376, 76, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(377, 76, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(378, 76, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(379, 76, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(380, 76, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(381, 76, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(382, 77, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(383, 77, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(384, 77, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(385, 77, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(386, 77, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(387, 77, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(388, 78, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(389, 78, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(390, 78, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(391, 79, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(392, 79, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(393, 79, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(394, 79, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(395, 79, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(396, 79, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(397, 80, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(398, 80, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(399, 80, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(400, 80, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(401, 80, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(402, 80, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(403, 81, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(404, 81, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(405, 81, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(406, 82, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(407, 82, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(408, 82, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(409, 82, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(410, 82, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(411, 82, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(412, 83, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(413, 83, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(414, 83, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(415, 83, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(416, 83, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(417, 83, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(418, 84, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(419, 84, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(420, 84, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(421, 85, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(422, 85, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(423, 85, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(424, 85, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(425, 85, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(426, 85, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(427, 86, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(428, 86, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(429, 86, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(430, 86, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(431, 86, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(432, 86, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(433, 87, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(434, 87, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(435, 87, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10');
+INSERT INTO `course_quiz_questions` (`id`, `quiz_id`, `question`, `options`, `correct_answer`, `order`, `created_at`, `updated_at`) VALUES
+(436, 88, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(437, 88, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(438, 88, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(439, 88, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(440, 88, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(441, 88, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(442, 89, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(443, 89, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(444, 89, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(445, 89, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(446, 89, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(447, 89, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(448, 90, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(449, 90, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(450, 90, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(451, 91, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(452, 91, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(453, 91, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(454, 91, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(455, 91, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(456, 91, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(457, 92, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(458, 92, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(459, 92, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(460, 92, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(461, 92, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(462, 92, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(463, 93, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(464, 93, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(465, 93, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(466, 94, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(467, 94, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(468, 94, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(469, 94, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(470, 94, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(471, 94, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(472, 95, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(473, 95, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(474, 95, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(475, 95, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(476, 95, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(477, 95, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(478, 96, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(479, 96, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(480, 96, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(481, 97, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(482, 97, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(483, 97, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(484, 97, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(485, 97, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(486, 97, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(487, 98, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(488, 98, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(489, 98, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(490, 98, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(491, 98, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(492, 98, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(493, 99, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(494, 99, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(495, 99, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(496, 100, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(497, 100, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(498, 100, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(499, 100, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(500, 100, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(501, 100, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(502, 101, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(503, 101, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(504, 101, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(505, 101, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(506, 101, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(507, 101, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(508, 102, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(509, 102, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(510, 102, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(511, 103, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(512, 103, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(513, 103, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(514, 103, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(515, 103, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(516, 103, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(517, 104, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(518, 104, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(519, 104, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(520, 104, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(521, 104, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(522, 104, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(523, 105, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(524, 105, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(525, 105, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(526, 106, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(527, 106, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(528, 106, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(529, 106, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(530, 106, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(531, 106, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(532, 107, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(533, 107, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(534, 107, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(535, 107, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(536, 107, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(537, 107, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(538, 108, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(539, 108, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(540, 108, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(541, 109, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(542, 109, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(543, 109, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(544, 109, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(545, 109, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(546, 109, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(547, 110, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(548, 110, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(549, 110, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(550, 110, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(551, 110, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(552, 110, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(553, 111, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(554, 111, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(555, 111, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(556, 112, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(557, 112, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(558, 112, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(559, 112, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(560, 112, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(561, 112, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(562, 113, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(563, 113, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(564, 113, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(565, 113, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(566, 113, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(567, 113, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(568, 114, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(569, 114, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(570, 114, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(571, 115, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(572, 115, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(573, 115, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(574, 115, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(575, 115, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(576, 115, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(577, 116, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(578, 116, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(579, 116, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(580, 116, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(581, 116, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(582, 116, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(583, 117, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(584, 117, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(585, 117, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(586, 118, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(587, 118, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(588, 118, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(589, 118, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(590, 118, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(591, 118, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(592, 119, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(593, 119, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(594, 119, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(595, 119, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(596, 119, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(597, 119, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(598, 120, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(599, 120, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(600, 120, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(601, 121, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(602, 121, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(603, 121, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(604, 121, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(605, 121, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(606, 121, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(607, 122, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(608, 122, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(609, 122, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(610, 122, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(611, 122, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(612, 122, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(613, 123, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(614, 123, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(615, 123, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(616, 124, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(617, 124, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(618, 124, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(619, 124, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(620, 124, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(621, 124, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(622, 125, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(623, 125, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(624, 125, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(625, 125, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(626, 125, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(627, 125, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(628, 126, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(629, 126, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(630, 126, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(631, 127, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(632, 127, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(633, 127, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(634, 127, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(635, 127, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(636, 127, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(637, 128, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(638, 128, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(639, 128, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(640, 128, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(641, 128, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(642, 128, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(643, 129, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(644, 129, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(645, 129, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(646, 130, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(647, 130, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(648, 130, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(649, 130, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(650, 130, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(651, 130, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10');
+INSERT INTO `course_quiz_questions` (`id`, `quiz_id`, `question`, `options`, `correct_answer`, `order`, `created_at`, `updated_at`) VALUES
+(652, 131, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(653, 131, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(654, 131, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(655, 131, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(656, 131, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(657, 131, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(658, 132, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(659, 132, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(660, 132, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(661, 133, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(662, 133, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(663, 133, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(664, 133, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(665, 133, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(666, 133, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(667, 134, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(668, 134, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(669, 134, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(670, 134, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(671, 134, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(672, 134, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(673, 135, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(674, 135, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(675, 135, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(676, 136, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(677, 136, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(678, 136, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(679, 136, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(680, 136, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(681, 136, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(682, 137, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(683, 137, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(684, 137, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(685, 137, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(686, 137, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(687, 137, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(688, 138, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(689, 138, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(690, 138, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(691, 139, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(692, 139, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(693, 139, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(694, 139, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(695, 139, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(696, 139, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(697, 140, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(698, 140, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(699, 140, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(700, 140, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(701, 140, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(702, 140, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(703, 141, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(704, 141, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(705, 141, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(706, 142, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(707, 142, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(708, 142, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(709, 142, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(710, 142, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(711, 142, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(712, 143, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(713, 143, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(714, 143, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(715, 143, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(716, 143, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(717, 143, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(718, 144, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(719, 144, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(720, 144, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(721, 145, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(722, 145, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(723, 145, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(724, 145, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(725, 145, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(726, 145, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(727, 146, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(728, 146, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(729, 146, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(730, 146, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(731, 146, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(732, 146, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(733, 147, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(734, 147, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(735, 147, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(736, 148, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(737, 148, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(738, 148, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(739, 148, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(740, 148, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(741, 148, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(742, 149, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(743, 149, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(744, 149, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(745, 149, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(746, 149, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(747, 149, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(748, 150, 'What is the primary objective of this lesson?', '\"[\\\"To understand key concepts\\\",\\\"To memorize facts\\\",\\\"To skip practice\\\",\\\"To avoid assignments\\\"]\"', 0, 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(749, 150, 'Which technique is most effective for retention?', '\"[\\\"Active practice\\\",\\\"Passive reading\\\",\\\"Ignoring examples\\\",\\\"Skipping exercises\\\"]\"', 0, 2, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(750, 150, 'What should you do after completing this lesson?', '\"[\\\"Review and practice\\\",\\\"Move on without review\\\",\\\"Forget the material\\\",\\\"Skip the quiz\\\"]\"', 0, 3, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(751, 153, 'effefe', '\"[\\\"fef\\\",\\\"fef\\\",\\\"efef\\\",\\\"efef\\\"]\"', 0, 0, '2026-04-06 04:38:11', '2026-04-06 04:38:11'),
+(752, 154, 'efef', '\"[\\\"efef\\\",\\\"efef\\\",\\\"efef\\\",\\\"efef\\\"]\"', 0, 0, '2026-04-06 05:20:21', '2026-04-06 05:20:21'),
+(779, 167, 'What is the main goal of this course?', '[\"Learn basics\",\"Master advanced topics\",\"Get certified\",\"All of the above\"]', 3, 0, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(780, 167, 'How many modules are there?', '[\"3\",\"5\",\"7\",\"10\"]', 1, 1, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(781, 168, 'What is the first principle?', '\"[\\\"Option A\\\", \\\"Option B\\\", \\\"Option C\\\", \\\"Option D\\\"]\"', 0, 0, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(782, 168, 'Which tool is recommended?', '\"[\\\"Tool X\\\", \\\"Tool Y\\\", \\\"Tool Z\\\", \\\"None\\\"]\"', 1, 1, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(783, 168, 'How long does it take to master?', '\"[\\\"1 week\\\", \\\"1 month\\\", \\\"6 months\\\", \\\"1 year\\\"]\"', 2, 2, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(784, 169, 'Did you complete the exercise?', '\"[\\\"Yes\\\", \\\"No\\\", \\\"Partially\\\", \\\"Not sure\\\"]\"', 0, 0, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(785, 170, 'What is the key to mastery?', '\"[\\\"Practice\\\", \\\"Theory\\\", \\\"Both\\\", \\\"Neither\\\"]\"', 2, 0, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(786, 170, 'How many hours of practice?', '\"[\\\"100\\\", \\\"500\\\", \\\"1000\\\", \\\"10000\\\"]\"', 2, 1, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(787, 170, 'Is this course enough?', '\"[\\\"Yes\\\", \\\"No\\\", \\\"Maybe\\\", \\\"Depends\\\"]\"', 0, 2, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(788, 170, 'Would you recommend it?', '\"[\\\"Yes\\\", \\\"No\\\", \\\"Maybe\\\", \\\"Depends\\\"]\"', 0, 3, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(789, 170, 'Final question?', '\"[\\\"A\\\", \\\"B\\\", \\\"C\\\", \\\"D\\\"]\"', 3, 4, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(790, 171, 'Did you finish the project?', '\"[\\\"Yes\\\", \\\"No\\\", \\\"In progress\\\", \\\"Not started\\\"]\"', 0, 0, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(791, 171, 'Rate your confidence', '\"[\\\"1\\\", \\\"2\\\", \\\"3\\\", \\\"4\\\"]\"', 3, 1, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(792, 173, 'frf', '[\"rfrf\",\"rfrfrfr\",\"frfrf\",\"rfrf\"]', 0, 0, '2026-04-07 01:11:56', '2026-04-07 08:08:23'),
+(793, 174, 'frfrf', '[\"rrfrf\",\"rfrf\",\"rfrf\",\"rfrf\"]', 0, 0, '2026-04-07 01:11:56', '2026-04-07 08:08:23'),
+(794, 175, 'fvvvvvv', '[\"fvvvvvvvvvvvvvv\",\"vfv\",\"vffv\",\"fvfv\"]', 0, 0, '2026-04-07 01:11:56', '2026-04-07 08:08:23'),
+(795, 175, 'vfv', '[\"fvfv\",\"fvfv\",\"vfv\",\"fvfv\"]', 0, 1, '2026-04-07 01:11:56', '2026-04-07 08:08:23'),
+(796, 176, 'fvvff', '[\"fvfv\",\"fvfv\",\"fvfv\",\"fvfv\"]', 0, 0, '2026-04-07 01:11:56', '2026-04-07 08:08:23'),
+(797, 177, 'What does HTML stand for?', '\"[\\\"Hyper Text Markup Language\\\",\\\"High Tech Modern Language\\\",\\\"Home Tool Markup Language\\\",\\\"Hyperlinks and Text Markup Language\\\"]\"', 0, 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(798, 177, 'Which tag is used for the largest heading?', '\"[\\\"<heading>\\\",\\\"<h6>\\\",\\\"<h1>\\\",\\\"<head>\\\"]\"', 2, 1, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(799, 177, 'Which HTML element is used for paragraphs?', '\"[\\\"<para>\\\",\\\"<paragraph>\\\",\\\"<text>\\\",\\\"<p>\\\"]\"', 3, 2, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(800, 178, 'Which attribute specifies the URL for a link?', '\"[\\\"src\\\",\\\"link\\\",\\\"href\\\",\\\"url\\\"]\"', 2, 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(801, 178, 'Which tag is used to create a hyperlink?', '\"[\\\"<link>\\\",\\\"<a>\\\",\\\"<href>\\\",\\\"<url>\\\"]\"', 1, 1, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(802, 179, 'Which CSS property changes text color?', '\"[\\\"text-color\\\",\\\"font-color\\\",\\\"color\\\",\\\"text-style\\\"]\"', 2, 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(803, 179, 'Which selector targets elements by their class?', '\"[\\\"#classname\\\",\\\".classname\\\",\\\"*classname\\\",\\\"@classname\\\"]\"', 1, 1, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(804, 180, 'Which property creates a flex container?', '\"[\\\"display: block\\\",\\\"display: flex\\\",\\\"display: grid\\\",\\\"display: inline\\\"]\"', 1, 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(805, 180, 'Which property aligns items along the main axis in flexbox?', '\"[\\\"align-items\\\",\\\"justify-content\\\",\\\"flex-direction\\\",\\\"align-content\\\"]\"', 1, 1, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(806, 181, 'Which keyword declares a block-scoped variable?', '\"[\\\"var\\\",\\\"let\\\",\\\"define\\\",\\\"variable\\\"]\"', 1, 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(807, 181, 'What is the output of typeof null?', '\"[\\\"null\\\",\\\"undefined\\\",\\\"object\\\",\\\"number\\\"]\"', 2, 1, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(808, 181, 'Which is NOT a JavaScript primitive type?', '\"[\\\"string\\\",\\\"boolean\\\",\\\"array\\\",\\\"symbol\\\"]\"', 2, 2, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(809, 182, 'What is a closure in JavaScript?', '\"[\\\"A way to close the browser\\\",\\\"A function with access to its outer scope\\\",\\\"A method to end a loop\\\",\\\"A type of variable\\\"]\"', 1, 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(810, 182, 'Which is an arrow function syntax?', '\"[\\\"function => ()\\\",\\\"() -> {}\\\",\\\"() => {}\\\",\\\"=> function()\\\"]\"', 2, 1, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(811, 183, 'Which HTML5 element is used for navigation links?', '\"[\\\"<navigation>\\\",\\\"<nav>\\\",\\\"<menu>\\\",\\\"<links>\\\"]\"', 1, 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(812, 183, 'Which CSS property creates space inside an element?', '\"[\\\"margin\\\",\\\"border\\\",\\\"padding\\\",\\\"spacing\\\"]\"', 2, 1, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(813, 183, 'What does the z-index property control?', '\"[\\\"Text size\\\",\\\"Stacking order of elements\\\",\\\"Zoom level\\\",\\\"Element opacity\\\"]\"', 1, 2, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(814, 183, 'Which CSS unit is relative to the viewport width?', '\"[\\\"px\\\",\\\"em\\\",\\\"rem\\\",\\\"vw\\\"]\"', 3, 3, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(815, 184, 'What does JSON stand for?', '\"[\\\"JavaScript Object Notation\\\",\\\"Java Standard Output Network\\\",\\\"JavaScript Oriented Naming\\\",\\\"Java Serialized Object Network\\\"]\"', 0, 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(816, 184, 'Which method converts a JSON string to a JavaScript object?', '\"[\\\"JSON.stringify()\\\",\\\"JSON.parse()\\\",\\\"JSON.toObject()\\\",\\\"JSON.convert()\\\"]\"', 1, 1, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(817, 184, 'What is the purpose of the \"async\" keyword?', '\"[\\\"To make a function run faster\\\",\\\"To declare an asynchronous function that returns a Promise\\\",\\\"To run code in parallel\\\",\\\"To stop execution until a condition is met\\\"]\"', 1, 2, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(818, 184, 'Which array method creates a new array with elements that pass a test?', '\"[\\\"map()\\\",\\\"forEach()\\\",\\\"filter()\\\",\\\"reduce()\\\"]\"', 2, 3, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(819, 186, 'frfrfffffffffffffffffffff', '[\"rvrv\",\"rvrv\",\"rvv\",\"rv\"]', 0, 0, '2026-04-07 10:30:04', '2026-04-07 10:35:02'),
+(820, 186, 'rvrvr', '[\"rvrvr\",\"rvrv\",\"vrrv\",\"rvr\"]', 0, 1, '2026-04-07 10:30:04', '2026-04-07 10:35:02'),
+(827, 185, 'vrvrv', '[\"vrv\",\"rvrv\",\"vrv\",\"rvrv\"]', 0, 0, '2026-04-07 10:35:02', '2026-04-07 10:35:02'),
+(828, 185, 'rvrvr', '[\"vrvvr\",\"vrr\",\"vrrv\",\"vrvr\"]', 0, 1, '2026-04-07 10:35:02', '2026-04-07 10:35:02'),
+(829, 187, 'fbfbfbfbf', '\"[\\\"fbfb\\\",\\\"fb\\\",\\\"fbfbbfb\\\",\\\"fbfb\\\"]\"', 0, 0, '2026-04-09 07:35:28', '2026-04-09 07:35:28'),
+(830, 188, 'f f fff f', '\"[\\\"bfb\\\",\\\"brb\\\",\\\"rbrb\\\",\\\"brbrb\\\"]\"', 0, 0, '2026-04-09 07:35:28', '2026-04-09 07:35:28'),
+(831, 189, 'fvfvfvfvfv', '\"[\\\"vffvf\\\",\\\"vfvf\\\",\\\"fvfv\\\",\\\"fvfv\\\"]\"', 0, 0, '2026-04-09 08:51:39', '2026-04-09 08:51:39'),
+(832, 190, 'vfvfv', '\"[\\\"fvfv\\\",\\\"fvfv\\\",\\\"fvfv\\\",\\\"fvfv\\\"]\"', 0, 0, '2026-04-09 08:51:39', '2026-04-09 08:51:39'),
+(833, 191, 'fvfv', '\"[\\\"vfv\\\",\\\"vffv\\\",\\\"vfvf\\\",\\\"fvfvfv\\\"]\"', 0, 0, '2026-04-09 08:51:39', '2026-04-09 08:51:39'),
+(834, 192, 'fvfvf', '\"[\\\"vdfv\\\",\\\"fvfv\\\",\\\"fvfvfvfv\\\",\\\"fvfvfv\\\"]\"', 0, 0, '2026-04-09 08:51:39', '2026-04-09 08:51:39'),
+(835, 193, 'efef', '\"[\\\"ewfewf\\\",\\\"wefewf\\\",\\\"ewfwef\\\",\\\"wefewf\\\"]\"', 0, 0, '2026-04-09 08:51:39', '2026-04-09 08:51:39'),
+(836, 193, 'wefewf', '\"[\\\"wefewf\\\",\\\"ewfewf\\\",\\\"wefwef\\\",\\\"wefwef\\\"]\"', 0, 1, '2026-04-09 08:51:39', '2026-04-09 08:51:39'),
+(837, 194, 'wefwef', '\"[\\\"wefwef\\\",\\\"wefewf\\\",\\\"wfwef\\\",\\\"wfewf\\\"]\"', 0, 0, '2026-04-09 08:51:39', '2026-04-09 08:51:39'),
+(838, 195, 'wefewf', '\"[\\\"wefwef\\\",\\\"wefwef\\\",\\\"ewfewf\\\",\\\"wfwef\\\"]\"', 0, 0, '2026-04-09 08:51:39', '2026-04-09 08:51:39');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `course_resources`
+--
+
+CREATE TABLE `course_resources` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `lesson_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `course_id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `file_type` varchar(255) NOT NULL DEFAULT 'document',
+  `file_size` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `course_resources`
+--
+
+INSERT INTO `course_resources` (`id`, `lesson_id`, `course_id`, `title`, `file_path`, `file_type`, `file_size`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 'Listening Mastery - Course Guide.pdf', 'course-docs/ielts-band-8-complete/Course Guide.pdf', 'pdf', 2784953, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(2, 1, 1, 'Listening Mastery - Study Notes.pdf', 'course-docs/ielts-band-8-complete/Study Notes.pdf', 'pdf', 1087359, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(3, 1, 1, 'Listening Mastery - Practice Exercises.pdf', 'course-docs/ielts-band-8-complete/Practice Exercises.pdf', 'pdf', 1919281, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(4, 2, 1, 'Listening Mastery - Study Notes.pdf', 'course-docs/ielts-band-8-complete/Study Notes.pdf', 'pdf', 2117448, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(5, 2, 1, 'Listening Mastery - Practice Exercises.pdf', 'course-docs/ielts-band-8-complete/Practice Exercises.pdf', 'pdf', 1533293, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(6, 2, 1, 'Listening Mastery - Reference Material.pdf', 'course-docs/ielts-band-8-complete/Reference Material.pdf', 'pdf', 2690688, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(7, 3, 1, 'Listening Mastery - Practice Exercises.pdf', 'course-docs/ielts-band-8-complete/Practice Exercises.pdf', 'pdf', 1643559, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(8, 3, 1, 'Listening Mastery - Reference Material.pdf', 'course-docs/ielts-band-8-complete/Reference Material.pdf', 'pdf', 2880167, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(9, 3, 1, 'Listening Mastery - Worksheets.pdf', 'course-docs/ielts-band-8-complete/Worksheets.pdf', 'pdf', 2303175, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(10, 4, 1, 'Listening Mastery - Reference Material.pdf', 'course-docs/ielts-band-8-complete/Reference Material.pdf', 'pdf', 224049, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(11, 4, 1, 'Listening Mastery - Worksheets.pdf', 'course-docs/ielts-band-8-complete/Worksheets.pdf', 'pdf', 293656, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(12, 4, 1, 'Listening Mastery - Summary Sheet.pdf', 'course-docs/ielts-band-8-complete/Summary Sheet.pdf', 'pdf', 447186, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(13, 5, 1, 'Listening Mastery - Worksheets.pdf', 'course-docs/ielts-band-8-complete/Worksheets.pdf', 'pdf', 2037687, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(14, 5, 1, 'Listening Mastery - Summary Sheet.pdf', 'course-docs/ielts-band-8-complete/Summary Sheet.pdf', 'pdf', 2520831, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(15, 5, 1, 'Listening Mastery - Course Guide.pdf', 'course-docs/ielts-band-8-complete/Course Guide.pdf', 'pdf', 2689084, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(16, 6, 1, 'Reading Excellence - Course Guide.pdf', 'course-docs/ielts-band-8-complete/Course Guide.pdf', 'pdf', 790682, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(17, 6, 1, 'Reading Excellence - Study Notes.pdf', 'course-docs/ielts-band-8-complete/Study Notes.pdf', 'pdf', 739777, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(18, 6, 1, 'Reading Excellence - Practice Exercises.pdf', 'course-docs/ielts-band-8-complete/Practice Exercises.pdf', 'pdf', 728648, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(19, 7, 1, 'Reading Excellence - Study Notes.pdf', 'course-docs/ielts-band-8-complete/Study Notes.pdf', 'pdf', 1720211, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(20, 7, 1, 'Reading Excellence - Practice Exercises.pdf', 'course-docs/ielts-band-8-complete/Practice Exercises.pdf', 'pdf', 509941, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(21, 7, 1, 'Reading Excellence - Reference Material.pdf', 'course-docs/ielts-band-8-complete/Reference Material.pdf', 'pdf', 311699, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(22, 8, 1, 'Reading Excellence - Practice Exercises.pdf', 'course-docs/ielts-band-8-complete/Practice Exercises.pdf', 'pdf', 867814, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(23, 8, 1, 'Reading Excellence - Reference Material.pdf', 'course-docs/ielts-band-8-complete/Reference Material.pdf', 'pdf', 2922491, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(24, 8, 1, 'Reading Excellence - Worksheets.pdf', 'course-docs/ielts-band-8-complete/Worksheets.pdf', 'pdf', 1494107, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(25, 9, 1, 'Reading Excellence - Reference Material.pdf', 'course-docs/ielts-band-8-complete/Reference Material.pdf', 'pdf', 967964, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(26, 9, 1, 'Reading Excellence - Worksheets.pdf', 'course-docs/ielts-band-8-complete/Worksheets.pdf', 'pdf', 2516446, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(27, 9, 1, 'Reading Excellence - Summary Sheet.pdf', 'course-docs/ielts-band-8-complete/Summary Sheet.pdf', 'pdf', 796795, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(28, 10, 1, 'Reading Excellence - Worksheets.pdf', 'course-docs/ielts-band-8-complete/Worksheets.pdf', 'pdf', 1011207, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(29, 10, 1, 'Reading Excellence - Summary Sheet.pdf', 'course-docs/ielts-band-8-complete/Summary Sheet.pdf', 'pdf', 2355417, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(30, 10, 1, 'Reading Excellence - Course Guide.pdf', 'course-docs/ielts-band-8-complete/Course Guide.pdf', 'pdf', 725443, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(31, 11, 1, 'Writing Task 1 - Course Guide.pdf', 'course-docs/ielts-band-8-complete/Course Guide.pdf', 'pdf', 2514407, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(32, 11, 1, 'Writing Task 1 - Study Notes.pdf', 'course-docs/ielts-band-8-complete/Study Notes.pdf', 'pdf', 2342588, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(33, 11, 1, 'Writing Task 1 - Practice Exercises.pdf', 'course-docs/ielts-band-8-complete/Practice Exercises.pdf', 'pdf', 419073, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(34, 12, 1, 'Writing Task 1 - Study Notes.pdf', 'course-docs/ielts-band-8-complete/Study Notes.pdf', 'pdf', 2289111, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(35, 12, 1, 'Writing Task 1 - Practice Exercises.pdf', 'course-docs/ielts-band-8-complete/Practice Exercises.pdf', 'pdf', 2360579, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(36, 12, 1, 'Writing Task 1 - Reference Material.pdf', 'course-docs/ielts-band-8-complete/Reference Material.pdf', 'pdf', 1546917, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(37, 13, 1, 'Writing Task 1 - Practice Exercises.pdf', 'course-docs/ielts-band-8-complete/Practice Exercises.pdf', 'pdf', 1637395, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(38, 13, 1, 'Writing Task 1 - Reference Material.pdf', 'course-docs/ielts-band-8-complete/Reference Material.pdf', 'pdf', 1387900, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(39, 13, 1, 'Writing Task 1 - Worksheets.pdf', 'course-docs/ielts-band-8-complete/Worksheets.pdf', 'pdf', 2380653, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(40, 14, 1, 'Writing Task 1 - Reference Material.pdf', 'course-docs/ielts-band-8-complete/Reference Material.pdf', 'pdf', 365316, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(41, 14, 1, 'Writing Task 1 - Worksheets.pdf', 'course-docs/ielts-band-8-complete/Worksheets.pdf', 'pdf', 2990711, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(42, 14, 1, 'Writing Task 1 - Summary Sheet.pdf', 'course-docs/ielts-band-8-complete/Summary Sheet.pdf', 'pdf', 2040525, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(43, 15, 1, 'Writing Task 1 - Worksheets.pdf', 'course-docs/ielts-band-8-complete/Worksheets.pdf', 'pdf', 2568724, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(44, 15, 1, 'Writing Task 1 - Summary Sheet.pdf', 'course-docs/ielts-band-8-complete/Summary Sheet.pdf', 'pdf', 2827519, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(45, 15, 1, 'Writing Task 1 - Course Guide.pdf', 'course-docs/ielts-band-8-complete/Course Guide.pdf', 'pdf', 788372, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(46, 16, 1, 'Writing Task 2 - Course Guide.pdf', 'course-docs/ielts-band-8-complete/Course Guide.pdf', 'pdf', 1408446, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(47, 16, 1, 'Writing Task 2 - Study Notes.pdf', 'course-docs/ielts-band-8-complete/Study Notes.pdf', 'pdf', 1730100, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(48, 16, 1, 'Writing Task 2 - Practice Exercises.pdf', 'course-docs/ielts-band-8-complete/Practice Exercises.pdf', 'pdf', 324190, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(49, 17, 1, 'Writing Task 2 - Study Notes.pdf', 'course-docs/ielts-band-8-complete/Study Notes.pdf', 'pdf', 1140022, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(50, 17, 1, 'Writing Task 2 - Practice Exercises.pdf', 'course-docs/ielts-band-8-complete/Practice Exercises.pdf', 'pdf', 964524, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(51, 17, 1, 'Writing Task 2 - Reference Material.pdf', 'course-docs/ielts-band-8-complete/Reference Material.pdf', 'pdf', 735709, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(52, 18, 1, 'Writing Task 2 - Practice Exercises.pdf', 'course-docs/ielts-band-8-complete/Practice Exercises.pdf', 'pdf', 2688778, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(53, 18, 1, 'Writing Task 2 - Reference Material.pdf', 'course-docs/ielts-band-8-complete/Reference Material.pdf', 'pdf', 808913, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(54, 18, 1, 'Writing Task 2 - Worksheets.pdf', 'course-docs/ielts-band-8-complete/Worksheets.pdf', 'pdf', 2442227, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(55, 19, 1, 'Writing Task 2 - Reference Material.pdf', 'course-docs/ielts-band-8-complete/Reference Material.pdf', 'pdf', 1914990, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(56, 19, 1, 'Writing Task 2 - Worksheets.pdf', 'course-docs/ielts-band-8-complete/Worksheets.pdf', 'pdf', 2624226, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(57, 19, 1, 'Writing Task 2 - Summary Sheet.pdf', 'course-docs/ielts-band-8-complete/Summary Sheet.pdf', 'pdf', 2452689, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(58, 20, 1, 'Writing Task 2 - Worksheets.pdf', 'course-docs/ielts-band-8-complete/Worksheets.pdf', 'pdf', 701750, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(59, 20, 1, 'Writing Task 2 - Summary Sheet.pdf', 'course-docs/ielts-band-8-complete/Summary Sheet.pdf', 'pdf', 1564561, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(60, 20, 1, 'Writing Task 2 - Course Guide.pdf', 'course-docs/ielts-band-8-complete/Course Guide.pdf', 'pdf', 683362, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(61, 21, 1, 'Speaking Confidence - Course Guide.pdf', 'course-docs/ielts-band-8-complete/Course Guide.pdf', 'pdf', 2130120, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(62, 21, 1, 'Speaking Confidence - Study Notes.pdf', 'course-docs/ielts-band-8-complete/Study Notes.pdf', 'pdf', 1634855, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(63, 21, 1, 'Speaking Confidence - Practice Exercises.pdf', 'course-docs/ielts-band-8-complete/Practice Exercises.pdf', 'pdf', 1513422, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(64, 22, 1, 'Speaking Confidence - Study Notes.pdf', 'course-docs/ielts-band-8-complete/Study Notes.pdf', 'pdf', 2090837, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(65, 22, 1, 'Speaking Confidence - Practice Exercises.pdf', 'course-docs/ielts-band-8-complete/Practice Exercises.pdf', 'pdf', 316756, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(66, 22, 1, 'Speaking Confidence - Reference Material.pdf', 'course-docs/ielts-band-8-complete/Reference Material.pdf', 'pdf', 1296653, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(67, 23, 1, 'Speaking Confidence - Practice Exercises.pdf', 'course-docs/ielts-band-8-complete/Practice Exercises.pdf', 'pdf', 746249, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(68, 23, 1, 'Speaking Confidence - Reference Material.pdf', 'course-docs/ielts-band-8-complete/Reference Material.pdf', 'pdf', 1296030, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(69, 23, 1, 'Speaking Confidence - Worksheets.pdf', 'course-docs/ielts-band-8-complete/Worksheets.pdf', 'pdf', 512483, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(70, 24, 1, 'Speaking Confidence - Reference Material.pdf', 'course-docs/ielts-band-8-complete/Reference Material.pdf', 'pdf', 628217, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(71, 24, 1, 'Speaking Confidence - Worksheets.pdf', 'course-docs/ielts-band-8-complete/Worksheets.pdf', 'pdf', 2927203, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(72, 24, 1, 'Speaking Confidence - Summary Sheet.pdf', 'course-docs/ielts-band-8-complete/Summary Sheet.pdf', 'pdf', 2313760, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(73, 25, 1, 'Speaking Confidence - Worksheets.pdf', 'course-docs/ielts-band-8-complete/Worksheets.pdf', 'pdf', 960024, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(74, 25, 1, 'Speaking Confidence - Summary Sheet.pdf', 'course-docs/ielts-band-8-complete/Summary Sheet.pdf', 'pdf', 228409, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(75, 25, 1, 'Speaking Confidence - Course Guide.pdf', 'course-docs/ielts-band-8-complete/Course Guide.pdf', 'pdf', 2201303, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(76, 26, 2, 'Research Fundamentals - Course Guide.pdf', 'course-docs/academic-writing-university/Course Guide.pdf', 'pdf', 1536727, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(77, 26, 2, 'Research Fundamentals - Study Notes.pdf', 'course-docs/academic-writing-university/Study Notes.pdf', 'pdf', 2815276, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(78, 26, 2, 'Research Fundamentals - Practice Exercises.pdf', 'course-docs/academic-writing-university/Practice Exercises.pdf', 'pdf', 1274879, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(79, 27, 2, 'Research Fundamentals - Study Notes.pdf', 'course-docs/academic-writing-university/Study Notes.pdf', 'pdf', 2228108, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(80, 27, 2, 'Research Fundamentals - Practice Exercises.pdf', 'course-docs/academic-writing-university/Practice Exercises.pdf', 'pdf', 521192, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(81, 27, 2, 'Research Fundamentals - Reference Material.pdf', 'course-docs/academic-writing-university/Reference Material.pdf', 'pdf', 1851583, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(82, 28, 2, 'Research Fundamentals - Practice Exercises.pdf', 'course-docs/academic-writing-university/Practice Exercises.pdf', 'pdf', 900868, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(83, 28, 2, 'Research Fundamentals - Reference Material.pdf', 'course-docs/academic-writing-university/Reference Material.pdf', 'pdf', 1831521, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(84, 28, 2, 'Research Fundamentals - Worksheets.pdf', 'course-docs/academic-writing-university/Worksheets.pdf', 'pdf', 1978230, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(85, 29, 2, 'Research Fundamentals - Reference Material.pdf', 'course-docs/academic-writing-university/Reference Material.pdf', 'pdf', 2484153, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(86, 29, 2, 'Research Fundamentals - Worksheets.pdf', 'course-docs/academic-writing-university/Worksheets.pdf', 'pdf', 1552184, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(87, 29, 2, 'Research Fundamentals - Summary Sheet.pdf', 'course-docs/academic-writing-university/Summary Sheet.pdf', 'pdf', 493807, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(88, 30, 2, 'Research Fundamentals - Worksheets.pdf', 'course-docs/academic-writing-university/Worksheets.pdf', 'pdf', 1343367, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(89, 30, 2, 'Research Fundamentals - Summary Sheet.pdf', 'course-docs/academic-writing-university/Summary Sheet.pdf', 'pdf', 1901035, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(90, 30, 2, 'Research Fundamentals - Course Guide.pdf', 'course-docs/academic-writing-university/Course Guide.pdf', 'pdf', 2627464, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(91, 31, 2, 'Essay Writing - Course Guide.pdf', 'course-docs/academic-writing-university/Course Guide.pdf', 'pdf', 2111684, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(92, 31, 2, 'Essay Writing - Study Notes.pdf', 'course-docs/academic-writing-university/Study Notes.pdf', 'pdf', 1770638, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(93, 31, 2, 'Essay Writing - Practice Exercises.pdf', 'course-docs/academic-writing-university/Practice Exercises.pdf', 'pdf', 1997206, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(94, 32, 2, 'Essay Writing - Study Notes.pdf', 'course-docs/academic-writing-university/Study Notes.pdf', 'pdf', 2900509, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(95, 32, 2, 'Essay Writing - Practice Exercises.pdf', 'course-docs/academic-writing-university/Practice Exercises.pdf', 'pdf', 1109749, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(96, 32, 2, 'Essay Writing - Reference Material.pdf', 'course-docs/academic-writing-university/Reference Material.pdf', 'pdf', 1847120, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(97, 33, 2, 'Essay Writing - Practice Exercises.pdf', 'course-docs/academic-writing-university/Practice Exercises.pdf', 'pdf', 1956702, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(98, 33, 2, 'Essay Writing - Reference Material.pdf', 'course-docs/academic-writing-university/Reference Material.pdf', 'pdf', 619037, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(99, 33, 2, 'Essay Writing - Worksheets.pdf', 'course-docs/academic-writing-university/Worksheets.pdf', 'pdf', 906074, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(100, 34, 2, 'Essay Writing - Reference Material.pdf', 'course-docs/academic-writing-university/Reference Material.pdf', 'pdf', 1515610, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(101, 34, 2, 'Essay Writing - Worksheets.pdf', 'course-docs/academic-writing-university/Worksheets.pdf', 'pdf', 1552186, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(102, 34, 2, 'Essay Writing - Summary Sheet.pdf', 'course-docs/academic-writing-university/Summary Sheet.pdf', 'pdf', 1749793, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(103, 35, 2, 'Essay Writing - Worksheets.pdf', 'course-docs/academic-writing-university/Worksheets.pdf', 'pdf', 289918, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(104, 35, 2, 'Essay Writing - Summary Sheet.pdf', 'course-docs/academic-writing-university/Summary Sheet.pdf', 'pdf', 841286, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(105, 35, 2, 'Essay Writing - Course Guide.pdf', 'course-docs/academic-writing-university/Course Guide.pdf', 'pdf', 2155473, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(106, 36, 2, 'Research Paper Writing - Course Guide.pdf', 'course-docs/academic-writing-university/Course Guide.pdf', 'pdf', 976548, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(107, 36, 2, 'Research Paper Writing - Study Notes.pdf', 'course-docs/academic-writing-university/Study Notes.pdf', 'pdf', 1449822, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(108, 36, 2, 'Research Paper Writing - Practice Exercises.pdf', 'course-docs/academic-writing-university/Practice Exercises.pdf', 'pdf', 1468831, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(109, 37, 2, 'Research Paper Writing - Study Notes.pdf', 'course-docs/academic-writing-university/Study Notes.pdf', 'pdf', 2968055, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(110, 37, 2, 'Research Paper Writing - Practice Exercises.pdf', 'course-docs/academic-writing-university/Practice Exercises.pdf', 'pdf', 2527958, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(111, 37, 2, 'Research Paper Writing - Reference Material.pdf', 'course-docs/academic-writing-university/Reference Material.pdf', 'pdf', 2161924, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(112, 38, 2, 'Research Paper Writing - Practice Exercises.pdf', 'course-docs/academic-writing-university/Practice Exercises.pdf', 'pdf', 1303829, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(113, 38, 2, 'Research Paper Writing - Reference Material.pdf', 'course-docs/academic-writing-university/Reference Material.pdf', 'pdf', 1693211, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(114, 38, 2, 'Research Paper Writing - Worksheets.pdf', 'course-docs/academic-writing-university/Worksheets.pdf', 'pdf', 1052298, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(115, 39, 2, 'Research Paper Writing - Reference Material.pdf', 'course-docs/academic-writing-university/Reference Material.pdf', 'pdf', 2778248, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(116, 39, 2, 'Research Paper Writing - Worksheets.pdf', 'course-docs/academic-writing-university/Worksheets.pdf', 'pdf', 1389668, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(117, 39, 2, 'Research Paper Writing - Summary Sheet.pdf', 'course-docs/academic-writing-university/Summary Sheet.pdf', 'pdf', 2894716, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(118, 40, 2, 'Research Paper Writing - Worksheets.pdf', 'course-docs/academic-writing-university/Worksheets.pdf', 'pdf', 733541, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(119, 40, 2, 'Research Paper Writing - Summary Sheet.pdf', 'course-docs/academic-writing-university/Summary Sheet.pdf', 'pdf', 985677, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(120, 40, 2, 'Research Paper Writing - Course Guide.pdf', 'course-docs/academic-writing-university/Course Guide.pdf', 'pdf', 2318550, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(121, 41, 2, 'Citation & Referencing - Course Guide.pdf', 'course-docs/academic-writing-university/Course Guide.pdf', 'pdf', 1224284, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(122, 41, 2, 'Citation & Referencing - Study Notes.pdf', 'course-docs/academic-writing-university/Study Notes.pdf', 'pdf', 1548934, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(123, 41, 2, 'Citation & Referencing - Practice Exercises.pdf', 'course-docs/academic-writing-university/Practice Exercises.pdf', 'pdf', 928988, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(124, 42, 2, 'Citation & Referencing - Study Notes.pdf', 'course-docs/academic-writing-university/Study Notes.pdf', 'pdf', 1073488, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(125, 42, 2, 'Citation & Referencing - Practice Exercises.pdf', 'course-docs/academic-writing-university/Practice Exercises.pdf', 'pdf', 1770457, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(126, 42, 2, 'Citation & Referencing - Reference Material.pdf', 'course-docs/academic-writing-university/Reference Material.pdf', 'pdf', 779898, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(127, 43, 2, 'Citation & Referencing - Practice Exercises.pdf', 'course-docs/academic-writing-university/Practice Exercises.pdf', 'pdf', 1343674, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(128, 43, 2, 'Citation & Referencing - Reference Material.pdf', 'course-docs/academic-writing-university/Reference Material.pdf', 'pdf', 1653737, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(129, 43, 2, 'Citation & Referencing - Worksheets.pdf', 'course-docs/academic-writing-university/Worksheets.pdf', 'pdf', 2951454, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(130, 44, 2, 'Citation & Referencing - Reference Material.pdf', 'course-docs/academic-writing-university/Reference Material.pdf', 'pdf', 452914, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(131, 44, 2, 'Citation & Referencing - Worksheets.pdf', 'course-docs/academic-writing-university/Worksheets.pdf', 'pdf', 1311217, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(132, 44, 2, 'Citation & Referencing - Summary Sheet.pdf', 'course-docs/academic-writing-university/Summary Sheet.pdf', 'pdf', 1069470, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(133, 45, 2, 'Citation & Referencing - Worksheets.pdf', 'course-docs/academic-writing-university/Worksheets.pdf', 'pdf', 2721231, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(134, 45, 2, 'Citation & Referencing - Summary Sheet.pdf', 'course-docs/academic-writing-university/Summary Sheet.pdf', 'pdf', 1537261, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(135, 45, 2, 'Citation & Referencing - Course Guide.pdf', 'course-docs/academic-writing-university/Course Guide.pdf', 'pdf', 2667131, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(136, 46, 2, 'Dissertation Writing - Course Guide.pdf', 'course-docs/academic-writing-university/Course Guide.pdf', 'pdf', 1172400, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(137, 46, 2, 'Dissertation Writing - Study Notes.pdf', 'course-docs/academic-writing-university/Study Notes.pdf', 'pdf', 1544058, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(138, 46, 2, 'Dissertation Writing - Practice Exercises.pdf', 'course-docs/academic-writing-university/Practice Exercises.pdf', 'pdf', 1098460, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(139, 47, 2, 'Dissertation Writing - Study Notes.pdf', 'course-docs/academic-writing-university/Study Notes.pdf', 'pdf', 1524322, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(140, 47, 2, 'Dissertation Writing - Practice Exercises.pdf', 'course-docs/academic-writing-university/Practice Exercises.pdf', 'pdf', 1279380, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(141, 47, 2, 'Dissertation Writing - Reference Material.pdf', 'course-docs/academic-writing-university/Reference Material.pdf', 'pdf', 1974157, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(142, 48, 2, 'Dissertation Writing - Practice Exercises.pdf', 'course-docs/academic-writing-university/Practice Exercises.pdf', 'pdf', 1699979, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(143, 48, 2, 'Dissertation Writing - Reference Material.pdf', 'course-docs/academic-writing-university/Reference Material.pdf', 'pdf', 2575656, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(144, 48, 2, 'Dissertation Writing - Worksheets.pdf', 'course-docs/academic-writing-university/Worksheets.pdf', 'pdf', 1319435, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(145, 49, 2, 'Dissertation Writing - Reference Material.pdf', 'course-docs/academic-writing-university/Reference Material.pdf', 'pdf', 730356, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(146, 49, 2, 'Dissertation Writing - Worksheets.pdf', 'course-docs/academic-writing-university/Worksheets.pdf', 'pdf', 2176141, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(147, 49, 2, 'Dissertation Writing - Summary Sheet.pdf', 'course-docs/academic-writing-university/Summary Sheet.pdf', 'pdf', 2211173, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(148, 50, 2, 'Dissertation Writing - Worksheets.pdf', 'course-docs/academic-writing-university/Worksheets.pdf', 'pdf', 2553967, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(149, 50, 2, 'Dissertation Writing - Summary Sheet.pdf', 'course-docs/academic-writing-university/Summary Sheet.pdf', 'pdf', 1200921, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(150, 50, 2, 'Dissertation Writing - Course Guide.pdf', 'course-docs/academic-writing-university/Course Guide.pdf', 'pdf', 1161870, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(151, 51, 3, 'Professional Email Writing - Course Guide.pdf', 'course-docs/business-english-corporate/Course Guide.pdf', 'pdf', 624241, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(152, 51, 3, 'Professional Email Writing - Study Notes.pdf', 'course-docs/business-english-corporate/Study Notes.pdf', 'pdf', 1067585, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(153, 51, 3, 'Professional Email Writing - Practice Exercises.pdf', 'course-docs/business-english-corporate/Practice Exercises.pdf', 'pdf', 1822866, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(154, 52, 3, 'Professional Email Writing - Study Notes.pdf', 'course-docs/business-english-corporate/Study Notes.pdf', 'pdf', 1928606, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(155, 52, 3, 'Professional Email Writing - Practice Exercises.pdf', 'course-docs/business-english-corporate/Practice Exercises.pdf', 'pdf', 1116150, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(156, 52, 3, 'Professional Email Writing - Reference Material.pdf', 'course-docs/business-english-corporate/Reference Material.pdf', 'pdf', 1336378, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(157, 53, 3, 'Professional Email Writing - Practice Exercises.pdf', 'course-docs/business-english-corporate/Practice Exercises.pdf', 'pdf', 2641472, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(158, 53, 3, 'Professional Email Writing - Reference Material.pdf', 'course-docs/business-english-corporate/Reference Material.pdf', 'pdf', 2714247, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(159, 53, 3, 'Professional Email Writing - Worksheets.pdf', 'course-docs/business-english-corporate/Worksheets.pdf', 'pdf', 1791280, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(160, 54, 3, 'Professional Email Writing - Reference Material.pdf', 'course-docs/business-english-corporate/Reference Material.pdf', 'pdf', 1605775, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(161, 54, 3, 'Professional Email Writing - Worksheets.pdf', 'course-docs/business-english-corporate/Worksheets.pdf', 'pdf', 1227202, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(162, 54, 3, 'Professional Email Writing - Summary Sheet.pdf', 'course-docs/business-english-corporate/Summary Sheet.pdf', 'pdf', 245307, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(163, 55, 3, 'Professional Email Writing - Worksheets.pdf', 'course-docs/business-english-corporate/Worksheets.pdf', 'pdf', 2361666, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(164, 55, 3, 'Professional Email Writing - Summary Sheet.pdf', 'course-docs/business-english-corporate/Summary Sheet.pdf', 'pdf', 1217318, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(165, 55, 3, 'Professional Email Writing - Course Guide.pdf', 'course-docs/business-english-corporate/Course Guide.pdf', 'pdf', 2384320, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(166, 56, 3, 'Meeting Communication - Course Guide.pdf', 'course-docs/business-english-corporate/Course Guide.pdf', 'pdf', 923289, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(167, 56, 3, 'Meeting Communication - Study Notes.pdf', 'course-docs/business-english-corporate/Study Notes.pdf', 'pdf', 2492844, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(168, 56, 3, 'Meeting Communication - Practice Exercises.pdf', 'course-docs/business-english-corporate/Practice Exercises.pdf', 'pdf', 1077496, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(169, 57, 3, 'Meeting Communication - Study Notes.pdf', 'course-docs/business-english-corporate/Study Notes.pdf', 'pdf', 2346494, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(170, 57, 3, 'Meeting Communication - Practice Exercises.pdf', 'course-docs/business-english-corporate/Practice Exercises.pdf', 'pdf', 2033366, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(171, 57, 3, 'Meeting Communication - Reference Material.pdf', 'course-docs/business-english-corporate/Reference Material.pdf', 'pdf', 1306858, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(172, 58, 3, 'Meeting Communication - Practice Exercises.pdf', 'course-docs/business-english-corporate/Practice Exercises.pdf', 'pdf', 2587283, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(173, 58, 3, 'Meeting Communication - Reference Material.pdf', 'course-docs/business-english-corporate/Reference Material.pdf', 'pdf', 1870204, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(174, 58, 3, 'Meeting Communication - Worksheets.pdf', 'course-docs/business-english-corporate/Worksheets.pdf', 'pdf', 1605310, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(175, 59, 3, 'Meeting Communication - Reference Material.pdf', 'course-docs/business-english-corporate/Reference Material.pdf', 'pdf', 2147315, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(176, 59, 3, 'Meeting Communication - Worksheets.pdf', 'course-docs/business-english-corporate/Worksheets.pdf', 'pdf', 1647662, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(177, 59, 3, 'Meeting Communication - Summary Sheet.pdf', 'course-docs/business-english-corporate/Summary Sheet.pdf', 'pdf', 1122286, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(178, 60, 3, 'Meeting Communication - Worksheets.pdf', 'course-docs/business-english-corporate/Worksheets.pdf', 'pdf', 577812, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(179, 60, 3, 'Meeting Communication - Summary Sheet.pdf', 'course-docs/business-english-corporate/Summary Sheet.pdf', 'pdf', 1924499, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(180, 60, 3, 'Meeting Communication - Course Guide.pdf', 'course-docs/business-english-corporate/Course Guide.pdf', 'pdf', 442994, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(181, 61, 3, 'Presentation Skills - Course Guide.pdf', 'course-docs/business-english-corporate/Course Guide.pdf', 'pdf', 1838936, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(182, 61, 3, 'Presentation Skills - Study Notes.pdf', 'course-docs/business-english-corporate/Study Notes.pdf', 'pdf', 1336837, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(183, 61, 3, 'Presentation Skills - Practice Exercises.pdf', 'course-docs/business-english-corporate/Practice Exercises.pdf', 'pdf', 817803, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(184, 62, 3, 'Presentation Skills - Study Notes.pdf', 'course-docs/business-english-corporate/Study Notes.pdf', 'pdf', 652194, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(185, 62, 3, 'Presentation Skills - Practice Exercises.pdf', 'course-docs/business-english-corporate/Practice Exercises.pdf', 'pdf', 2790298, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(186, 62, 3, 'Presentation Skills - Reference Material.pdf', 'course-docs/business-english-corporate/Reference Material.pdf', 'pdf', 1616578, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(187, 63, 3, 'Presentation Skills - Practice Exercises.pdf', 'course-docs/business-english-corporate/Practice Exercises.pdf', 'pdf', 1667710, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(188, 63, 3, 'Presentation Skills - Reference Material.pdf', 'course-docs/business-english-corporate/Reference Material.pdf', 'pdf', 739889, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(189, 63, 3, 'Presentation Skills - Worksheets.pdf', 'course-docs/business-english-corporate/Worksheets.pdf', 'pdf', 481190, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(190, 64, 3, 'Presentation Skills - Reference Material.pdf', 'course-docs/business-english-corporate/Reference Material.pdf', 'pdf', 1189648, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(191, 64, 3, 'Presentation Skills - Worksheets.pdf', 'course-docs/business-english-corporate/Worksheets.pdf', 'pdf', 1698418, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(192, 64, 3, 'Presentation Skills - Summary Sheet.pdf', 'course-docs/business-english-corporate/Summary Sheet.pdf', 'pdf', 2012189, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(193, 65, 3, 'Presentation Skills - Worksheets.pdf', 'course-docs/business-english-corporate/Worksheets.pdf', 'pdf', 1382503, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(194, 65, 3, 'Presentation Skills - Summary Sheet.pdf', 'course-docs/business-english-corporate/Summary Sheet.pdf', 'pdf', 734298, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(195, 65, 3, 'Presentation Skills - Course Guide.pdf', 'course-docs/business-english-corporate/Course Guide.pdf', 'pdf', 1685881, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(196, 66, 3, 'Negotiation Language - Course Guide.pdf', 'course-docs/business-english-corporate/Course Guide.pdf', 'pdf', 1833963, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(197, 66, 3, 'Negotiation Language - Study Notes.pdf', 'course-docs/business-english-corporate/Study Notes.pdf', 'pdf', 1282582, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(198, 66, 3, 'Negotiation Language - Practice Exercises.pdf', 'course-docs/business-english-corporate/Practice Exercises.pdf', 'pdf', 2392077, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(199, 67, 3, 'Negotiation Language - Study Notes.pdf', 'course-docs/business-english-corporate/Study Notes.pdf', 'pdf', 2671912, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(200, 67, 3, 'Negotiation Language - Practice Exercises.pdf', 'course-docs/business-english-corporate/Practice Exercises.pdf', 'pdf', 1114582, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(201, 67, 3, 'Negotiation Language - Reference Material.pdf', 'course-docs/business-english-corporate/Reference Material.pdf', 'pdf', 839449, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(202, 68, 3, 'Negotiation Language - Practice Exercises.pdf', 'course-docs/business-english-corporate/Practice Exercises.pdf', 'pdf', 1087388, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(203, 68, 3, 'Negotiation Language - Reference Material.pdf', 'course-docs/business-english-corporate/Reference Material.pdf', 'pdf', 1815854, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(204, 68, 3, 'Negotiation Language - Worksheets.pdf', 'course-docs/business-english-corporate/Worksheets.pdf', 'pdf', 1558728, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(205, 69, 3, 'Negotiation Language - Reference Material.pdf', 'course-docs/business-english-corporate/Reference Material.pdf', 'pdf', 2005183, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(206, 69, 3, 'Negotiation Language - Worksheets.pdf', 'course-docs/business-english-corporate/Worksheets.pdf', 'pdf', 1225158, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(207, 69, 3, 'Negotiation Language - Summary Sheet.pdf', 'course-docs/business-english-corporate/Summary Sheet.pdf', 'pdf', 977322, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(208, 70, 3, 'Negotiation Language - Worksheets.pdf', 'course-docs/business-english-corporate/Worksheets.pdf', 'pdf', 608211, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(209, 70, 3, 'Negotiation Language - Summary Sheet.pdf', 'course-docs/business-english-corporate/Summary Sheet.pdf', 'pdf', 2525623, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(210, 70, 3, 'Negotiation Language - Course Guide.pdf', 'course-docs/business-english-corporate/Course Guide.pdf', 'pdf', 1090224, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(211, 71, 3, 'Report Writing - Course Guide.pdf', 'course-docs/business-english-corporate/Course Guide.pdf', 'pdf', 2682702, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(212, 71, 3, 'Report Writing - Study Notes.pdf', 'course-docs/business-english-corporate/Study Notes.pdf', 'pdf', 2970250, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(213, 71, 3, 'Report Writing - Practice Exercises.pdf', 'course-docs/business-english-corporate/Practice Exercises.pdf', 'pdf', 2746608, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(214, 72, 3, 'Report Writing - Study Notes.pdf', 'course-docs/business-english-corporate/Study Notes.pdf', 'pdf', 2996296, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(215, 72, 3, 'Report Writing - Practice Exercises.pdf', 'course-docs/business-english-corporate/Practice Exercises.pdf', 'pdf', 2682536, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(216, 72, 3, 'Report Writing - Reference Material.pdf', 'course-docs/business-english-corporate/Reference Material.pdf', 'pdf', 2499722, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(217, 73, 3, 'Report Writing - Practice Exercises.pdf', 'course-docs/business-english-corporate/Practice Exercises.pdf', 'pdf', 1687141, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(218, 73, 3, 'Report Writing - Reference Material.pdf', 'course-docs/business-english-corporate/Reference Material.pdf', 'pdf', 2684816, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(219, 73, 3, 'Report Writing - Worksheets.pdf', 'course-docs/business-english-corporate/Worksheets.pdf', 'pdf', 1490511, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(220, 74, 3, 'Report Writing - Reference Material.pdf', 'course-docs/business-english-corporate/Reference Material.pdf', 'pdf', 2282245, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(221, 74, 3, 'Report Writing - Worksheets.pdf', 'course-docs/business-english-corporate/Worksheets.pdf', 'pdf', 513504, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(222, 74, 3, 'Report Writing - Summary Sheet.pdf', 'course-docs/business-english-corporate/Summary Sheet.pdf', 'pdf', 1196868, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(223, 75, 3, 'Report Writing - Worksheets.pdf', 'course-docs/business-english-corporate/Worksheets.pdf', 'pdf', 2656116, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(224, 75, 3, 'Report Writing - Summary Sheet.pdf', 'course-docs/business-english-corporate/Summary Sheet.pdf', 'pdf', 1414988, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(225, 75, 3, 'Report Writing - Course Guide.pdf', 'course-docs/business-english-corporate/Course Guide.pdf', 'pdf', 918080, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(226, 76, 4, 'Finding Your Voice - Course Guide.pdf', 'course-docs/creative-writing-publication/Course Guide.pdf', 'pdf', 1638256, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(227, 76, 4, 'Finding Your Voice - Study Notes.pdf', 'course-docs/creative-writing-publication/Study Notes.pdf', 'pdf', 2471158, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(228, 76, 4, 'Finding Your Voice - Practice Exercises.pdf', 'course-docs/creative-writing-publication/Practice Exercises.pdf', 'pdf', 1106281, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(229, 77, 4, 'Finding Your Voice - Study Notes.pdf', 'course-docs/creative-writing-publication/Study Notes.pdf', 'pdf', 1674048, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(230, 77, 4, 'Finding Your Voice - Practice Exercises.pdf', 'course-docs/creative-writing-publication/Practice Exercises.pdf', 'pdf', 840185, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(231, 77, 4, 'Finding Your Voice - Reference Material.pdf', 'course-docs/creative-writing-publication/Reference Material.pdf', 'pdf', 468084, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(232, 78, 4, 'Finding Your Voice - Practice Exercises.pdf', 'course-docs/creative-writing-publication/Practice Exercises.pdf', 'pdf', 2294059, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(233, 78, 4, 'Finding Your Voice - Reference Material.pdf', 'course-docs/creative-writing-publication/Reference Material.pdf', 'pdf', 518318, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(234, 78, 4, 'Finding Your Voice - Worksheets.pdf', 'course-docs/creative-writing-publication/Worksheets.pdf', 'pdf', 2946613, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(235, 79, 4, 'Finding Your Voice - Reference Material.pdf', 'course-docs/creative-writing-publication/Reference Material.pdf', 'pdf', 2193073, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(236, 79, 4, 'Finding Your Voice - Worksheets.pdf', 'course-docs/creative-writing-publication/Worksheets.pdf', 'pdf', 892376, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(237, 79, 4, 'Finding Your Voice - Summary Sheet.pdf', 'course-docs/creative-writing-publication/Summary Sheet.pdf', 'pdf', 442623, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(238, 80, 4, 'Finding Your Voice - Worksheets.pdf', 'course-docs/creative-writing-publication/Worksheets.pdf', 'pdf', 2729029, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(239, 80, 4, 'Finding Your Voice - Summary Sheet.pdf', 'course-docs/creative-writing-publication/Summary Sheet.pdf', 'pdf', 1712427, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(240, 80, 4, 'Finding Your Voice - Course Guide.pdf', 'course-docs/creative-writing-publication/Course Guide.pdf', 'pdf', 1424469, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(241, 81, 4, 'Character Development - Course Guide.pdf', 'course-docs/creative-writing-publication/Course Guide.pdf', 'pdf', 2863755, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(242, 81, 4, 'Character Development - Study Notes.pdf', 'course-docs/creative-writing-publication/Study Notes.pdf', 'pdf', 1908861, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(243, 81, 4, 'Character Development - Practice Exercises.pdf', 'course-docs/creative-writing-publication/Practice Exercises.pdf', 'pdf', 2945650, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(244, 82, 4, 'Character Development - Study Notes.pdf', 'course-docs/creative-writing-publication/Study Notes.pdf', 'pdf', 877333, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(245, 82, 4, 'Character Development - Practice Exercises.pdf', 'course-docs/creative-writing-publication/Practice Exercises.pdf', 'pdf', 462109, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(246, 82, 4, 'Character Development - Reference Material.pdf', 'course-docs/creative-writing-publication/Reference Material.pdf', 'pdf', 1710682, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(247, 83, 4, 'Character Development - Practice Exercises.pdf', 'course-docs/creative-writing-publication/Practice Exercises.pdf', 'pdf', 2420527, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(248, 83, 4, 'Character Development - Reference Material.pdf', 'course-docs/creative-writing-publication/Reference Material.pdf', 'pdf', 2645029, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(249, 83, 4, 'Character Development - Worksheets.pdf', 'course-docs/creative-writing-publication/Worksheets.pdf', 'pdf', 276672, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(250, 84, 4, 'Character Development - Reference Material.pdf', 'course-docs/creative-writing-publication/Reference Material.pdf', 'pdf', 1528532, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(251, 84, 4, 'Character Development - Worksheets.pdf', 'course-docs/creative-writing-publication/Worksheets.pdf', 'pdf', 2609208, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(252, 84, 4, 'Character Development - Summary Sheet.pdf', 'course-docs/creative-writing-publication/Summary Sheet.pdf', 'pdf', 1506483, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(253, 85, 4, 'Character Development - Worksheets.pdf', 'course-docs/creative-writing-publication/Worksheets.pdf', 'pdf', 1699841, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(254, 85, 4, 'Character Development - Summary Sheet.pdf', 'course-docs/creative-writing-publication/Summary Sheet.pdf', 'pdf', 865856, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(255, 85, 4, 'Character Development - Course Guide.pdf', 'course-docs/creative-writing-publication/Course Guide.pdf', 'pdf', 952594, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(256, 86, 4, 'Plot & Structure - Course Guide.pdf', 'course-docs/creative-writing-publication/Course Guide.pdf', 'pdf', 1569577, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(257, 86, 4, 'Plot & Structure - Study Notes.pdf', 'course-docs/creative-writing-publication/Study Notes.pdf', 'pdf', 663608, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(258, 86, 4, 'Plot & Structure - Practice Exercises.pdf', 'course-docs/creative-writing-publication/Practice Exercises.pdf', 'pdf', 610009, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(259, 87, 4, 'Plot & Structure - Study Notes.pdf', 'course-docs/creative-writing-publication/Study Notes.pdf', 'pdf', 2540261, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(260, 87, 4, 'Plot & Structure - Practice Exercises.pdf', 'course-docs/creative-writing-publication/Practice Exercises.pdf', 'pdf', 730433, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(261, 87, 4, 'Plot & Structure - Reference Material.pdf', 'course-docs/creative-writing-publication/Reference Material.pdf', 'pdf', 391125, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(262, 88, 4, 'Plot & Structure - Practice Exercises.pdf', 'course-docs/creative-writing-publication/Practice Exercises.pdf', 'pdf', 2689040, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(263, 88, 4, 'Plot & Structure - Reference Material.pdf', 'course-docs/creative-writing-publication/Reference Material.pdf', 'pdf', 1117575, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(264, 88, 4, 'Plot & Structure - Worksheets.pdf', 'course-docs/creative-writing-publication/Worksheets.pdf', 'pdf', 1995065, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(265, 89, 4, 'Plot & Structure - Reference Material.pdf', 'course-docs/creative-writing-publication/Reference Material.pdf', 'pdf', 2124994, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(266, 89, 4, 'Plot & Structure - Worksheets.pdf', 'course-docs/creative-writing-publication/Worksheets.pdf', 'pdf', 1722304, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(267, 89, 4, 'Plot & Structure - Summary Sheet.pdf', 'course-docs/creative-writing-publication/Summary Sheet.pdf', 'pdf', 1933185, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(268, 90, 4, 'Plot & Structure - Worksheets.pdf', 'course-docs/creative-writing-publication/Worksheets.pdf', 'pdf', 2565604, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(269, 90, 4, 'Plot & Structure - Summary Sheet.pdf', 'course-docs/creative-writing-publication/Summary Sheet.pdf', 'pdf', 1636433, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(270, 90, 4, 'Plot & Structure - Course Guide.pdf', 'course-docs/creative-writing-publication/Course Guide.pdf', 'pdf', 1257145, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(271, 91, 4, 'Setting & World Building - Course Guide.pdf', 'course-docs/creative-writing-publication/Course Guide.pdf', 'pdf', 576155, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(272, 91, 4, 'Setting & World Building - Study Notes.pdf', 'course-docs/creative-writing-publication/Study Notes.pdf', 'pdf', 1486269, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(273, 91, 4, 'Setting & World Building - Practice Exercises.pdf', 'course-docs/creative-writing-publication/Practice Exercises.pdf', 'pdf', 1413616, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(274, 92, 4, 'Setting & World Building - Study Notes.pdf', 'course-docs/creative-writing-publication/Study Notes.pdf', 'pdf', 478148, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(275, 92, 4, 'Setting & World Building - Practice Exercises.pdf', 'course-docs/creative-writing-publication/Practice Exercises.pdf', 'pdf', 931012, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(276, 92, 4, 'Setting & World Building - Reference Material.pdf', 'course-docs/creative-writing-publication/Reference Material.pdf', 'pdf', 2286219, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(277, 93, 4, 'Setting & World Building - Practice Exercises.pdf', 'course-docs/creative-writing-publication/Practice Exercises.pdf', 'pdf', 859703, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(278, 93, 4, 'Setting & World Building - Reference Material.pdf', 'course-docs/creative-writing-publication/Reference Material.pdf', 'pdf', 1178865, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(279, 93, 4, 'Setting & World Building - Worksheets.pdf', 'course-docs/creative-writing-publication/Worksheets.pdf', 'pdf', 801361, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(280, 94, 4, 'Setting & World Building - Reference Material.pdf', 'course-docs/creative-writing-publication/Reference Material.pdf', 'pdf', 1915173, '2026-04-06 02:56:09', '2026-04-06 02:56:09');
+INSERT INTO `course_resources` (`id`, `lesson_id`, `course_id`, `title`, `file_path`, `file_type`, `file_size`, `created_at`, `updated_at`) VALUES
+(281, 94, 4, 'Setting & World Building - Worksheets.pdf', 'course-docs/creative-writing-publication/Worksheets.pdf', 'pdf', 681329, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(282, 94, 4, 'Setting & World Building - Summary Sheet.pdf', 'course-docs/creative-writing-publication/Summary Sheet.pdf', 'pdf', 795681, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(283, 95, 4, 'Setting & World Building - Worksheets.pdf', 'course-docs/creative-writing-publication/Worksheets.pdf', 'pdf', 2429017, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(284, 95, 4, 'Setting & World Building - Summary Sheet.pdf', 'course-docs/creative-writing-publication/Summary Sheet.pdf', 'pdf', 1058738, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(285, 95, 4, 'Setting & World Building - Course Guide.pdf', 'course-docs/creative-writing-publication/Course Guide.pdf', 'pdf', 372467, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(286, 96, 4, 'Editing & Publishing - Course Guide.pdf', 'course-docs/creative-writing-publication/Course Guide.pdf', 'pdf', 2492013, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(287, 96, 4, 'Editing & Publishing - Study Notes.pdf', 'course-docs/creative-writing-publication/Study Notes.pdf', 'pdf', 962856, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(288, 96, 4, 'Editing & Publishing - Practice Exercises.pdf', 'course-docs/creative-writing-publication/Practice Exercises.pdf', 'pdf', 1717500, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(289, 97, 4, 'Editing & Publishing - Study Notes.pdf', 'course-docs/creative-writing-publication/Study Notes.pdf', 'pdf', 1849987, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(290, 97, 4, 'Editing & Publishing - Practice Exercises.pdf', 'course-docs/creative-writing-publication/Practice Exercises.pdf', 'pdf', 1590348, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(291, 97, 4, 'Editing & Publishing - Reference Material.pdf', 'course-docs/creative-writing-publication/Reference Material.pdf', 'pdf', 2997608, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(292, 98, 4, 'Editing & Publishing - Practice Exercises.pdf', 'course-docs/creative-writing-publication/Practice Exercises.pdf', 'pdf', 1491238, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(293, 98, 4, 'Editing & Publishing - Reference Material.pdf', 'course-docs/creative-writing-publication/Reference Material.pdf', 'pdf', 1837573, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(294, 98, 4, 'Editing & Publishing - Worksheets.pdf', 'course-docs/creative-writing-publication/Worksheets.pdf', 'pdf', 2334176, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(295, 99, 4, 'Editing & Publishing - Reference Material.pdf', 'course-docs/creative-writing-publication/Reference Material.pdf', 'pdf', 2852277, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(296, 99, 4, 'Editing & Publishing - Worksheets.pdf', 'course-docs/creative-writing-publication/Worksheets.pdf', 'pdf', 1460048, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(297, 99, 4, 'Editing & Publishing - Summary Sheet.pdf', 'course-docs/creative-writing-publication/Summary Sheet.pdf', 'pdf', 2008301, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(298, 100, 4, 'Editing & Publishing - Worksheets.pdf', 'course-docs/creative-writing-publication/Worksheets.pdf', 'pdf', 1001128, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(299, 100, 4, 'Editing & Publishing - Summary Sheet.pdf', 'course-docs/creative-writing-publication/Summary Sheet.pdf', 'pdf', 1547083, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(300, 100, 4, 'Editing & Publishing - Course Guide.pdf', 'course-docs/creative-writing-publication/Course Guide.pdf', 'pdf', 2997704, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(301, 101, 5, 'Pronunciation Basics - Course Guide.pdf', 'course-docs/spoken-english-fluency/Course Guide.pdf', 'pdf', 297104, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(302, 101, 5, 'Pronunciation Basics - Study Notes.pdf', 'course-docs/spoken-english-fluency/Study Notes.pdf', 'pdf', 1936527, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(303, 101, 5, 'Pronunciation Basics - Practice Exercises.pdf', 'course-docs/spoken-english-fluency/Practice Exercises.pdf', 'pdf', 2308726, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(304, 102, 5, 'Pronunciation Basics - Study Notes.pdf', 'course-docs/spoken-english-fluency/Study Notes.pdf', 'pdf', 2615968, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(305, 102, 5, 'Pronunciation Basics - Practice Exercises.pdf', 'course-docs/spoken-english-fluency/Practice Exercises.pdf', 'pdf', 2735546, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(306, 102, 5, 'Pronunciation Basics - Reference Material.pdf', 'course-docs/spoken-english-fluency/Reference Material.pdf', 'pdf', 510326, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(307, 103, 5, 'Pronunciation Basics - Practice Exercises.pdf', 'course-docs/spoken-english-fluency/Practice Exercises.pdf', 'pdf', 1272857, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(308, 103, 5, 'Pronunciation Basics - Reference Material.pdf', 'course-docs/spoken-english-fluency/Reference Material.pdf', 'pdf', 220685, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(309, 103, 5, 'Pronunciation Basics - Worksheets.pdf', 'course-docs/spoken-english-fluency/Worksheets.pdf', 'pdf', 685196, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(310, 104, 5, 'Pronunciation Basics - Reference Material.pdf', 'course-docs/spoken-english-fluency/Reference Material.pdf', 'pdf', 531040, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(311, 104, 5, 'Pronunciation Basics - Worksheets.pdf', 'course-docs/spoken-english-fluency/Worksheets.pdf', 'pdf', 453017, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(312, 104, 5, 'Pronunciation Basics - Summary Sheet.pdf', 'course-docs/spoken-english-fluency/Summary Sheet.pdf', 'pdf', 505490, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(313, 105, 5, 'Pronunciation Basics - Worksheets.pdf', 'course-docs/spoken-english-fluency/Worksheets.pdf', 'pdf', 2020364, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(314, 105, 5, 'Pronunciation Basics - Summary Sheet.pdf', 'course-docs/spoken-english-fluency/Summary Sheet.pdf', 'pdf', 647978, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(315, 105, 5, 'Pronunciation Basics - Course Guide.pdf', 'course-docs/spoken-english-fluency/Course Guide.pdf', 'pdf', 1590681, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(316, 106, 5, 'Daily Conversations - Course Guide.pdf', 'course-docs/spoken-english-fluency/Course Guide.pdf', 'pdf', 2723795, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(317, 106, 5, 'Daily Conversations - Study Notes.pdf', 'course-docs/spoken-english-fluency/Study Notes.pdf', 'pdf', 1585864, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(318, 106, 5, 'Daily Conversations - Practice Exercises.pdf', 'course-docs/spoken-english-fluency/Practice Exercises.pdf', 'pdf', 2491583, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(319, 107, 5, 'Daily Conversations - Study Notes.pdf', 'course-docs/spoken-english-fluency/Study Notes.pdf', 'pdf', 2752363, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(320, 107, 5, 'Daily Conversations - Practice Exercises.pdf', 'course-docs/spoken-english-fluency/Practice Exercises.pdf', 'pdf', 784732, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(321, 107, 5, 'Daily Conversations - Reference Material.pdf', 'course-docs/spoken-english-fluency/Reference Material.pdf', 'pdf', 1865420, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(322, 108, 5, 'Daily Conversations - Practice Exercises.pdf', 'course-docs/spoken-english-fluency/Practice Exercises.pdf', 'pdf', 2605553, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(323, 108, 5, 'Daily Conversations - Reference Material.pdf', 'course-docs/spoken-english-fluency/Reference Material.pdf', 'pdf', 2434135, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(324, 108, 5, 'Daily Conversations - Worksheets.pdf', 'course-docs/spoken-english-fluency/Worksheets.pdf', 'pdf', 263636, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(325, 109, 5, 'Daily Conversations - Reference Material.pdf', 'course-docs/spoken-english-fluency/Reference Material.pdf', 'pdf', 1530424, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(326, 109, 5, 'Daily Conversations - Worksheets.pdf', 'course-docs/spoken-english-fluency/Worksheets.pdf', 'pdf', 1513165, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(327, 109, 5, 'Daily Conversations - Summary Sheet.pdf', 'course-docs/spoken-english-fluency/Summary Sheet.pdf', 'pdf', 2268642, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(328, 110, 5, 'Daily Conversations - Worksheets.pdf', 'course-docs/spoken-english-fluency/Worksheets.pdf', 'pdf', 2657138, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(329, 110, 5, 'Daily Conversations - Summary Sheet.pdf', 'course-docs/spoken-english-fluency/Summary Sheet.pdf', 'pdf', 229011, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(330, 110, 5, 'Daily Conversations - Course Guide.pdf', 'course-docs/spoken-english-fluency/Course Guide.pdf', 'pdf', 884995, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(331, 111, 5, 'Social Situations - Course Guide.pdf', 'course-docs/spoken-english-fluency/Course Guide.pdf', 'pdf', 446067, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(332, 111, 5, 'Social Situations - Study Notes.pdf', 'course-docs/spoken-english-fluency/Study Notes.pdf', 'pdf', 796376, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(333, 111, 5, 'Social Situations - Practice Exercises.pdf', 'course-docs/spoken-english-fluency/Practice Exercises.pdf', 'pdf', 2140623, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(334, 112, 5, 'Social Situations - Study Notes.pdf', 'course-docs/spoken-english-fluency/Study Notes.pdf', 'pdf', 1561983, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(335, 112, 5, 'Social Situations - Practice Exercises.pdf', 'course-docs/spoken-english-fluency/Practice Exercises.pdf', 'pdf', 1774431, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(336, 112, 5, 'Social Situations - Reference Material.pdf', 'course-docs/spoken-english-fluency/Reference Material.pdf', 'pdf', 1987796, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(337, 113, 5, 'Social Situations - Practice Exercises.pdf', 'course-docs/spoken-english-fluency/Practice Exercises.pdf', 'pdf', 1159824, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(338, 113, 5, 'Social Situations - Reference Material.pdf', 'course-docs/spoken-english-fluency/Reference Material.pdf', 'pdf', 2975515, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(339, 113, 5, 'Social Situations - Worksheets.pdf', 'course-docs/spoken-english-fluency/Worksheets.pdf', 'pdf', 1777976, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(340, 114, 5, 'Social Situations - Reference Material.pdf', 'course-docs/spoken-english-fluency/Reference Material.pdf', 'pdf', 1775442, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(341, 114, 5, 'Social Situations - Worksheets.pdf', 'course-docs/spoken-english-fluency/Worksheets.pdf', 'pdf', 1960636, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(342, 114, 5, 'Social Situations - Summary Sheet.pdf', 'course-docs/spoken-english-fluency/Summary Sheet.pdf', 'pdf', 1581527, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(343, 115, 5, 'Social Situations - Worksheets.pdf', 'course-docs/spoken-english-fluency/Worksheets.pdf', 'pdf', 2030180, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(344, 115, 5, 'Social Situations - Summary Sheet.pdf', 'course-docs/spoken-english-fluency/Summary Sheet.pdf', 'pdf', 1977098, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(345, 115, 5, 'Social Situations - Course Guide.pdf', 'course-docs/spoken-english-fluency/Course Guide.pdf', 'pdf', 1032809, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(346, 116, 5, 'Professional Speaking - Course Guide.pdf', 'course-docs/spoken-english-fluency/Course Guide.pdf', 'pdf', 652349, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(347, 116, 5, 'Professional Speaking - Study Notes.pdf', 'course-docs/spoken-english-fluency/Study Notes.pdf', 'pdf', 1041039, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(348, 116, 5, 'Professional Speaking - Practice Exercises.pdf', 'course-docs/spoken-english-fluency/Practice Exercises.pdf', 'pdf', 1868791, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(349, 117, 5, 'Professional Speaking - Study Notes.pdf', 'course-docs/spoken-english-fluency/Study Notes.pdf', 'pdf', 903484, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(350, 117, 5, 'Professional Speaking - Practice Exercises.pdf', 'course-docs/spoken-english-fluency/Practice Exercises.pdf', 'pdf', 1753693, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(351, 117, 5, 'Professional Speaking - Reference Material.pdf', 'course-docs/spoken-english-fluency/Reference Material.pdf', 'pdf', 2155142, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(352, 118, 5, 'Professional Speaking - Practice Exercises.pdf', 'course-docs/spoken-english-fluency/Practice Exercises.pdf', 'pdf', 2267090, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(353, 118, 5, 'Professional Speaking - Reference Material.pdf', 'course-docs/spoken-english-fluency/Reference Material.pdf', 'pdf', 2928467, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(354, 118, 5, 'Professional Speaking - Worksheets.pdf', 'course-docs/spoken-english-fluency/Worksheets.pdf', 'pdf', 1286894, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(355, 119, 5, 'Professional Speaking - Reference Material.pdf', 'course-docs/spoken-english-fluency/Reference Material.pdf', 'pdf', 2829316, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(356, 119, 5, 'Professional Speaking - Worksheets.pdf', 'course-docs/spoken-english-fluency/Worksheets.pdf', 'pdf', 2998116, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(357, 119, 5, 'Professional Speaking - Summary Sheet.pdf', 'course-docs/spoken-english-fluency/Summary Sheet.pdf', 'pdf', 1909582, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(358, 120, 5, 'Professional Speaking - Worksheets.pdf', 'course-docs/spoken-english-fluency/Worksheets.pdf', 'pdf', 789302, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(359, 120, 5, 'Professional Speaking - Summary Sheet.pdf', 'course-docs/spoken-english-fluency/Summary Sheet.pdf', 'pdf', 1802839, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(360, 120, 5, 'Professional Speaking - Course Guide.pdf', 'course-docs/spoken-english-fluency/Course Guide.pdf', 'pdf', 368878, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(361, 121, 5, 'Advanced Fluency - Course Guide.pdf', 'course-docs/spoken-english-fluency/Course Guide.pdf', 'pdf', 2820397, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(362, 121, 5, 'Advanced Fluency - Study Notes.pdf', 'course-docs/spoken-english-fluency/Study Notes.pdf', 'pdf', 2525377, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(363, 121, 5, 'Advanced Fluency - Practice Exercises.pdf', 'course-docs/spoken-english-fluency/Practice Exercises.pdf', 'pdf', 1921854, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(364, 122, 5, 'Advanced Fluency - Study Notes.pdf', 'course-docs/spoken-english-fluency/Study Notes.pdf', 'pdf', 470080, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(365, 122, 5, 'Advanced Fluency - Practice Exercises.pdf', 'course-docs/spoken-english-fluency/Practice Exercises.pdf', 'pdf', 2444637, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(366, 122, 5, 'Advanced Fluency - Reference Material.pdf', 'course-docs/spoken-english-fluency/Reference Material.pdf', 'pdf', 1593385, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(367, 123, 5, 'Advanced Fluency - Practice Exercises.pdf', 'course-docs/spoken-english-fluency/Practice Exercises.pdf', 'pdf', 2533209, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(368, 123, 5, 'Advanced Fluency - Reference Material.pdf', 'course-docs/spoken-english-fluency/Reference Material.pdf', 'pdf', 573722, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(369, 123, 5, 'Advanced Fluency - Worksheets.pdf', 'course-docs/spoken-english-fluency/Worksheets.pdf', 'pdf', 2689517, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(370, 124, 5, 'Advanced Fluency - Reference Material.pdf', 'course-docs/spoken-english-fluency/Reference Material.pdf', 'pdf', 425237, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(371, 124, 5, 'Advanced Fluency - Worksheets.pdf', 'course-docs/spoken-english-fluency/Worksheets.pdf', 'pdf', 1323464, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(372, 124, 5, 'Advanced Fluency - Summary Sheet.pdf', 'course-docs/spoken-english-fluency/Summary Sheet.pdf', 'pdf', 987322, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(373, 125, 5, 'Advanced Fluency - Worksheets.pdf', 'course-docs/spoken-english-fluency/Worksheets.pdf', 'pdf', 955150, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(374, 125, 5, 'Advanced Fluency - Summary Sheet.pdf', 'course-docs/spoken-english-fluency/Summary Sheet.pdf', 'pdf', 2917839, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(375, 125, 5, 'Advanced Fluency - Course Guide.pdf', 'course-docs/spoken-english-fluency/Course Guide.pdf', 'pdf', 1141440, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(376, 126, 6, 'Task 1 Fundamentals - Course Guide.pdf', 'course-docs/ielts-writing-intensive/Course Guide.pdf', 'pdf', 1608091, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(377, 126, 6, 'Task 1 Fundamentals - Study Notes.pdf', 'course-docs/ielts-writing-intensive/Study Notes.pdf', 'pdf', 520471, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(378, 126, 6, 'Task 1 Fundamentals - Practice Exercises.pdf', 'course-docs/ielts-writing-intensive/Practice Exercises.pdf', 'pdf', 1521183, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(379, 127, 6, 'Task 1 Fundamentals - Study Notes.pdf', 'course-docs/ielts-writing-intensive/Study Notes.pdf', 'pdf', 2464481, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(380, 127, 6, 'Task 1 Fundamentals - Practice Exercises.pdf', 'course-docs/ielts-writing-intensive/Practice Exercises.pdf', 'pdf', 685760, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(381, 127, 6, 'Task 1 Fundamentals - Reference Material.pdf', 'course-docs/ielts-writing-intensive/Reference Material.pdf', 'pdf', 2354806, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(382, 128, 6, 'Task 1 Fundamentals - Practice Exercises.pdf', 'course-docs/ielts-writing-intensive/Practice Exercises.pdf', 'pdf', 832203, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(383, 128, 6, 'Task 1 Fundamentals - Reference Material.pdf', 'course-docs/ielts-writing-intensive/Reference Material.pdf', 'pdf', 2718487, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(384, 128, 6, 'Task 1 Fundamentals - Worksheets.pdf', 'course-docs/ielts-writing-intensive/Worksheets.pdf', 'pdf', 1571414, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(385, 129, 6, 'Task 1 Fundamentals - Reference Material.pdf', 'course-docs/ielts-writing-intensive/Reference Material.pdf', 'pdf', 1493297, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(386, 129, 6, 'Task 1 Fundamentals - Worksheets.pdf', 'course-docs/ielts-writing-intensive/Worksheets.pdf', 'pdf', 2290878, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(387, 129, 6, 'Task 1 Fundamentals - Summary Sheet.pdf', 'course-docs/ielts-writing-intensive/Summary Sheet.pdf', 'pdf', 1543329, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(388, 130, 6, 'Task 1 Fundamentals - Worksheets.pdf', 'course-docs/ielts-writing-intensive/Worksheets.pdf', 'pdf', 2285254, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(389, 130, 6, 'Task 1 Fundamentals - Summary Sheet.pdf', 'course-docs/ielts-writing-intensive/Summary Sheet.pdf', 'pdf', 355429, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(390, 130, 6, 'Task 1 Fundamentals - Course Guide.pdf', 'course-docs/ielts-writing-intensive/Course Guide.pdf', 'pdf', 766733, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(391, 131, 6, 'Task 1 Advanced - Course Guide.pdf', 'course-docs/ielts-writing-intensive/Course Guide.pdf', 'pdf', 1627695, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(392, 131, 6, 'Task 1 Advanced - Study Notes.pdf', 'course-docs/ielts-writing-intensive/Study Notes.pdf', 'pdf', 449682, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(393, 131, 6, 'Task 1 Advanced - Practice Exercises.pdf', 'course-docs/ielts-writing-intensive/Practice Exercises.pdf', 'pdf', 2589583, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(394, 132, 6, 'Task 1 Advanced - Study Notes.pdf', 'course-docs/ielts-writing-intensive/Study Notes.pdf', 'pdf', 2381337, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(395, 132, 6, 'Task 1 Advanced - Practice Exercises.pdf', 'course-docs/ielts-writing-intensive/Practice Exercises.pdf', 'pdf', 1043693, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(396, 132, 6, 'Task 1 Advanced - Reference Material.pdf', 'course-docs/ielts-writing-intensive/Reference Material.pdf', 'pdf', 1165800, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(397, 133, 6, 'Task 1 Advanced - Practice Exercises.pdf', 'course-docs/ielts-writing-intensive/Practice Exercises.pdf', 'pdf', 2683302, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(398, 133, 6, 'Task 1 Advanced - Reference Material.pdf', 'course-docs/ielts-writing-intensive/Reference Material.pdf', 'pdf', 1279088, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(399, 133, 6, 'Task 1 Advanced - Worksheets.pdf', 'course-docs/ielts-writing-intensive/Worksheets.pdf', 'pdf', 2276368, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(400, 134, 6, 'Task 1 Advanced - Reference Material.pdf', 'course-docs/ielts-writing-intensive/Reference Material.pdf', 'pdf', 1335296, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(401, 134, 6, 'Task 1 Advanced - Worksheets.pdf', 'course-docs/ielts-writing-intensive/Worksheets.pdf', 'pdf', 2726321, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(402, 134, 6, 'Task 1 Advanced - Summary Sheet.pdf', 'course-docs/ielts-writing-intensive/Summary Sheet.pdf', 'pdf', 1655388, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(403, 135, 6, 'Task 1 Advanced - Worksheets.pdf', 'course-docs/ielts-writing-intensive/Worksheets.pdf', 'pdf', 1540224, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(404, 135, 6, 'Task 1 Advanced - Summary Sheet.pdf', 'course-docs/ielts-writing-intensive/Summary Sheet.pdf', 'pdf', 224717, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(405, 135, 6, 'Task 1 Advanced - Course Guide.pdf', 'course-docs/ielts-writing-intensive/Course Guide.pdf', 'pdf', 2158170, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(406, 136, 6, 'Task 2 Essay Types - Course Guide.pdf', 'course-docs/ielts-writing-intensive/Course Guide.pdf', 'pdf', 1341527, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(407, 136, 6, 'Task 2 Essay Types - Study Notes.pdf', 'course-docs/ielts-writing-intensive/Study Notes.pdf', 'pdf', 1277058, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(408, 136, 6, 'Task 2 Essay Types - Practice Exercises.pdf', 'course-docs/ielts-writing-intensive/Practice Exercises.pdf', 'pdf', 1967225, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(409, 137, 6, 'Task 2 Essay Types - Study Notes.pdf', 'course-docs/ielts-writing-intensive/Study Notes.pdf', 'pdf', 1885993, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(410, 137, 6, 'Task 2 Essay Types - Practice Exercises.pdf', 'course-docs/ielts-writing-intensive/Practice Exercises.pdf', 'pdf', 399385, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(411, 137, 6, 'Task 2 Essay Types - Reference Material.pdf', 'course-docs/ielts-writing-intensive/Reference Material.pdf', 'pdf', 1028063, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(412, 138, 6, 'Task 2 Essay Types - Practice Exercises.pdf', 'course-docs/ielts-writing-intensive/Practice Exercises.pdf', 'pdf', 1097643, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(413, 138, 6, 'Task 2 Essay Types - Reference Material.pdf', 'course-docs/ielts-writing-intensive/Reference Material.pdf', 'pdf', 456859, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(414, 138, 6, 'Task 2 Essay Types - Worksheets.pdf', 'course-docs/ielts-writing-intensive/Worksheets.pdf', 'pdf', 1631061, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(415, 139, 6, 'Task 2 Essay Types - Reference Material.pdf', 'course-docs/ielts-writing-intensive/Reference Material.pdf', 'pdf', 259537, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(416, 139, 6, 'Task 2 Essay Types - Worksheets.pdf', 'course-docs/ielts-writing-intensive/Worksheets.pdf', 'pdf', 1151250, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(417, 139, 6, 'Task 2 Essay Types - Summary Sheet.pdf', 'course-docs/ielts-writing-intensive/Summary Sheet.pdf', 'pdf', 1799824, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(418, 140, 6, 'Task 2 Essay Types - Worksheets.pdf', 'course-docs/ielts-writing-intensive/Worksheets.pdf', 'pdf', 1958423, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(419, 140, 6, 'Task 2 Essay Types - Summary Sheet.pdf', 'course-docs/ielts-writing-intensive/Summary Sheet.pdf', 'pdf', 1393889, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(420, 140, 6, 'Task 2 Essay Types - Course Guide.pdf', 'course-docs/ielts-writing-intensive/Course Guide.pdf', 'pdf', 1565139, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(421, 141, 6, 'Grammar for Writing - Course Guide.pdf', 'course-docs/ielts-writing-intensive/Course Guide.pdf', 'pdf', 904653, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(422, 141, 6, 'Grammar for Writing - Study Notes.pdf', 'course-docs/ielts-writing-intensive/Study Notes.pdf', 'pdf', 1791388, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(423, 141, 6, 'Grammar for Writing - Practice Exercises.pdf', 'course-docs/ielts-writing-intensive/Practice Exercises.pdf', 'pdf', 2503349, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(424, 142, 6, 'Grammar for Writing - Study Notes.pdf', 'course-docs/ielts-writing-intensive/Study Notes.pdf', 'pdf', 1161175, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(425, 142, 6, 'Grammar for Writing - Practice Exercises.pdf', 'course-docs/ielts-writing-intensive/Practice Exercises.pdf', 'pdf', 2349720, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(426, 142, 6, 'Grammar for Writing - Reference Material.pdf', 'course-docs/ielts-writing-intensive/Reference Material.pdf', 'pdf', 648305, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(427, 143, 6, 'Grammar for Writing - Practice Exercises.pdf', 'course-docs/ielts-writing-intensive/Practice Exercises.pdf', 'pdf', 449807, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(428, 143, 6, 'Grammar for Writing - Reference Material.pdf', 'course-docs/ielts-writing-intensive/Reference Material.pdf', 'pdf', 660004, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(429, 143, 6, 'Grammar for Writing - Worksheets.pdf', 'course-docs/ielts-writing-intensive/Worksheets.pdf', 'pdf', 1998811, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(430, 144, 6, 'Grammar for Writing - Reference Material.pdf', 'course-docs/ielts-writing-intensive/Reference Material.pdf', 'pdf', 1862524, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(431, 144, 6, 'Grammar for Writing - Worksheets.pdf', 'course-docs/ielts-writing-intensive/Worksheets.pdf', 'pdf', 1984165, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(432, 144, 6, 'Grammar for Writing - Summary Sheet.pdf', 'course-docs/ielts-writing-intensive/Summary Sheet.pdf', 'pdf', 801202, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(433, 145, 6, 'Grammar for Writing - Worksheets.pdf', 'course-docs/ielts-writing-intensive/Worksheets.pdf', 'pdf', 554601, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(434, 145, 6, 'Grammar for Writing - Summary Sheet.pdf', 'course-docs/ielts-writing-intensive/Summary Sheet.pdf', 'pdf', 804848, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(435, 145, 6, 'Grammar for Writing - Course Guide.pdf', 'course-docs/ielts-writing-intensive/Course Guide.pdf', 'pdf', 1464816, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(436, 146, 6, 'Practice & Assessment - Course Guide.pdf', 'course-docs/ielts-writing-intensive/Course Guide.pdf', 'pdf', 2217335, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(437, 146, 6, 'Practice & Assessment - Study Notes.pdf', 'course-docs/ielts-writing-intensive/Study Notes.pdf', 'pdf', 584210, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(438, 146, 6, 'Practice & Assessment - Practice Exercises.pdf', 'course-docs/ielts-writing-intensive/Practice Exercises.pdf', 'pdf', 1197643, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(439, 147, 6, 'Practice & Assessment - Study Notes.pdf', 'course-docs/ielts-writing-intensive/Study Notes.pdf', 'pdf', 2441031, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(440, 147, 6, 'Practice & Assessment - Practice Exercises.pdf', 'course-docs/ielts-writing-intensive/Practice Exercises.pdf', 'pdf', 1299068, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(441, 147, 6, 'Practice & Assessment - Reference Material.pdf', 'course-docs/ielts-writing-intensive/Reference Material.pdf', 'pdf', 1570381, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(442, 148, 6, 'Practice & Assessment - Practice Exercises.pdf', 'course-docs/ielts-writing-intensive/Practice Exercises.pdf', 'pdf', 229214, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(443, 148, 6, 'Practice & Assessment - Reference Material.pdf', 'course-docs/ielts-writing-intensive/Reference Material.pdf', 'pdf', 2604243, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(444, 148, 6, 'Practice & Assessment - Worksheets.pdf', 'course-docs/ielts-writing-intensive/Worksheets.pdf', 'pdf', 1112106, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(445, 149, 6, 'Practice & Assessment - Reference Material.pdf', 'course-docs/ielts-writing-intensive/Reference Material.pdf', 'pdf', 988755, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(446, 149, 6, 'Practice & Assessment - Worksheets.pdf', 'course-docs/ielts-writing-intensive/Worksheets.pdf', 'pdf', 1647187, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(447, 149, 6, 'Practice & Assessment - Summary Sheet.pdf', 'course-docs/ielts-writing-intensive/Summary Sheet.pdf', 'pdf', 969131, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(448, 150, 6, 'Practice & Assessment - Worksheets.pdf', 'course-docs/ielts-writing-intensive/Worksheets.pdf', 'pdf', 1623342, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(449, 150, 6, 'Practice & Assessment - Summary Sheet.pdf', 'course-docs/ielts-writing-intensive/Summary Sheet.pdf', 'pdf', 336875, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(450, 150, 6, 'Practice & Assessment - Course Guide.pdf', 'course-docs/ielts-writing-intensive/Course Guide.pdf', 'pdf', 1024456, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(451, 151, 7, 'Parts of Speech - Course Guide.pdf', 'course-docs/english-grammar-complete/Course Guide.pdf', 'pdf', 994854, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(452, 151, 7, 'Parts of Speech - Study Notes.pdf', 'course-docs/english-grammar-complete/Study Notes.pdf', 'pdf', 2760528, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(453, 151, 7, 'Parts of Speech - Practice Exercises.pdf', 'course-docs/english-grammar-complete/Practice Exercises.pdf', 'pdf', 951630, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(454, 152, 7, 'Parts of Speech - Study Notes.pdf', 'course-docs/english-grammar-complete/Study Notes.pdf', 'pdf', 1574595, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(455, 152, 7, 'Parts of Speech - Practice Exercises.pdf', 'course-docs/english-grammar-complete/Practice Exercises.pdf', 'pdf', 803452, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(456, 152, 7, 'Parts of Speech - Reference Material.pdf', 'course-docs/english-grammar-complete/Reference Material.pdf', 'pdf', 324646, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(457, 153, 7, 'Parts of Speech - Practice Exercises.pdf', 'course-docs/english-grammar-complete/Practice Exercises.pdf', 'pdf', 1759080, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(458, 153, 7, 'Parts of Speech - Reference Material.pdf', 'course-docs/english-grammar-complete/Reference Material.pdf', 'pdf', 451782, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(459, 153, 7, 'Parts of Speech - Worksheets.pdf', 'course-docs/english-grammar-complete/Worksheets.pdf', 'pdf', 1755627, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(460, 154, 7, 'Parts of Speech - Reference Material.pdf', 'course-docs/english-grammar-complete/Reference Material.pdf', 'pdf', 1568369, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(461, 154, 7, 'Parts of Speech - Worksheets.pdf', 'course-docs/english-grammar-complete/Worksheets.pdf', 'pdf', 2082144, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(462, 154, 7, 'Parts of Speech - Summary Sheet.pdf', 'course-docs/english-grammar-complete/Summary Sheet.pdf', 'pdf', 2854464, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(463, 155, 7, 'Parts of Speech - Worksheets.pdf', 'course-docs/english-grammar-complete/Worksheets.pdf', 'pdf', 1216209, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(464, 155, 7, 'Parts of Speech - Summary Sheet.pdf', 'course-docs/english-grammar-complete/Summary Sheet.pdf', 'pdf', 439254, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(465, 155, 7, 'Parts of Speech - Course Guide.pdf', 'course-docs/english-grammar-complete/Course Guide.pdf', 'pdf', 2304283, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(466, 156, 7, 'Tenses Mastery - Course Guide.pdf', 'course-docs/english-grammar-complete/Course Guide.pdf', 'pdf', 2571829, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(467, 156, 7, 'Tenses Mastery - Study Notes.pdf', 'course-docs/english-grammar-complete/Study Notes.pdf', 'pdf', 2187720, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(468, 156, 7, 'Tenses Mastery - Practice Exercises.pdf', 'course-docs/english-grammar-complete/Practice Exercises.pdf', 'pdf', 1502141, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(469, 157, 7, 'Tenses Mastery - Study Notes.pdf', 'course-docs/english-grammar-complete/Study Notes.pdf', 'pdf', 2346172, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(470, 157, 7, 'Tenses Mastery - Practice Exercises.pdf', 'course-docs/english-grammar-complete/Practice Exercises.pdf', 'pdf', 2040974, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(471, 157, 7, 'Tenses Mastery - Reference Material.pdf', 'course-docs/english-grammar-complete/Reference Material.pdf', 'pdf', 960297, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(472, 158, 7, 'Tenses Mastery - Practice Exercises.pdf', 'course-docs/english-grammar-complete/Practice Exercises.pdf', 'pdf', 2676558, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(473, 158, 7, 'Tenses Mastery - Reference Material.pdf', 'course-docs/english-grammar-complete/Reference Material.pdf', 'pdf', 837611, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(474, 158, 7, 'Tenses Mastery - Worksheets.pdf', 'course-docs/english-grammar-complete/Worksheets.pdf', 'pdf', 918189, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(475, 159, 7, 'Tenses Mastery - Reference Material.pdf', 'course-docs/english-grammar-complete/Reference Material.pdf', 'pdf', 767315, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(476, 159, 7, 'Tenses Mastery - Worksheets.pdf', 'course-docs/english-grammar-complete/Worksheets.pdf', 'pdf', 714174, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(477, 159, 7, 'Tenses Mastery - Summary Sheet.pdf', 'course-docs/english-grammar-complete/Summary Sheet.pdf', 'pdf', 1067110, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(478, 160, 7, 'Tenses Mastery - Worksheets.pdf', 'course-docs/english-grammar-complete/Worksheets.pdf', 'pdf', 2557780, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(479, 160, 7, 'Tenses Mastery - Summary Sheet.pdf', 'course-docs/english-grammar-complete/Summary Sheet.pdf', 'pdf', 2868589, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(480, 160, 7, 'Tenses Mastery - Course Guide.pdf', 'course-docs/english-grammar-complete/Course Guide.pdf', 'pdf', 1931546, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(481, 161, 7, 'Sentence Structure - Course Guide.pdf', 'course-docs/english-grammar-complete/Course Guide.pdf', 'pdf', 2539761, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(482, 161, 7, 'Sentence Structure - Study Notes.pdf', 'course-docs/english-grammar-complete/Study Notes.pdf', 'pdf', 2706783, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(483, 161, 7, 'Sentence Structure - Practice Exercises.pdf', 'course-docs/english-grammar-complete/Practice Exercises.pdf', 'pdf', 1771125, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(484, 162, 7, 'Sentence Structure - Study Notes.pdf', 'course-docs/english-grammar-complete/Study Notes.pdf', 'pdf', 2558479, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(485, 162, 7, 'Sentence Structure - Practice Exercises.pdf', 'course-docs/english-grammar-complete/Practice Exercises.pdf', 'pdf', 2290080, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(486, 162, 7, 'Sentence Structure - Reference Material.pdf', 'course-docs/english-grammar-complete/Reference Material.pdf', 'pdf', 1894525, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(487, 163, 7, 'Sentence Structure - Practice Exercises.pdf', 'course-docs/english-grammar-complete/Practice Exercises.pdf', 'pdf', 1701386, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(488, 163, 7, 'Sentence Structure - Reference Material.pdf', 'course-docs/english-grammar-complete/Reference Material.pdf', 'pdf', 1553453, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(489, 163, 7, 'Sentence Structure - Worksheets.pdf', 'course-docs/english-grammar-complete/Worksheets.pdf', 'pdf', 2596741, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(490, 164, 7, 'Sentence Structure - Reference Material.pdf', 'course-docs/english-grammar-complete/Reference Material.pdf', 'pdf', 234770, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(491, 164, 7, 'Sentence Structure - Worksheets.pdf', 'course-docs/english-grammar-complete/Worksheets.pdf', 'pdf', 2082824, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(492, 164, 7, 'Sentence Structure - Summary Sheet.pdf', 'course-docs/english-grammar-complete/Summary Sheet.pdf', 'pdf', 1485388, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(493, 165, 7, 'Sentence Structure - Worksheets.pdf', 'course-docs/english-grammar-complete/Worksheets.pdf', 'pdf', 1198930, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(494, 165, 7, 'Sentence Structure - Summary Sheet.pdf', 'course-docs/english-grammar-complete/Summary Sheet.pdf', 'pdf', 1128320, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(495, 165, 7, 'Sentence Structure - Course Guide.pdf', 'course-docs/english-grammar-complete/Course Guide.pdf', 'pdf', 1436854, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(496, 166, 7, 'Advanced Grammar - Course Guide.pdf', 'course-docs/english-grammar-complete/Course Guide.pdf', 'pdf', 865939, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(497, 166, 7, 'Advanced Grammar - Study Notes.pdf', 'course-docs/english-grammar-complete/Study Notes.pdf', 'pdf', 2765217, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(498, 166, 7, 'Advanced Grammar - Practice Exercises.pdf', 'course-docs/english-grammar-complete/Practice Exercises.pdf', 'pdf', 1722686, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(499, 167, 7, 'Advanced Grammar - Study Notes.pdf', 'course-docs/english-grammar-complete/Study Notes.pdf', 'pdf', 807609, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(500, 167, 7, 'Advanced Grammar - Practice Exercises.pdf', 'course-docs/english-grammar-complete/Practice Exercises.pdf', 'pdf', 2796145, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(501, 167, 7, 'Advanced Grammar - Reference Material.pdf', 'course-docs/english-grammar-complete/Reference Material.pdf', 'pdf', 666822, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(502, 168, 7, 'Advanced Grammar - Practice Exercises.pdf', 'course-docs/english-grammar-complete/Practice Exercises.pdf', 'pdf', 2805310, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(503, 168, 7, 'Advanced Grammar - Reference Material.pdf', 'course-docs/english-grammar-complete/Reference Material.pdf', 'pdf', 1127962, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(504, 168, 7, 'Advanced Grammar - Worksheets.pdf', 'course-docs/english-grammar-complete/Worksheets.pdf', 'pdf', 854695, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(505, 169, 7, 'Advanced Grammar - Reference Material.pdf', 'course-docs/english-grammar-complete/Reference Material.pdf', 'pdf', 2371100, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(506, 169, 7, 'Advanced Grammar - Worksheets.pdf', 'course-docs/english-grammar-complete/Worksheets.pdf', 'pdf', 1781639, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(507, 169, 7, 'Advanced Grammar - Summary Sheet.pdf', 'course-docs/english-grammar-complete/Summary Sheet.pdf', 'pdf', 593350, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(508, 170, 7, 'Advanced Grammar - Worksheets.pdf', 'course-docs/english-grammar-complete/Worksheets.pdf', 'pdf', 283104, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(509, 170, 7, 'Advanced Grammar - Summary Sheet.pdf', 'course-docs/english-grammar-complete/Summary Sheet.pdf', 'pdf', 829239, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(510, 170, 7, 'Advanced Grammar - Course Guide.pdf', 'course-docs/english-grammar-complete/Course Guide.pdf', 'pdf', 2110530, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(511, 171, 7, 'Common Errors - Course Guide.pdf', 'course-docs/english-grammar-complete/Course Guide.pdf', 'pdf', 2630655, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(512, 171, 7, 'Common Errors - Study Notes.pdf', 'course-docs/english-grammar-complete/Study Notes.pdf', 'pdf', 219236, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(513, 171, 7, 'Common Errors - Practice Exercises.pdf', 'course-docs/english-grammar-complete/Practice Exercises.pdf', 'pdf', 1082099, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(514, 172, 7, 'Common Errors - Study Notes.pdf', 'course-docs/english-grammar-complete/Study Notes.pdf', 'pdf', 1004282, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(515, 172, 7, 'Common Errors - Practice Exercises.pdf', 'course-docs/english-grammar-complete/Practice Exercises.pdf', 'pdf', 2463908, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(516, 172, 7, 'Common Errors - Reference Material.pdf', 'course-docs/english-grammar-complete/Reference Material.pdf', 'pdf', 804255, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(517, 173, 7, 'Common Errors - Practice Exercises.pdf', 'course-docs/english-grammar-complete/Practice Exercises.pdf', 'pdf', 889006, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(518, 173, 7, 'Common Errors - Reference Material.pdf', 'course-docs/english-grammar-complete/Reference Material.pdf', 'pdf', 1236097, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(519, 173, 7, 'Common Errors - Worksheets.pdf', 'course-docs/english-grammar-complete/Worksheets.pdf', 'pdf', 643706, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(520, 174, 7, 'Common Errors - Reference Material.pdf', 'course-docs/english-grammar-complete/Reference Material.pdf', 'pdf', 1548315, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(521, 174, 7, 'Common Errors - Worksheets.pdf', 'course-docs/english-grammar-complete/Worksheets.pdf', 'pdf', 1970555, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(522, 174, 7, 'Common Errors - Summary Sheet.pdf', 'course-docs/english-grammar-complete/Summary Sheet.pdf', 'pdf', 1340397, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(523, 175, 7, 'Common Errors - Worksheets.pdf', 'course-docs/english-grammar-complete/Worksheets.pdf', 'pdf', 412388, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(524, 175, 7, 'Common Errors - Summary Sheet.pdf', 'course-docs/english-grammar-complete/Summary Sheet.pdf', 'pdf', 1998941, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(525, 175, 7, 'Common Errors - Course Guide.pdf', 'course-docs/english-grammar-complete/Course Guide.pdf', 'pdf', 641262, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(526, 176, 8, 'Presentation Planning - Course Guide.pdf', 'course-docs/business-presentation-excellence/Course Guide.pdf', 'pdf', 2321171, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(527, 176, 8, 'Presentation Planning - Study Notes.pdf', 'course-docs/business-presentation-excellence/Study Notes.pdf', 'pdf', 2027841, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(528, 176, 8, 'Presentation Planning - Practice Exercises.pdf', 'course-docs/business-presentation-excellence/Practice Exercises.pdf', 'pdf', 1677372, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(529, 177, 8, 'Presentation Planning - Study Notes.pdf', 'course-docs/business-presentation-excellence/Study Notes.pdf', 'pdf', 2733333, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(530, 177, 8, 'Presentation Planning - Practice Exercises.pdf', 'course-docs/business-presentation-excellence/Practice Exercises.pdf', 'pdf', 1495277, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(531, 177, 8, 'Presentation Planning - Reference Material.pdf', 'course-docs/business-presentation-excellence/Reference Material.pdf', 'pdf', 2753318, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(532, 178, 8, 'Presentation Planning - Practice Exercises.pdf', 'course-docs/business-presentation-excellence/Practice Exercises.pdf', 'pdf', 234290, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(533, 178, 8, 'Presentation Planning - Reference Material.pdf', 'course-docs/business-presentation-excellence/Reference Material.pdf', 'pdf', 2802007, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(534, 178, 8, 'Presentation Planning - Worksheets.pdf', 'course-docs/business-presentation-excellence/Worksheets.pdf', 'pdf', 595859, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(535, 179, 8, 'Presentation Planning - Reference Material.pdf', 'course-docs/business-presentation-excellence/Reference Material.pdf', 'pdf', 581188, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(536, 179, 8, 'Presentation Planning - Worksheets.pdf', 'course-docs/business-presentation-excellence/Worksheets.pdf', 'pdf', 1962802, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(537, 179, 8, 'Presentation Planning - Summary Sheet.pdf', 'course-docs/business-presentation-excellence/Summary Sheet.pdf', 'pdf', 2806974, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(538, 180, 8, 'Presentation Planning - Worksheets.pdf', 'course-docs/business-presentation-excellence/Worksheets.pdf', 'pdf', 859589, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(539, 180, 8, 'Presentation Planning - Summary Sheet.pdf', 'course-docs/business-presentation-excellence/Summary Sheet.pdf', 'pdf', 2245467, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(540, 180, 8, 'Presentation Planning - Course Guide.pdf', 'course-docs/business-presentation-excellence/Course Guide.pdf', 'pdf', 1110769, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(541, 181, 8, 'Slide Design - Course Guide.pdf', 'course-docs/business-presentation-excellence/Course Guide.pdf', 'pdf', 2493459, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(542, 181, 8, 'Slide Design - Study Notes.pdf', 'course-docs/business-presentation-excellence/Study Notes.pdf', 'pdf', 543692, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(543, 181, 8, 'Slide Design - Practice Exercises.pdf', 'course-docs/business-presentation-excellence/Practice Exercises.pdf', 'pdf', 1692450, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(544, 182, 8, 'Slide Design - Study Notes.pdf', 'course-docs/business-presentation-excellence/Study Notes.pdf', 'pdf', 2972724, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(545, 182, 8, 'Slide Design - Practice Exercises.pdf', 'course-docs/business-presentation-excellence/Practice Exercises.pdf', 'pdf', 1816957, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(546, 182, 8, 'Slide Design - Reference Material.pdf', 'course-docs/business-presentation-excellence/Reference Material.pdf', 'pdf', 432405, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(547, 183, 8, 'Slide Design - Practice Exercises.pdf', 'course-docs/business-presentation-excellence/Practice Exercises.pdf', 'pdf', 237155, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(548, 183, 8, 'Slide Design - Reference Material.pdf', 'course-docs/business-presentation-excellence/Reference Material.pdf', 'pdf', 453975, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(549, 183, 8, 'Slide Design - Worksheets.pdf', 'course-docs/business-presentation-excellence/Worksheets.pdf', 'pdf', 871778, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(550, 184, 8, 'Slide Design - Reference Material.pdf', 'course-docs/business-presentation-excellence/Reference Material.pdf', 'pdf', 1872078, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(551, 184, 8, 'Slide Design - Worksheets.pdf', 'course-docs/business-presentation-excellence/Worksheets.pdf', 'pdf', 1042795, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(552, 184, 8, 'Slide Design - Summary Sheet.pdf', 'course-docs/business-presentation-excellence/Summary Sheet.pdf', 'pdf', 2078711, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(553, 185, 8, 'Slide Design - Worksheets.pdf', 'course-docs/business-presentation-excellence/Worksheets.pdf', 'pdf', 2176322, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(554, 185, 8, 'Slide Design - Summary Sheet.pdf', 'course-docs/business-presentation-excellence/Summary Sheet.pdf', 'pdf', 1959872, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(555, 185, 8, 'Slide Design - Course Guide.pdf', 'course-docs/business-presentation-excellence/Course Guide.pdf', 'pdf', 2935706, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(556, 186, 8, 'Delivery Techniques - Course Guide.pdf', 'course-docs/business-presentation-excellence/Course Guide.pdf', 'pdf', 1673776, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(557, 186, 8, 'Delivery Techniques - Study Notes.pdf', 'course-docs/business-presentation-excellence/Study Notes.pdf', 'pdf', 2972845, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(558, 186, 8, 'Delivery Techniques - Practice Exercises.pdf', 'course-docs/business-presentation-excellence/Practice Exercises.pdf', 'pdf', 1211508, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(559, 187, 8, 'Delivery Techniques - Study Notes.pdf', 'course-docs/business-presentation-excellence/Study Notes.pdf', 'pdf', 1123776, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(560, 187, 8, 'Delivery Techniques - Practice Exercises.pdf', 'course-docs/business-presentation-excellence/Practice Exercises.pdf', 'pdf', 2234836, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(561, 187, 8, 'Delivery Techniques - Reference Material.pdf', 'course-docs/business-presentation-excellence/Reference Material.pdf', 'pdf', 2485407, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(562, 188, 8, 'Delivery Techniques - Practice Exercises.pdf', 'course-docs/business-presentation-excellence/Practice Exercises.pdf', 'pdf', 1575273, '2026-04-06 02:56:10', '2026-04-06 02:56:10');
+INSERT INTO `course_resources` (`id`, `lesson_id`, `course_id`, `title`, `file_path`, `file_type`, `file_size`, `created_at`, `updated_at`) VALUES
+(563, 188, 8, 'Delivery Techniques - Reference Material.pdf', 'course-docs/business-presentation-excellence/Reference Material.pdf', 'pdf', 1522323, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(564, 188, 8, 'Delivery Techniques - Worksheets.pdf', 'course-docs/business-presentation-excellence/Worksheets.pdf', 'pdf', 1230590, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(565, 189, 8, 'Delivery Techniques - Reference Material.pdf', 'course-docs/business-presentation-excellence/Reference Material.pdf', 'pdf', 2363056, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(566, 189, 8, 'Delivery Techniques - Worksheets.pdf', 'course-docs/business-presentation-excellence/Worksheets.pdf', 'pdf', 419542, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(567, 189, 8, 'Delivery Techniques - Summary Sheet.pdf', 'course-docs/business-presentation-excellence/Summary Sheet.pdf', 'pdf', 1899885, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(568, 190, 8, 'Delivery Techniques - Worksheets.pdf', 'course-docs/business-presentation-excellence/Worksheets.pdf', 'pdf', 2575671, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(569, 190, 8, 'Delivery Techniques - Summary Sheet.pdf', 'course-docs/business-presentation-excellence/Summary Sheet.pdf', 'pdf', 1597636, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(570, 190, 8, 'Delivery Techniques - Course Guide.pdf', 'course-docs/business-presentation-excellence/Course Guide.pdf', 'pdf', 1780127, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(571, 191, 8, 'Engagement Strategies - Course Guide.pdf', 'course-docs/business-presentation-excellence/Course Guide.pdf', 'pdf', 346979, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(572, 191, 8, 'Engagement Strategies - Study Notes.pdf', 'course-docs/business-presentation-excellence/Study Notes.pdf', 'pdf', 1297506, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(573, 191, 8, 'Engagement Strategies - Practice Exercises.pdf', 'course-docs/business-presentation-excellence/Practice Exercises.pdf', 'pdf', 879427, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(574, 192, 8, 'Engagement Strategies - Study Notes.pdf', 'course-docs/business-presentation-excellence/Study Notes.pdf', 'pdf', 2226798, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(575, 192, 8, 'Engagement Strategies - Practice Exercises.pdf', 'course-docs/business-presentation-excellence/Practice Exercises.pdf', 'pdf', 1741349, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(576, 192, 8, 'Engagement Strategies - Reference Material.pdf', 'course-docs/business-presentation-excellence/Reference Material.pdf', 'pdf', 585046, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(577, 193, 8, 'Engagement Strategies - Practice Exercises.pdf', 'course-docs/business-presentation-excellence/Practice Exercises.pdf', 'pdf', 399583, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(578, 193, 8, 'Engagement Strategies - Reference Material.pdf', 'course-docs/business-presentation-excellence/Reference Material.pdf', 'pdf', 352265, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(579, 193, 8, 'Engagement Strategies - Worksheets.pdf', 'course-docs/business-presentation-excellence/Worksheets.pdf', 'pdf', 927423, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(580, 194, 8, 'Engagement Strategies - Reference Material.pdf', 'course-docs/business-presentation-excellence/Reference Material.pdf', 'pdf', 2132208, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(581, 194, 8, 'Engagement Strategies - Worksheets.pdf', 'course-docs/business-presentation-excellence/Worksheets.pdf', 'pdf', 417223, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(582, 194, 8, 'Engagement Strategies - Summary Sheet.pdf', 'course-docs/business-presentation-excellence/Summary Sheet.pdf', 'pdf', 989197, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(583, 195, 8, 'Engagement Strategies - Worksheets.pdf', 'course-docs/business-presentation-excellence/Worksheets.pdf', 'pdf', 2303907, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(584, 195, 8, 'Engagement Strategies - Summary Sheet.pdf', 'course-docs/business-presentation-excellence/Summary Sheet.pdf', 'pdf', 2195784, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(585, 195, 8, 'Engagement Strategies - Course Guide.pdf', 'course-docs/business-presentation-excellence/Course Guide.pdf', 'pdf', 794248, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(586, 196, 8, 'Q&A & Follow-up - Course Guide.pdf', 'course-docs/business-presentation-excellence/Course Guide.pdf', 'pdf', 1221449, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(587, 196, 8, 'Q&A & Follow-up - Study Notes.pdf', 'course-docs/business-presentation-excellence/Study Notes.pdf', 'pdf', 811786, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(588, 196, 8, 'Q&A & Follow-up - Practice Exercises.pdf', 'course-docs/business-presentation-excellence/Practice Exercises.pdf', 'pdf', 535447, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(589, 197, 8, 'Q&A & Follow-up - Study Notes.pdf', 'course-docs/business-presentation-excellence/Study Notes.pdf', 'pdf', 2797020, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(590, 197, 8, 'Q&A & Follow-up - Practice Exercises.pdf', 'course-docs/business-presentation-excellence/Practice Exercises.pdf', 'pdf', 252553, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(591, 197, 8, 'Q&A & Follow-up - Reference Material.pdf', 'course-docs/business-presentation-excellence/Reference Material.pdf', 'pdf', 1130952, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(592, 198, 8, 'Q&A & Follow-up - Practice Exercises.pdf', 'course-docs/business-presentation-excellence/Practice Exercises.pdf', 'pdf', 2111200, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(593, 198, 8, 'Q&A & Follow-up - Reference Material.pdf', 'course-docs/business-presentation-excellence/Reference Material.pdf', 'pdf', 1934929, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(594, 198, 8, 'Q&A & Follow-up - Worksheets.pdf', 'course-docs/business-presentation-excellence/Worksheets.pdf', 'pdf', 2091586, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(595, 199, 8, 'Q&A & Follow-up - Reference Material.pdf', 'course-docs/business-presentation-excellence/Reference Material.pdf', 'pdf', 2402145, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(596, 199, 8, 'Q&A & Follow-up - Worksheets.pdf', 'course-docs/business-presentation-excellence/Worksheets.pdf', 'pdf', 351692, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(597, 199, 8, 'Q&A & Follow-up - Summary Sheet.pdf', 'course-docs/business-presentation-excellence/Summary Sheet.pdf', 'pdf', 233747, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(598, 200, 8, 'Q&A & Follow-up - Worksheets.pdf', 'course-docs/business-presentation-excellence/Worksheets.pdf', 'pdf', 2171811, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(599, 200, 8, 'Q&A & Follow-up - Summary Sheet.pdf', 'course-docs/business-presentation-excellence/Summary Sheet.pdf', 'pdf', 946503, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(600, 200, 8, 'Q&A & Follow-up - Course Guide.pdf', 'course-docs/business-presentation-excellence/Course Guide.pdf', 'pdf', 1077019, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(601, 201, 9, 'Story Foundations - Course Guide.pdf', 'course-docs/short-story-writing/Course Guide.pdf', 'pdf', 2979112, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(602, 201, 9, 'Story Foundations - Study Notes.pdf', 'course-docs/short-story-writing/Study Notes.pdf', 'pdf', 2504261, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(603, 201, 9, 'Story Foundations - Practice Exercises.pdf', 'course-docs/short-story-writing/Practice Exercises.pdf', 'pdf', 1193632, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(604, 202, 9, 'Story Foundations - Study Notes.pdf', 'course-docs/short-story-writing/Study Notes.pdf', 'pdf', 1451287, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(605, 202, 9, 'Story Foundations - Practice Exercises.pdf', 'course-docs/short-story-writing/Practice Exercises.pdf', 'pdf', 1250889, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(606, 202, 9, 'Story Foundations - Reference Material.pdf', 'course-docs/short-story-writing/Reference Material.pdf', 'pdf', 2557736, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(607, 203, 9, 'Story Foundations - Practice Exercises.pdf', 'course-docs/short-story-writing/Practice Exercises.pdf', 'pdf', 1403122, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(608, 203, 9, 'Story Foundations - Reference Material.pdf', 'course-docs/short-story-writing/Reference Material.pdf', 'pdf', 2286379, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(609, 203, 9, 'Story Foundations - Worksheets.pdf', 'course-docs/short-story-writing/Worksheets.pdf', 'pdf', 1225822, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(610, 204, 9, 'Story Foundations - Reference Material.pdf', 'course-docs/short-story-writing/Reference Material.pdf', 'pdf', 513848, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(611, 204, 9, 'Story Foundations - Worksheets.pdf', 'course-docs/short-story-writing/Worksheets.pdf', 'pdf', 1969186, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(612, 204, 9, 'Story Foundations - Summary Sheet.pdf', 'course-docs/short-story-writing/Summary Sheet.pdf', 'pdf', 2718410, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(613, 205, 9, 'Story Foundations - Worksheets.pdf', 'course-docs/short-story-writing/Worksheets.pdf', 'pdf', 682055, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(614, 205, 9, 'Story Foundations - Summary Sheet.pdf', 'course-docs/short-story-writing/Summary Sheet.pdf', 'pdf', 1489547, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(615, 205, 9, 'Story Foundations - Course Guide.pdf', 'course-docs/short-story-writing/Course Guide.pdf', 'pdf', 664398, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(616, 206, 9, 'Character in Short Form - Course Guide.pdf', 'course-docs/short-story-writing/Course Guide.pdf', 'pdf', 269754, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(617, 206, 9, 'Character in Short Form - Study Notes.pdf', 'course-docs/short-story-writing/Study Notes.pdf', 'pdf', 685932, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(618, 206, 9, 'Character in Short Form - Practice Exercises.pdf', 'course-docs/short-story-writing/Practice Exercises.pdf', 'pdf', 2946132, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(619, 207, 9, 'Character in Short Form - Study Notes.pdf', 'course-docs/short-story-writing/Study Notes.pdf', 'pdf', 819445, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(620, 207, 9, 'Character in Short Form - Practice Exercises.pdf', 'course-docs/short-story-writing/Practice Exercises.pdf', 'pdf', 394599, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(621, 207, 9, 'Character in Short Form - Reference Material.pdf', 'course-docs/short-story-writing/Reference Material.pdf', 'pdf', 660480, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(622, 208, 9, 'Character in Short Form - Practice Exercises.pdf', 'course-docs/short-story-writing/Practice Exercises.pdf', 'pdf', 2420232, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(623, 208, 9, 'Character in Short Form - Reference Material.pdf', 'course-docs/short-story-writing/Reference Material.pdf', 'pdf', 2950741, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(624, 208, 9, 'Character in Short Form - Worksheets.pdf', 'course-docs/short-story-writing/Worksheets.pdf', 'pdf', 1045565, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(625, 209, 9, 'Character in Short Form - Reference Material.pdf', 'course-docs/short-story-writing/Reference Material.pdf', 'pdf', 1754443, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(626, 209, 9, 'Character in Short Form - Worksheets.pdf', 'course-docs/short-story-writing/Worksheets.pdf', 'pdf', 2633306, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(627, 209, 9, 'Character in Short Form - Summary Sheet.pdf', 'course-docs/short-story-writing/Summary Sheet.pdf', 'pdf', 2615567, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(628, 210, 9, 'Character in Short Form - Worksheets.pdf', 'course-docs/short-story-writing/Worksheets.pdf', 'pdf', 681734, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(629, 210, 9, 'Character in Short Form - Summary Sheet.pdf', 'course-docs/short-story-writing/Summary Sheet.pdf', 'pdf', 604609, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(630, 210, 9, 'Character in Short Form - Course Guide.pdf', 'course-docs/short-story-writing/Course Guide.pdf', 'pdf', 1358005, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(631, 211, 9, 'Plot in Miniature - Course Guide.pdf', 'course-docs/short-story-writing/Course Guide.pdf', 'pdf', 2369773, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(632, 211, 9, 'Plot in Miniature - Study Notes.pdf', 'course-docs/short-story-writing/Study Notes.pdf', 'pdf', 2235054, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(633, 211, 9, 'Plot in Miniature - Practice Exercises.pdf', 'course-docs/short-story-writing/Practice Exercises.pdf', 'pdf', 2977708, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(634, 212, 9, 'Plot in Miniature - Study Notes.pdf', 'course-docs/short-story-writing/Study Notes.pdf', 'pdf', 1913012, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(635, 212, 9, 'Plot in Miniature - Practice Exercises.pdf', 'course-docs/short-story-writing/Practice Exercises.pdf', 'pdf', 2833784, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(636, 212, 9, 'Plot in Miniature - Reference Material.pdf', 'course-docs/short-story-writing/Reference Material.pdf', 'pdf', 1543342, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(637, 213, 9, 'Plot in Miniature - Practice Exercises.pdf', 'course-docs/short-story-writing/Practice Exercises.pdf', 'pdf', 952747, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(638, 213, 9, 'Plot in Miniature - Reference Material.pdf', 'course-docs/short-story-writing/Reference Material.pdf', 'pdf', 1075078, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(639, 213, 9, 'Plot in Miniature - Worksheets.pdf', 'course-docs/short-story-writing/Worksheets.pdf', 'pdf', 838794, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(640, 214, 9, 'Plot in Miniature - Reference Material.pdf', 'course-docs/short-story-writing/Reference Material.pdf', 'pdf', 684148, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(641, 214, 9, 'Plot in Miniature - Worksheets.pdf', 'course-docs/short-story-writing/Worksheets.pdf', 'pdf', 1605597, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(642, 214, 9, 'Plot in Miniature - Summary Sheet.pdf', 'course-docs/short-story-writing/Summary Sheet.pdf', 'pdf', 1454284, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(643, 215, 9, 'Plot in Miniature - Worksheets.pdf', 'course-docs/short-story-writing/Worksheets.pdf', 'pdf', 2594676, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(644, 215, 9, 'Plot in Miniature - Summary Sheet.pdf', 'course-docs/short-story-writing/Summary Sheet.pdf', 'pdf', 2078486, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(645, 215, 9, 'Plot in Miniature - Course Guide.pdf', 'course-docs/short-story-writing/Course Guide.pdf', 'pdf', 1402761, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(646, 216, 9, 'Style & Voice - Course Guide.pdf', 'course-docs/short-story-writing/Course Guide.pdf', 'pdf', 2814400, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(647, 216, 9, 'Style & Voice - Study Notes.pdf', 'course-docs/short-story-writing/Study Notes.pdf', 'pdf', 269866, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(648, 216, 9, 'Style & Voice - Practice Exercises.pdf', 'course-docs/short-story-writing/Practice Exercises.pdf', 'pdf', 1967147, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(649, 217, 9, 'Style & Voice - Study Notes.pdf', 'course-docs/short-story-writing/Study Notes.pdf', 'pdf', 2314201, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(650, 217, 9, 'Style & Voice - Practice Exercises.pdf', 'course-docs/short-story-writing/Practice Exercises.pdf', 'pdf', 1891675, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(651, 217, 9, 'Style & Voice - Reference Material.pdf', 'course-docs/short-story-writing/Reference Material.pdf', 'pdf', 1454509, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(652, 218, 9, 'Style & Voice - Practice Exercises.pdf', 'course-docs/short-story-writing/Practice Exercises.pdf', 'pdf', 2177110, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(653, 218, 9, 'Style & Voice - Reference Material.pdf', 'course-docs/short-story-writing/Reference Material.pdf', 'pdf', 317227, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(654, 218, 9, 'Style & Voice - Worksheets.pdf', 'course-docs/short-story-writing/Worksheets.pdf', 'pdf', 809709, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(655, 219, 9, 'Style & Voice - Reference Material.pdf', 'course-docs/short-story-writing/Reference Material.pdf', 'pdf', 460600, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(656, 219, 9, 'Style & Voice - Worksheets.pdf', 'course-docs/short-story-writing/Worksheets.pdf', 'pdf', 1256775, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(657, 219, 9, 'Style & Voice - Summary Sheet.pdf', 'course-docs/short-story-writing/Summary Sheet.pdf', 'pdf', 316140, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(658, 220, 9, 'Style & Voice - Worksheets.pdf', 'course-docs/short-story-writing/Worksheets.pdf', 'pdf', 1111754, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(659, 220, 9, 'Style & Voice - Summary Sheet.pdf', 'course-docs/short-story-writing/Summary Sheet.pdf', 'pdf', 2756778, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(660, 220, 9, 'Style & Voice - Course Guide.pdf', 'course-docs/short-story-writing/Course Guide.pdf', 'pdf', 1770897, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(661, 221, 9, 'Publication Ready - Course Guide.pdf', 'course-docs/short-story-writing/Course Guide.pdf', 'pdf', 1800992, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(662, 221, 9, 'Publication Ready - Study Notes.pdf', 'course-docs/short-story-writing/Study Notes.pdf', 'pdf', 214054, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(663, 221, 9, 'Publication Ready - Practice Exercises.pdf', 'course-docs/short-story-writing/Practice Exercises.pdf', 'pdf', 1964809, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(664, 222, 9, 'Publication Ready - Study Notes.pdf', 'course-docs/short-story-writing/Study Notes.pdf', 'pdf', 2325264, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(665, 222, 9, 'Publication Ready - Practice Exercises.pdf', 'course-docs/short-story-writing/Practice Exercises.pdf', 'pdf', 2556686, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(666, 222, 9, 'Publication Ready - Reference Material.pdf', 'course-docs/short-story-writing/Reference Material.pdf', 'pdf', 1638291, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(667, 223, 9, 'Publication Ready - Practice Exercises.pdf', 'course-docs/short-story-writing/Practice Exercises.pdf', 'pdf', 382579, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(668, 223, 9, 'Publication Ready - Reference Material.pdf', 'course-docs/short-story-writing/Reference Material.pdf', 'pdf', 649144, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(669, 223, 9, 'Publication Ready - Worksheets.pdf', 'course-docs/short-story-writing/Worksheets.pdf', 'pdf', 1134573, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(670, 224, 9, 'Publication Ready - Reference Material.pdf', 'course-docs/short-story-writing/Reference Material.pdf', 'pdf', 1695821, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(671, 224, 9, 'Publication Ready - Worksheets.pdf', 'course-docs/short-story-writing/Worksheets.pdf', 'pdf', 1541263, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(672, 224, 9, 'Publication Ready - Summary Sheet.pdf', 'course-docs/short-story-writing/Summary Sheet.pdf', 'pdf', 439969, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(673, 225, 9, 'Publication Ready - Worksheets.pdf', 'course-docs/short-story-writing/Worksheets.pdf', 'pdf', 2086043, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(674, 225, 9, 'Publication Ready - Summary Sheet.pdf', 'course-docs/short-story-writing/Summary Sheet.pdf', 'pdf', 2369841, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(675, 225, 9, 'Publication Ready - Course Guide.pdf', 'course-docs/short-story-writing/Course Guide.pdf', 'pdf', 2569122, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(676, 226, 10, 'Airport English - Course Guide.pdf', 'course-docs/english-travel-tourism/Course Guide.pdf', 'pdf', 1261909, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(677, 226, 10, 'Airport English - Study Notes.pdf', 'course-docs/english-travel-tourism/Study Notes.pdf', 'pdf', 1662030, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(678, 226, 10, 'Airport English - Practice Exercises.pdf', 'course-docs/english-travel-tourism/Practice Exercises.pdf', 'pdf', 1614290, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(679, 227, 10, 'Airport English - Study Notes.pdf', 'course-docs/english-travel-tourism/Study Notes.pdf', 'pdf', 1026538, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(680, 227, 10, 'Airport English - Practice Exercises.pdf', 'course-docs/english-travel-tourism/Practice Exercises.pdf', 'pdf', 2917316, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(681, 227, 10, 'Airport English - Reference Material.pdf', 'course-docs/english-travel-tourism/Reference Material.pdf', 'pdf', 1472870, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(682, 228, 10, 'Airport English - Practice Exercises.pdf', 'course-docs/english-travel-tourism/Practice Exercises.pdf', 'pdf', 2397524, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(683, 228, 10, 'Airport English - Reference Material.pdf', 'course-docs/english-travel-tourism/Reference Material.pdf', 'pdf', 671084, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(684, 228, 10, 'Airport English - Worksheets.pdf', 'course-docs/english-travel-tourism/Worksheets.pdf', 'pdf', 1382830, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(685, 229, 10, 'Airport English - Reference Material.pdf', 'course-docs/english-travel-tourism/Reference Material.pdf', 'pdf', 2041529, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(686, 229, 10, 'Airport English - Worksheets.pdf', 'course-docs/english-travel-tourism/Worksheets.pdf', 'pdf', 2128827, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(687, 229, 10, 'Airport English - Summary Sheet.pdf', 'course-docs/english-travel-tourism/Summary Sheet.pdf', 'pdf', 2786185, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(688, 230, 10, 'Airport English - Worksheets.pdf', 'course-docs/english-travel-tourism/Worksheets.pdf', 'pdf', 422559, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(689, 230, 10, 'Airport English - Summary Sheet.pdf', 'course-docs/english-travel-tourism/Summary Sheet.pdf', 'pdf', 2803017, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(690, 230, 10, 'Airport English - Course Guide.pdf', 'course-docs/english-travel-tourism/Course Guide.pdf', 'pdf', 735524, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(691, 231, 10, 'Hotel English - Course Guide.pdf', 'course-docs/english-travel-tourism/Course Guide.pdf', 'pdf', 2028313, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(692, 231, 10, 'Hotel English - Study Notes.pdf', 'course-docs/english-travel-tourism/Study Notes.pdf', 'pdf', 2896581, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(693, 231, 10, 'Hotel English - Practice Exercises.pdf', 'course-docs/english-travel-tourism/Practice Exercises.pdf', 'pdf', 2335924, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(694, 232, 10, 'Hotel English - Study Notes.pdf', 'course-docs/english-travel-tourism/Study Notes.pdf', 'pdf', 2774526, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(695, 232, 10, 'Hotel English - Practice Exercises.pdf', 'course-docs/english-travel-tourism/Practice Exercises.pdf', 'pdf', 2472941, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(696, 232, 10, 'Hotel English - Reference Material.pdf', 'course-docs/english-travel-tourism/Reference Material.pdf', 'pdf', 1134892, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(697, 233, 10, 'Hotel English - Practice Exercises.pdf', 'course-docs/english-travel-tourism/Practice Exercises.pdf', 'pdf', 1159329, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(698, 233, 10, 'Hotel English - Reference Material.pdf', 'course-docs/english-travel-tourism/Reference Material.pdf', 'pdf', 1040756, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(699, 233, 10, 'Hotel English - Worksheets.pdf', 'course-docs/english-travel-tourism/Worksheets.pdf', 'pdf', 1511521, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(700, 234, 10, 'Hotel English - Reference Material.pdf', 'course-docs/english-travel-tourism/Reference Material.pdf', 'pdf', 1762156, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(701, 234, 10, 'Hotel English - Worksheets.pdf', 'course-docs/english-travel-tourism/Worksheets.pdf', 'pdf', 683285, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(702, 234, 10, 'Hotel English - Summary Sheet.pdf', 'course-docs/english-travel-tourism/Summary Sheet.pdf', 'pdf', 1824916, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(703, 235, 10, 'Hotel English - Worksheets.pdf', 'course-docs/english-travel-tourism/Worksheets.pdf', 'pdf', 416111, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(704, 235, 10, 'Hotel English - Summary Sheet.pdf', 'course-docs/english-travel-tourism/Summary Sheet.pdf', 'pdf', 2681835, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(705, 235, 10, 'Hotel English - Course Guide.pdf', 'course-docs/english-travel-tourism/Course Guide.pdf', 'pdf', 1510597, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(706, 236, 10, 'Restaurant English - Course Guide.pdf', 'course-docs/english-travel-tourism/Course Guide.pdf', 'pdf', 1487998, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(707, 236, 10, 'Restaurant English - Study Notes.pdf', 'course-docs/english-travel-tourism/Study Notes.pdf', 'pdf', 717728, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(708, 236, 10, 'Restaurant English - Practice Exercises.pdf', 'course-docs/english-travel-tourism/Practice Exercises.pdf', 'pdf', 2095691, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(709, 237, 10, 'Restaurant English - Study Notes.pdf', 'course-docs/english-travel-tourism/Study Notes.pdf', 'pdf', 2337463, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(710, 237, 10, 'Restaurant English - Practice Exercises.pdf', 'course-docs/english-travel-tourism/Practice Exercises.pdf', 'pdf', 837950, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(711, 237, 10, 'Restaurant English - Reference Material.pdf', 'course-docs/english-travel-tourism/Reference Material.pdf', 'pdf', 1547936, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(712, 238, 10, 'Restaurant English - Practice Exercises.pdf', 'course-docs/english-travel-tourism/Practice Exercises.pdf', 'pdf', 2456766, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(713, 238, 10, 'Restaurant English - Reference Material.pdf', 'course-docs/english-travel-tourism/Reference Material.pdf', 'pdf', 994229, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(714, 238, 10, 'Restaurant English - Worksheets.pdf', 'course-docs/english-travel-tourism/Worksheets.pdf', 'pdf', 2324947, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(715, 239, 10, 'Restaurant English - Reference Material.pdf', 'course-docs/english-travel-tourism/Reference Material.pdf', 'pdf', 1667307, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(716, 239, 10, 'Restaurant English - Worksheets.pdf', 'course-docs/english-travel-tourism/Worksheets.pdf', 'pdf', 1311545, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(717, 239, 10, 'Restaurant English - Summary Sheet.pdf', 'course-docs/english-travel-tourism/Summary Sheet.pdf', 'pdf', 2895761, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(718, 240, 10, 'Restaurant English - Worksheets.pdf', 'course-docs/english-travel-tourism/Worksheets.pdf', 'pdf', 1260534, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(719, 240, 10, 'Restaurant English - Summary Sheet.pdf', 'course-docs/english-travel-tourism/Summary Sheet.pdf', 'pdf', 1363249, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(720, 240, 10, 'Restaurant English - Course Guide.pdf', 'course-docs/english-travel-tourism/Course Guide.pdf', 'pdf', 2844125, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(721, 241, 10, 'Tourist English - Course Guide.pdf', 'course-docs/english-travel-tourism/Course Guide.pdf', 'pdf', 2929151, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(722, 241, 10, 'Tourist English - Study Notes.pdf', 'course-docs/english-travel-tourism/Study Notes.pdf', 'pdf', 2886383, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(723, 241, 10, 'Tourist English - Practice Exercises.pdf', 'course-docs/english-travel-tourism/Practice Exercises.pdf', 'pdf', 1171812, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(724, 242, 10, 'Tourist English - Study Notes.pdf', 'course-docs/english-travel-tourism/Study Notes.pdf', 'pdf', 2820594, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(725, 242, 10, 'Tourist English - Practice Exercises.pdf', 'course-docs/english-travel-tourism/Practice Exercises.pdf', 'pdf', 2117677, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(726, 242, 10, 'Tourist English - Reference Material.pdf', 'course-docs/english-travel-tourism/Reference Material.pdf', 'pdf', 708871, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(727, 243, 10, 'Tourist English - Practice Exercises.pdf', 'course-docs/english-travel-tourism/Practice Exercises.pdf', 'pdf', 1897331, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(728, 243, 10, 'Tourist English - Reference Material.pdf', 'course-docs/english-travel-tourism/Reference Material.pdf', 'pdf', 1155819, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(729, 243, 10, 'Tourist English - Worksheets.pdf', 'course-docs/english-travel-tourism/Worksheets.pdf', 'pdf', 364161, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(730, 244, 10, 'Tourist English - Reference Material.pdf', 'course-docs/english-travel-tourism/Reference Material.pdf', 'pdf', 790082, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(731, 244, 10, 'Tourist English - Worksheets.pdf', 'course-docs/english-travel-tourism/Worksheets.pdf', 'pdf', 382607, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(732, 244, 10, 'Tourist English - Summary Sheet.pdf', 'course-docs/english-travel-tourism/Summary Sheet.pdf', 'pdf', 1923567, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(733, 245, 10, 'Tourist English - Worksheets.pdf', 'course-docs/english-travel-tourism/Worksheets.pdf', 'pdf', 2280496, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(734, 245, 10, 'Tourist English - Summary Sheet.pdf', 'course-docs/english-travel-tourism/Summary Sheet.pdf', 'pdf', 431773, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(735, 245, 10, 'Tourist English - Course Guide.pdf', 'course-docs/english-travel-tourism/Course Guide.pdf', 'pdf', 750692, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(736, 246, 10, 'Travel Industry English - Course Guide.pdf', 'course-docs/english-travel-tourism/Course Guide.pdf', 'pdf', 359011, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(737, 246, 10, 'Travel Industry English - Study Notes.pdf', 'course-docs/english-travel-tourism/Study Notes.pdf', 'pdf', 2253757, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(738, 246, 10, 'Travel Industry English - Practice Exercises.pdf', 'course-docs/english-travel-tourism/Practice Exercises.pdf', 'pdf', 2475093, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(739, 247, 10, 'Travel Industry English - Study Notes.pdf', 'course-docs/english-travel-tourism/Study Notes.pdf', 'pdf', 2251870, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(740, 247, 10, 'Travel Industry English - Practice Exercises.pdf', 'course-docs/english-travel-tourism/Practice Exercises.pdf', 'pdf', 1293929, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(741, 247, 10, 'Travel Industry English - Reference Material.pdf', 'course-docs/english-travel-tourism/Reference Material.pdf', 'pdf', 1541351, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(742, 248, 10, 'Travel Industry English - Practice Exercises.pdf', 'course-docs/english-travel-tourism/Practice Exercises.pdf', 'pdf', 2316289, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(743, 248, 10, 'Travel Industry English - Reference Material.pdf', 'course-docs/english-travel-tourism/Reference Material.pdf', 'pdf', 206183, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(744, 248, 10, 'Travel Industry English - Worksheets.pdf', 'course-docs/english-travel-tourism/Worksheets.pdf', 'pdf', 1060318, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(745, 249, 10, 'Travel Industry English - Reference Material.pdf', 'course-docs/english-travel-tourism/Reference Material.pdf', 'pdf', 353352, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(746, 249, 10, 'Travel Industry English - Worksheets.pdf', 'course-docs/english-travel-tourism/Worksheets.pdf', 'pdf', 763486, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(747, 249, 10, 'Travel Industry English - Summary Sheet.pdf', 'course-docs/english-travel-tourism/Summary Sheet.pdf', 'pdf', 1687017, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(748, 250, 10, 'Travel Industry English - Worksheets.pdf', 'course-docs/english-travel-tourism/Worksheets.pdf', 'pdf', 978776, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(749, 250, 10, 'Travel Industry English - Summary Sheet.pdf', 'course-docs/english-travel-tourism/Summary Sheet.pdf', 'pdf', 463052, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(750, 250, 10, 'Travel Industry English - Course Guide.pdf', 'course-docs/english-travel-tourism/Course Guide.pdf', 'pdf', 1966578, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(751, 257, 20, 'ai_studio_code.html', 'courses/documents/RAxc7ty766PLhN0zfytbHdg8L6VBYg5rj2SGXDak.html', 'document', 12093, '2026-04-06 06:31:45', '2026-04-06 06:31:45'),
+(764, 274, 24, 'ai_studio_code.html', 'courses/documents/bD5dQlOGrSvgvnwdVfbi.html', 'document', 12093, '2026-04-06 07:26:27', '2026-04-06 07:26:27'),
+(765, 275, 24, 'ai_studio_code.html', 'courses/documents/174R6J4pIDMKU4lfPvaV.html', 'document', 12093, '2026-04-06 07:26:27', '2026-04-06 07:26:27'),
+(766, 276, 25, 'Course Syllabus.pdf', 'courses/documents/syllabus.pdf', 'document', 45000, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(767, 276, 25, 'Welcome Guide.pdf', 'courses/documents/welcome.pdf', 'document', 12000, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(768, 279, 25, 'Cheat Sheet.pdf', 'courses/documents/cheatsheet.pdf', 'document', 25000, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(769, 279, 25, 'Reference Guide.pdf', 'courses/documents/reference.pdf', 'document', 80000, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(770, 279, 25, 'Sample Code.zip', 'courses/documents/sample.zip', 'document', 150000, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(771, 281, 25, 'Advanced Notes.pdf', 'courses/documents/advanced.pdf', 'document', 55000, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(772, 285, 26, 'F1.pdf', 'courses/documents/7SxyQ3lPIPQKq3AjlkHx.pdf', 'document', 16044474, '2026-04-07 01:11:56', '2026-04-07 01:11:56'),
+(775, 300, 30, '5_triangle_area_formulas.pdf', 'courses/documents/yQnmo15lKtTZy7fW0ZeR.pdf', 'document', 2398, '2026-04-09 08:51:39', '2026-04-09 08:51:39');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `course_reviews`
+--
+
+CREATE TABLE `course_reviews` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `course_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `user_name` varchar(255) NOT NULL,
+  `user_email` varchar(255) DEFAULT NULL,
+  `rating` int(11) NOT NULL DEFAULT 5,
+  `comment` text NOT NULL,
+  `is_approved` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `course_reviews`
+--
+
+INSERT INTO `course_reviews` (`id`, `course_id`, `user_id`, `user_name`, `user_email`, `rating`, `comment`, `is_approved`, `created_at`, `updated_at`) VALUES
+(1, 26, NULL, 'Null', 'N@gmail.com', 4, 'svsdvsd', 1, '2026-04-09 05:59:53', '2026-04-09 06:45:43'),
+(2, 1, NULL, 'Test User', 'test@example.com', 2, 'Updated via Next.js!', 1, '2026-04-09 06:06:50', '2026-04-09 06:27:54');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `course_sections`
+--
+
+CREATE TABLE `course_sections` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `course_id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `order` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `course_sections`
+--
+
+INSERT INTO `course_sections` (`id`, `course_id`, `title`, `order`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Listening Mastery', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(2, 1, 'Reading Excellence', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(3, 1, 'Writing Task 1', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(4, 1, 'Writing Task 2', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(5, 1, 'Speaking Confidence', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(6, 2, 'Research Fundamentals', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(7, 2, 'Essay Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(8, 2, 'Research Paper Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(9, 2, 'Citation & Referencing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(10, 2, 'Dissertation Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(11, 3, 'Professional Email Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(12, 3, 'Meeting Communication', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(13, 3, 'Presentation Skills', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(14, 3, 'Negotiation Language', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(15, 3, 'Report Writing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(16, 4, 'Finding Your Voice', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(17, 4, 'Character Development', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(18, 4, 'Plot & Structure', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(19, 4, 'Setting & World Building', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(20, 4, 'Editing & Publishing', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(21, 5, 'Pronunciation Basics', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(22, 5, 'Daily Conversations', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(23, 5, 'Social Situations', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(24, 5, 'Professional Speaking', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(25, 5, 'Advanced Fluency', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(26, 6, 'Task 1 Fundamentals', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(27, 6, 'Task 1 Advanced', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(28, 6, 'Task 2 Essay Types', 1, '2026-04-06 02:56:09', '2026-04-06 02:56:09'),
+(29, 6, 'Grammar for Writing', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(30, 6, 'Practice & Assessment', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(31, 7, 'Parts of Speech', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(32, 7, 'Tenses Mastery', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(33, 7, 'Sentence Structure', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(34, 7, 'Advanced Grammar', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(35, 7, 'Common Errors', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(36, 8, 'Presentation Planning', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(37, 8, 'Slide Design', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(38, 8, 'Delivery Techniques', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(39, 8, 'Engagement Strategies', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(40, 8, 'Q&A & Follow-up', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(41, 9, 'Story Foundations', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(42, 9, 'Character in Short Form', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(43, 9, 'Plot in Miniature', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(44, 9, 'Style & Voice', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(45, 9, 'Publication Ready', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(46, 10, 'Airport English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(47, 10, 'Hotel English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(48, 10, 'Restaurant English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(49, 10, 'Tourist English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(50, 10, 'Travel Industry English', 1, '2026-04-06 02:56:10', '2026-04-06 02:56:10'),
+(51, 14, 'Section 1', 0, '2026-04-06 04:49:32', '2026-04-06 04:49:32'),
+(52, 15, 'effe', 0, '2026-04-06 05:20:21', '2026-04-06 05:20:21'),
+(53, 16, 'Section 1', 0, '2026-04-06 05:22:05', '2026-04-06 05:22:05'),
+(54, 18, 'efefe', 0, '2026-04-06 05:31:35', '2026-04-06 05:31:35'),
+(55, 18, 'feefef', 1, '2026-04-06 05:31:35', '2026-04-06 05:31:35'),
+(56, 19, 'dvdvdv', 0, '2026-04-06 05:41:31', '2026-04-06 05:41:31'),
+(57, 20, 'yyy', 0, '2026-04-06 06:31:45', '2026-04-06 06:31:45'),
+(65, 24, 'vrfr', 0, '2026-04-06 07:26:27', '2026-04-06 07:26:27'),
+(66, 24, 'fvfv', 1, '2026-04-06 07:26:27', '2026-04-06 07:26:27'),
+(67, 25, 'Module 1: Introduction', 0, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(68, 25, 'Module 2: Core Concepts', 1, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(69, 25, 'Module 3: Advanced Techniques', 2, '2026-04-06 08:15:56', '2026-04-06 08:15:56'),
+(70, 26, 'S1', 0, '2026-04-07 01:11:56', '2026-04-07 01:11:56'),
+(71, 26, 'S2', 1, '2026-04-07 01:11:56', '2026-04-07 01:11:56'),
+(72, 27, 'HTML Fundamentals', 0, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(73, 27, 'CSS Styling', 1, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(74, 27, 'JavaScript Fundamentals', 2, '2026-04-07 08:51:09', '2026-04-07 08:51:09'),
+(75, 28, 'S1', 0, '2026-04-07 10:30:04', '2026-04-07 10:30:04'),
+(76, 28, 'aaaaaaaa', 1, '2026-04-07 10:47:06', '2026-04-07 10:47:06'),
+(77, 29, 'bfbfbfbfbf', 0, '2026-04-09 07:35:28', '2026-04-09 07:35:28'),
+(78, 30, 'efwefewf', 0, '2026-04-09 08:51:39', '2026-04-09 08:51:39');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `failed_jobs`
+--
+
+CREATE TABLE `failed_jobs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `uuid` varchar(255) NOT NULL,
+  `connection` text NOT NULL,
+  `queue` text NOT NULL,
+  `payload` longtext NOT NULL,
+  `exception` longtext NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `gallery_photos`
+--
+
+CREATE TABLE `gallery_photos` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `image_path` varchar(255) NOT NULL,
+  `order` int(11) NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jobs`
+--
+
+CREATE TABLE `jobs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `queue` varchar(255) NOT NULL,
+  `payload` longtext NOT NULL,
+  `attempts` tinyint(3) UNSIGNED NOT NULL,
+  `reserved_at` int(10) UNSIGNED DEFAULT NULL,
+  `available_at` int(10) UNSIGNED NOT NULL,
+  `created_at` int(10) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `job_batches`
+--
+
+CREATE TABLE `job_batches` (
+  `id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `total_jobs` int(11) NOT NULL,
+  `pending_jobs` int(11) NOT NULL,
+  `failed_jobs` int(11) NOT NULL,
+  `failed_job_ids` longtext NOT NULL,
+  `options` mediumtext DEFAULT NULL,
+  `cancelled_at` int(11) DEFAULT NULL,
+  `created_at` int(11) NOT NULL,
+  `finished_at` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `migrations`
+--
+
+CREATE TABLE `migrations` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `migration` varchar(255) NOT NULL,
+  `batch` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `migrations`
+--
+
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
+(1, '0001_01_01_000000_create_users_table', 1),
+(2, '0001_01_01_000001_create_cache_table', 1),
+(3, '0001_01_01_000002_create_jobs_table', 1),
+(4, '2026_04_01_164645_create_personal_access_tokens_table', 1),
+(5, '2026_04_01_164801_create_categories_table', 1),
+(6, '2026_04_01_164802_create_books_table', 1),
+(7, '2026_04_01_164805_create_orders_table', 1),
+(8, '2026_04_01_164806_create_order_items_table', 1),
+(9, '2026_04_01_172453_create_reviews_table', 1),
+(10, '2026_04_01_172454_create_questions_table', 1),
+(11, '2026_04_01_174942_create_wishlists_table', 2),
+(12, '2026_04_02_054858_add_avatar_to_users_table', 3),
+(13, '2026_04_02_060518_create_about_pages_table', 4),
+(14, '2026_04_02_065040_add_preview_content_to_books_table', 5),
+(15, '2026_04_02_070139_add_preview_images_to_books_table', 6),
+(16, '2026_04_02_072138_add_status_to_books_table', 7),
+(17, '2026_04_03_043020_update_book_statuses_to_draft_or_approved', 8),
+(18, '2026_04_03_000000_add_indexes_to_books_table', 9),
+(19, '2026_04_03_000001_add_indexes_to_questions_table', 9),
+(20, '2026_04_05_095532_create_courses_table', 9),
+(21, '2026_04_05_100953_add_preview_video_to_courses_table', 10),
+(22, '2026_04_05_112021_add_documents_and_quiz_to_courses_table', 11),
+(23, '2026_04_05_131354_add_lesson_structure_to_courses_table', 12),
+(24, '2026_04_06_053346_add_type_to_categories_table', 13),
+(25, '2026_04_06_083714_add_type_to_course_lessons_table', 14),
+(26, '2026_04_06_085014_add_course_id_to_order_items_table', 15),
+(27, '2026_04_06_085507_make_book_id_nullable_in_order_items', 16),
+(28, '2026_04_06_100322_add_lesson_id_to_course_quizzes_table', 17),
+(29, '2026_04_06_104825_remove_conflicting_columns_from_courses_table', 18),
+(30, '2026_04_08_150409_create_gallery_photos_table', 19),
+(31, '2026_04_09_050942_create_course_reviews_table', 20),
+(32, '2026_04_09_050947_create_course_questions_table', 20);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `orders`
+--
+
+CREATE TABLE `orders` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `total` decimal(10,2) NOT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'pending',
+  `payment_method` varchar(255) DEFAULT NULL,
+  `shipping_address` varchar(255) NOT NULL,
+  `city` varchar(255) NOT NULL,
+  `state` varchar(255) DEFAULT NULL,
+  `postal_code` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) NOT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`id`, `user_id`, `total`, `status`, `payment_method`, `shipping_address`, `city`, `state`, `postal_code`, `phone`, `notes`, `created_at`, `updated_at`) VALUES
+(1, 2, 135.96, 'delivered', 'paypal', '123 Main St, New York, NY', 'Sample City', NULL, NULL, '+1987654321', 'Seeded order', '2026-03-16 10:57:14', '2026-04-02 10:57:14'),
+(2, 2, 52.97, 'shipped', 'card', '123 Main St, New York, NY', 'Sample City', NULL, NULL, '+1987654321', 'Seeded order', '2026-04-01 10:57:14', '2026-04-02 10:57:14'),
+(3, 2, 151.91, 'pending', 'paypal', '123 Main St, New York, NY', 'Sample City', NULL, NULL, '+1987654321', 'Seeded order', '2026-03-06 10:57:14', '2026-04-02 10:57:14'),
+(4, 2, 57.96, 'processing', 'cod', '123 Main St, New York, NY', 'Sample City', NULL, NULL, '+1987654321', 'Seeded order', '2026-03-27 10:57:14', '2026-04-02 10:57:14'),
+(5, 2, 746.97, 'processing', 'paypal', '123 Main St, New York, NY', 'Sample City', NULL, NULL, '+1987654321', 'Seeded order', '2026-03-10 10:57:14', '2026-04-02 10:57:14'),
+(6, 2, 102.95, 'delivered', 'cod', '123 Main St, New York, NY', 'Sample City', NULL, NULL, '+1987654321', 'Seeded order', '2026-03-28 10:57:14', '2026-04-02 10:57:14'),
+(7, 2, 80.95, 'delivered', 'cod', '123 Main St, New York, NY', 'Sample City', NULL, NULL, '+1987654321', 'Seeded order', '2026-03-08 10:57:14', '2026-04-02 10:57:14'),
+(8, 2, 257.92, 'delivered', 'card', '123 Main St, New York, NY', 'Sample City', NULL, NULL, '+1987654321', 'Seeded order', '2026-03-07 10:57:14', '2026-04-02 10:57:14'),
+(9, 2, 159.96, 'pending', 'paypal', '123 Main St, New York, NY', 'Sample City', NULL, NULL, '+1987654321', 'Seeded order', '2026-03-10 11:46:15', '2026-04-02 11:46:15'),
+(10, 4, 160.90, 'delivered', 'card', '123 Example St', 'Sample City', NULL, NULL, '+10000000000', 'Seeded order', '2026-03-06 11:46:15', '2026-04-02 11:46:15'),
+(11, 4, 56.97, 'delivered', 'paypal', '123 Example St', 'Sample City', NULL, NULL, '+10000000000', 'Seeded order', '2026-03-15 11:46:15', '2026-04-02 11:46:15'),
+(12, 4, 129.92, 'pending', 'cod', '123 Example St', 'Sample City', NULL, NULL, '+10000000000', 'Seeded order', '2026-03-21 11:46:15', '2026-04-02 11:46:15'),
+(13, 4, 140.95, 'delivered', 'paypal', '123 Example St', 'Sample City', NULL, NULL, '+10000000000', 'Seeded order', '2026-03-15 11:46:15', '2026-04-02 11:46:15'),
+(14, 4, 68.97, 'delivered', 'cod', '123 Example St', 'Sample City', NULL, NULL, '+10000000000', 'Seeded order', '2026-03-03 11:46:15', '2026-04-02 11:46:15'),
+(15, 2, 35.97, 'pending', 'cod', '123 Main St, New York, NY', 'Sample City', NULL, NULL, '+1987654321', 'Seeded order', '2026-03-21 11:46:15', '2026-04-02 11:46:15'),
+(16, 4, 92.96, 'pending', 'card', '123 Example St', 'Sample City', NULL, NULL, '+10000000000', 'Seeded order', '2026-03-30 11:46:15', '2026-04-02 11:46:15'),
+(17, 7, 29.99, 'shipped', 'stripe', 'Fatima Khan, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801306074049', NULL, '2026-04-06 02:50:10', '2026-04-06 02:50:10'),
+(18, 7, 59.99, 'shipped', 'cod', 'Fatima Khan, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801974329194', NULL, '2026-04-06 02:51:55', '2026-04-06 02:51:55'),
+(19, 9, 34.99, 'shipped', 'cod', 'Nadia Islam, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801528664585', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(20, 6, 49.99, 'delivered', 'stripe', 'Rahim Ahmed, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801875753208', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(21, 10, 54.99, 'processing', 'cod', 'Tariq Ali, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801792736234', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(22, 9, 29.99, 'pending', 'cod', 'Nadia Islam, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801399615282', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(23, 9, 29.99, 'shipped', 'stripe', 'Nadia Islam, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801307254965', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(24, 10, 34.99, 'shipped', 'stripe', 'Tariq Ali, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801775398988', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(25, 10, 49.99, 'pending', 'bkash', 'Tariq Ali, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801827746011', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(26, 8, 69.99, 'processing', 'stripe', 'Karim Hassan, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801552914221', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(27, 6, 29.99, 'shipped', 'bkash', 'Rahim Ahmed, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801961973293', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(28, 7, 59.99, 'processing', 'bkash', 'Fatima Khan, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801647170199', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(29, 8, 45.99, 'pending', 'stripe', 'Karim Hassan, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801763313080', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(30, 6, 49.99, 'shipped', 'stripe', 'Rahim Ahmed, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801294778285', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(31, 8, 29.99, 'pending', 'stripe', 'Karim Hassan, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801611466802', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(32, 6, 54.99, 'delivered', 'bkash', 'Rahim Ahmed, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801840507879', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(33, 10, 45.99, 'pending', 'stripe', 'Tariq Ali, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801356791223', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(34, 7, 29.99, 'pending', 'cod', 'Fatima Khan, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801726705986', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(35, 8, 49.99, 'delivered', 'stripe', 'Karim Hassan, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801871544197', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(36, 7, 29.99, 'processing', 'bkash', 'Fatima Khan, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801139213363', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(37, 6, 59.99, 'pending', 'bkash', 'Rahim Ahmed, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801478582632', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(38, 8, 54.99, 'processing', 'bkash', 'Karim Hassan, Dhaka, Bangladesh', 'Dhaka', NULL, '1200', '+8801961916023', NULL, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(39, 2, 189.97, 'completed', 'cod', 'N/A - Course Only', 'N/A', NULL, NULL, '+1987654321', 'Course enrollment order', '2026-04-09 00:12:46', '2026-04-09 00:12:46'),
+(40, 2, 189.97, 'completed', 'cod', 'N/A - Course Only', 'N/A', NULL, NULL, '+1987654321', 'Course enrollment order', '2026-04-09 00:13:28', '2026-04-09 00:13:28'),
+(45, 12, 55.00, 'completed', 'cod', 'N/A - Course Enrollment', 'N/A', NULL, NULL, '0000000000', NULL, '2026-04-09 03:38:02', '2026-04-09 03:38:02'),
+(46, 2, 55.00, 'completed', 'cod', 'N/A - Course Enrollment', 'N/A', NULL, NULL, '0000000000', NULL, '2026-04-09 07:30:19', '2026-04-09 07:30:19'),
+(47, 13, 55.00, 'completed', 'cod', 'N/A - Course Enrollment', 'N/A', NULL, NULL, '0000000000', NULL, '2026-04-09 08:37:42', '2026-04-09 08:37:42');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `order_items`
+--
+
+CREATE TABLE `order_items` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `order_id` bigint(20) UNSIGNED NOT NULL,
+  `book_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `course_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `quantity` int(11) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `order_items`
+--
+
+INSERT INTO `order_items` (`id`, `order_id`, `book_id`, `course_id`, `quantity`, `price`, `created_at`, `updated_at`) VALUES
+(1, 1, 7, NULL, 2, 44.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(2, 1, 9, NULL, 2, 22.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(3, 2, 12, NULL, 1, 17.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(4, 2, 14, NULL, 1, 13.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(5, 2, 16, NULL, 1, 20.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(6, 3, 4, NULL, 1, 18.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(7, 3, 5, NULL, 2, 16.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(8, 3, 16, NULL, 3, 20.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(9, 3, 24, NULL, 3, 11.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(10, 4, 1, NULL, 1, 12.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(11, 4, 15, NULL, 3, 14.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(12, 5, 2, NULL, 3, 14.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(13, 5, 19, NULL, 1, 234.00, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(14, 5, 23, NULL, 2, 234.00, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(15, 6, 10, NULL, 2, 19.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(16, 6, 16, NULL, 3, 20.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(17, 7, 11, NULL, 3, 16.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(18, 7, 15, NULL, 2, 14.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(19, 8, 2, NULL, 1, 14.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(20, 8, 6, NULL, 2, 39.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(21, 8, 7, NULL, 3, 44.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(22, 8, 14, NULL, 2, 13.99, '2026-04-02 10:57:14', '2026-04-02 10:57:14'),
+(23, 9, 8, NULL, 2, 42.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(24, 9, 36, NULL, 2, 36.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(25, 10, 2, NULL, 3, 14.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(26, 10, 4, NULL, 2, 18.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(27, 10, 26, NULL, 2, 11.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(28, 10, 33, NULL, 3, 17.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(29, 11, 16, NULL, 1, 20.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(30, 11, 51, NULL, 2, 17.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(31, 12, 12, NULL, 3, 17.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(32, 12, 15, NULL, 2, 14.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(33, 12, 24, NULL, 2, 11.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(34, 12, 42, NULL, 1, 21.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(35, 13, 5, NULL, 3, 16.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(36, 13, 7, NULL, 2, 44.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(37, 14, 9, NULL, 3, 22.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(38, 15, 26, NULL, 3, 11.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(39, 16, 2, NULL, 1, 14.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(40, 16, 37, NULL, 2, 29.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(41, 16, 62, NULL, 1, 17.99, '2026-04-02 11:46:15', '2026-04-02 11:46:15'),
+(42, 19, NULL, 7, 1, 34.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(43, 20, NULL, 4, 1, 49.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(44, 21, NULL, 8, 1, 54.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(45, 22, NULL, 9, 1, 29.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(46, 23, NULL, 9, 1, 29.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(47, 24, NULL, 7, 1, 34.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(48, 25, NULL, 4, 1, 49.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(49, 26, NULL, 3, 1, 69.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(50, 27, NULL, 9, 1, 29.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(51, 28, NULL, 2, 1, 59.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(52, 29, NULL, 6, 1, 45.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(53, 30, NULL, 4, 1, 49.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(54, 31, NULL, 9, 1, 29.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(55, 32, NULL, 8, 1, 54.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(56, 33, NULL, 6, 1, 45.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(57, 34, NULL, 9, 1, 29.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(58, 35, NULL, 4, 1, 49.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(59, 36, NULL, 9, 1, 29.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(60, 37, NULL, 2, 1, 59.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(61, 38, NULL, 8, 1, 54.99, '2026-04-06 02:56:11', '2026-04-06 02:56:11'),
+(62, 39, NULL, 1, 1, 79.99, '2026-04-09 00:12:46', '2026-04-09 00:12:46'),
+(63, 39, NULL, 2, 1, 59.99, '2026-04-09 00:12:46', '2026-04-09 00:12:46'),
+(64, 39, NULL, 4, 1, 49.99, '2026-04-09 00:12:46', '2026-04-09 00:12:46'),
+(65, 40, NULL, 1, 1, 79.99, '2026-04-09 00:13:28', '2026-04-09 00:13:28'),
+(66, 40, NULL, 2, 1, 59.99, '2026-04-09 00:13:28', '2026-04-09 00:13:28'),
+(67, 40, NULL, 4, 1, 49.99, '2026-04-09 00:13:28', '2026-04-09 00:13:28'),
+(72, 45, NULL, 26, 1, 55.00, '2026-04-09 03:38:02', '2026-04-09 03:38:02'),
+(73, 46, NULL, 26, 1, 55.00, '2026-04-09 07:30:19', '2026-04-09 07:30:19'),
+(74, 47, NULL, 26, 1, 55.00, '2026-04-09 08:37:42', '2026-04-09 08:37:42');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `password_reset_tokens`
+--
+
+CREATE TABLE `password_reset_tokens` (
+  `email` varchar(255) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `personal_access_tokens`
+--
+
+CREATE TABLE `personal_access_tokens` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `tokenable_type` varchar(255) NOT NULL,
+  `tokenable_id` bigint(20) UNSIGNED NOT NULL,
+  `name` text NOT NULL,
+  `token` varchar(64) NOT NULL,
+  `abilities` text DEFAULT NULL,
+  `last_used_at` timestamp NULL DEFAULT NULL,
+  `expires_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `personal_access_tokens`
+--
+
+INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `name`, `token`, `abilities`, `last_used_at`, `expires_at`, `created_at`, `updated_at`) VALUES
+(1, 'App\\Models\\User', 2, 'auth-token', 'a86c3666fff17d7999d3362e1eb6d53a1d380761d57859e34ec6a29f8488c0cd', '[\"*\"]', '2026-04-01 11:56:54', NULL, '2026-04-01 11:40:25', '2026-04-01 11:56:54'),
+(2, 'App\\Models\\User', 2, 'auth-token', '005a2852f0a0d87cb0ce40d432bccc263d87000871327f70069fcfe11ee647de', '[\"*\"]', '2026-04-01 11:58:17', NULL, '2026-04-01 11:58:08', '2026-04-01 11:58:17'),
+(3, 'App\\Models\\User', 2, 'auth-token', 'f5910264d0259379a891999d8902e145224eebc8f28a395b1ec875f5ba0409af', '[\"*\"]', '2026-04-01 12:05:34', NULL, '2026-04-01 12:04:11', '2026-04-01 12:05:34'),
+(4, 'App\\Models\\User', 2, 'auth-token', 'ffd1f45135b88130dfa207dea67d5cd27d04f2ac7649fdf96b4f14b17f161861', '[\"*\"]', '2026-04-01 12:39:55', NULL, '2026-04-01 12:12:07', '2026-04-01 12:39:55'),
+(5, 'App\\Models\\User', 2, 'auth-token', '09dddde2bcf8748f463a782e0591d6f92d815ef691e400e001504624fcee5d04', '[\"*\"]', '2026-04-01 12:37:13', NULL, '2026-04-01 12:37:06', '2026-04-01 12:37:13'),
+(30, 'App\\Models\\User', 2, 'auth-token', '68a6634520222ac8852edc053cc6a4208fb1c3fded93662d3d9404d41162866e', '[\"*\"]', '2026-04-02 11:47:56', NULL, '2026-04-02 11:38:35', '2026-04-02 11:47:56'),
+(32, 'App\\Models\\User', 5, 'auth-token', 'b1f7bb5a4ec9279d4f51879063718f7d96d170a3b09a18fbc365e22dcca21689', '[\"*\"]', '2026-04-02 12:15:43', NULL, '2026-04-02 12:13:39', '2026-04-02 12:15:43'),
+(33, 'App\\Models\\User', 1, 'auth-token', '9b93ec032368eddafe4787f63dd9a3f40f1d23ef59fd36266352c03b00c09b1d', '[\"*\"]', '2026-04-02 12:16:53', NULL, '2026-04-02 12:15:56', '2026-04-02 12:16:53'),
+(37, 'App\\Models\\User', 1, 'auth-token', 'a5cdfba5ac5ce7988e33d4c575c2fefbfd9f042bf134547174743c7f85cb1a4c', '[\"*\"]', '2026-04-03 02:47:17', NULL, '2026-04-02 23:36:57', '2026-04-03 02:47:17'),
+(62, 'App\\Models\\User', 1, 'auth-token', '94f56f99f7be6f9590283f2f5efc3683c2392efac5567fc8d3cb51596501060a', '[\"*\"]', '2026-04-07 01:22:04', NULL, '2026-04-06 04:46:49', '2026-04-07 01:22:04'),
+(64, 'App\\Models\\User', 2, 'auth-token', 'c237175f5d51c2b4515973401342b8fe404aa264e75495116a4827d5bff4c830', '[\"*\"]', '2026-04-08 05:01:16', NULL, '2026-04-08 04:57:33', '2026-04-08 05:01:16'),
+(87, 'App\\Models\\User', 12, 'auth-token', '9f319da166a6988abdb2e3194c48f8bcb49af53f8561ee6ebc5cdc09958b84aa', '[\"*\"]', '2026-04-09 04:58:02', NULL, '2026-04-09 04:22:30', '2026-04-09 04:58:02'),
+(97, 'App\\Models\\User', 1, 'auth-token', '38c3bc7f3d7f35204fbab938dd64577566d8346362b87e349527dc7c51d00a80', '[\"*\"]', '2026-04-09 08:52:51', NULL, '2026-04-09 08:43:27', '2026-04-09 08:52:51');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `questions`
+--
+
+CREATE TABLE `questions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `book_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `user_name` varchar(255) NOT NULL,
+  `user_email` varchar(255) DEFAULT NULL,
+  `question` text NOT NULL,
+  `answer` text DEFAULT NULL,
+  `is_answered` tinyint(1) NOT NULL DEFAULT 0,
+  `is_approved` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `questions`
+--
+
+INSERT INTO `questions` (`id`, `book_id`, `user_id`, `user_name`, `user_email`, `question`, `answer`, `is_answered`, `is_approved`, `created_at`, `updated_at`) VALUES
+(1, 1, NULL, 'Sarah Mitchell', 'sarah@email.com', 'Is this the original unabridged version or a shortened edition? I want the complete text.', 'yo', 1, 1, '2026-02-21 11:26:29', '2026-04-02 22:25:10'),
+(2, 1, NULL, 'James Wilson', 'james@email.com', 'Does this edition include any study guides or annotations?', 'This is the standard edition without additional study materials. Check our \"Annotated Classics\" section for editions with guides.', 1, 1, '2026-03-06 11:26:29', '2026-04-01 11:26:29'),
+(3, 2, NULL, 'Emily Chen', 'emily@email.com', 'Is this appropriate for a 13-year-old reader?', 'Yes, it\'s commonly assigned in middle school curricula. Some themes are mature but handled thoughtfully.', 1, 1, '2026-03-28 11:26:29', '2026-04-01 11:26:29'),
+(4, 2, NULL, 'Michael Brown', 'michael@email.com', 'How does this compare to the movie adaptation?', 'The book offers much deeper character development and internal monologue that the films can\'t capture. Always read the book first!', 1, 1, '2026-02-07 11:26:29', '2026-04-01 11:26:29'),
+(6, 6, NULL, 'David Kim', 'david@email.com', 'Is this the 2nd edition? I heard it has updated examples.', 'This is the original edition. The 2nd edition is available separately with updated code examples in modern languages.', 1, 1, '2026-03-01 11:26:29', '2026-04-01 11:26:29'),
+(7, 6, NULL, 'Rachel Green', 'rachel@email.com', 'Are the code examples in Java or can they be applied to other languages?', 'The examples are primarily in Java but the principles are language-agnostic and apply to any object-oriented language.', 1, 1, '2026-02-10 11:26:29', '2026-04-01 11:26:29'),
+(8, 9, NULL, 'Tom Harris', 'tom@email.com', 'How does this compare to \"Guns, Germs, and Steel\" by the same author?', 'Sapiens covers the entire span of human history while GGS focuses on why certain civilizations dominated. They complement each other well.', 1, 1, '2026-03-06 11:26:29', '2026-04-01 11:26:29'),
+(9, 11, NULL, 'Anna Lee', 'anna@email.com', 'Does this book include worksheets or practical exercises?', 'Yes! The book includes practical exercises at the end of each chapter plus access to free downloadable worksheets on the author\'s website.', 1, 1, '2026-02-01 11:26:29', '2026-04-01 11:26:29'),
+(10, 15, NULL, 'Chris Taylor', 'chris@email.com', 'Is this the illustrated edition or text only?', 'This is the standard text-only edition. The illustrated edition with artwork by Pablo Picasso is available separately.', 1, 1, '2026-02-05 11:26:29', '2026-04-01 11:26:29'),
+(11, 2, NULL, 'John Doe', 'john@example.com', 'hi', 'yo', 1, 1, '2026-04-01 23:36:58', '2026-04-02 05:14:34'),
+(12, 1, NULL, 'Sarah Mitchell', 'sarah@email.com', 'Is this the original unabridged version or a shortened edition? I want the complete text.', 'This is the complete, unabridged version of The Great Gatsby as originally published by Scribner.', 1, 1, '2026-03-30 10:57:14', '2026-04-02 10:57:14'),
+(13, 1, NULL, 'James Wilson', 'james@email.com', 'Does this edition include any study guides or annotations?', 'This is the standard edition without additional study materials. Check our \"Annotated Classics\" section for editions with guides.', 1, 1, '2026-03-03 10:57:14', '2026-04-02 10:57:14'),
+(14, 2, NULL, 'Emily Chen', 'emily@email.com', 'Is this appropriate for a 13-year-old reader?', 'Yes, it\'s commonly assigned in middle school curricula. Some themes are mature but handled thoughtfully.', 1, 1, '2026-03-06 10:57:14', '2026-04-02 10:57:14'),
+(15, 2, NULL, 'Michael Brown', 'michael@email.com', 'How does this compare to the movie adaptation?', 'The book offers much deeper character development and internal monologue that the films can\'t capture. Always read the book first!', 1, 1, '2026-03-29 10:57:14', '2026-04-02 10:57:14'),
+(16, 24, NULL, 'Lisa Anderson', 'lisa@email.com', 'Which edition/translation is this? Some versions have different appendices.', 'This is the standard Signet Classic edition which includes the original text. It does not include additional essays or appendices.', 1, 1, '2026-03-26 10:57:14', '2026-04-02 10:57:14'),
+(17, 6, NULL, 'David Kim', 'david@email.com', 'Is this the 2nd edition? I heard it has updated examples.', 'This is the original edition. The 2nd edition is available separately with updated code examples in modern languages.', 1, 1, '2026-02-27 10:57:14', '2026-04-02 10:57:14'),
+(18, 6, NULL, 'Rachel Green', 'rachel@email.com', 'Are the code examples in Java or can they be applied to other languages?', 'The examples are primarily in Java but the principles are language-agnostic and apply to any object-oriented language.', 1, 1, '2026-03-27 10:57:14', '2026-04-02 10:57:14'),
+(19, 9, NULL, 'Tom Harris', 'tom@email.com', 'How does this compare to \"Guns, Germs, and Steel\" by the same author?', 'Sapiens covers the entire span of human history while GGS focuses on why certain civilizations dominated. They complement each other well.', 1, 1, '2026-02-26 10:57:14', '2026-04-02 10:57:14'),
+(20, 11, NULL, 'Anna Lee', 'anna@email.com', 'Does this book include worksheets or practical exercises?', 'Yes! The book includes practical exercises at the end of each chapter plus access to free downloadable worksheets on the author\'s website.', 1, 1, '2026-02-26 10:57:14', '2026-04-02 10:57:14'),
+(21, 15, NULL, 'Chris Taylor', 'chris@email.com', 'Is this the illustrated edition or text only?', 'This is the standard text-only edition. The illustrated edition with artwork by Pablo Picasso is available separately.', 1, 1, '2026-03-07 10:57:14', '2026-04-02 10:57:14'),
+(22, 1, NULL, 'Sarah Mitchell', 'sarah@email.com', 'Is this the original unabridged version or a shortened edition? I want the complete text.', 'This is the complete, unabridged version of The Great Gatsby as originally published by Scribner.', 1, 1, '2026-03-03 11:46:15', '2026-04-02 11:46:15'),
+(23, 1, NULL, 'James Wilson', 'james@email.com', 'Does this edition include any study guides or annotations?', 'This is the standard edition without additional study materials. Check our \"Annotated Classics\" section for editions with guides.', 1, 1, '2026-03-18 11:46:15', '2026-04-02 11:46:15'),
+(24, 2, NULL, 'Emily Chen', 'emily@email.com', 'Is this appropriate for a 13-year-old reader?', 'Yes, it\'s commonly assigned in middle school curricula. Some themes are mature but handled thoughtfully.', 1, 1, '2026-02-16 11:46:15', '2026-04-02 11:46:15'),
+(25, 2, NULL, 'Michael Brown', 'michael@email.com', 'How does this compare to the movie adaptation?', 'The book offers much deeper character development and internal monologue that the films can\'t capture. Always read the book first!', 1, 1, '2026-02-16 11:46:15', '2026-04-02 11:46:15'),
+(26, 24, NULL, 'Lisa Anderson', 'lisa@email.com', 'Which edition/translation is this? Some versions have different appendices.', 'This is the standard Signet Classic edition which includes the original text. It does not include additional essays or appendices.', 1, 1, '2026-03-19 11:46:15', '2026-04-02 11:46:15'),
+(27, 6, NULL, 'David Kim', 'david@email.com', 'Is this the 2nd edition? I heard it has updated examples.', 'This is the original edition. The 2nd edition is available separately with updated code examples in modern languages.', 1, 1, '2026-03-24 11:46:15', '2026-04-02 11:46:15'),
+(28, 6, NULL, 'Rachel Green', 'rachel@email.com', 'Are the code examples in Java or can they be applied to other languages?', 'The examples are primarily in Java but the principles are language-agnostic and apply to any object-oriented language.', 1, 1, '2026-02-06 11:46:15', '2026-04-02 11:46:15'),
+(29, 9, NULL, 'Tom Harris', 'tom@email.com', 'How does this compare to \"Guns, Germs, and Steel\" by the same author?', 'Sapiens covers the entire span of human history while GGS focuses on why certain civilizations dominated. They complement each other well.', 1, 1, '2026-03-05 11:46:15', '2026-04-02 11:46:15'),
+(30, 11, NULL, 'Anna Lee', 'anna@email.com', 'Does this book include worksheets or practical exercises?', 'Yes! The book includes practical exercises at the end of each chapter plus access to free downloadable worksheets on the author\'s website.', 1, 1, '2026-03-17 11:46:15', '2026-04-02 11:46:15'),
+(31, 15, NULL, 'Chris Taylor', 'chris@taylor.com', 'Is this the illustrated edition or text only?', 'This is the standard text-only edition. The illustrated edition with artwork by Pablo Picasso is available separately.', 1, 1, '2026-02-11 11:46:15', '2026-04-02 11:46:15'),
+(32, 1, NULL, 'Anonymous', NULL, 'Is this book good for beginners?', 'Yes, this book is great for beginners!', 1, 1, '2026-04-02 12:14:48', '2026-04-02 12:16:49'),
+(33, 26, NULL, 'John Doe', 'john@example.com', 'hi', NULL, 0, 1, '2026-04-03 08:31:43', '2026-04-03 08:31:43');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reviews`
+--
+
+CREATE TABLE `reviews` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `book_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `user_name` varchar(255) NOT NULL,
+  `user_email` varchar(255) DEFAULT NULL,
+  `rating` int(11) NOT NULL DEFAULT 5,
+  `comment` text NOT NULL,
+  `is_approved` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `reviews`
+--
+
+INSERT INTO `reviews` (`id`, `book_id`, `user_id`, `user_name`, `user_email`, `rating`, `comment`, `is_approved`, `created_at`, `updated_at`) VALUES
+(1, 1, NULL, 'Sarah Mitchell', 'sarah@email.com', 5, 'An absolute masterpiece! Fitzgerald\'s prose is breathtaking and the portrayal of the Jazz Age is unmatched. Every re-read reveals new layers of meaning.', 1, '2026-02-20 11:26:29', '2026-04-01 11:26:29'),
+(2, 1, NULL, 'James Wilson', 'james@email.com', 4, 'Beautiful writing but the characters are so flawed it\'s hard to root for anyone. Still, a must-read classic that everyone should experience.', 1, '2026-03-08 11:26:29', '2026-04-01 11:26:29'),
+(3, 1, NULL, 'Emily Chen', 'emily@email.com', 5, 'The symbolism in this book is incredible. The green light, the eyes of Dr. T.J. Eckleburg - every detail has meaning. A true work of art.', 1, '2026-01-08 11:26:29', '2026-04-01 11:26:29'),
+(4, 2, NULL, 'Michael Brown', 'michael@email.com', 5, 'This book changed my perspective on justice and morality. Scout\'s innocent yet perceptive narration makes the heavy themes accessible and deeply moving.', 1, '2026-01-11 11:26:29', '2026-04-01 11:26:29'),
+(5, 2, NULL, 'Lisa Anderson', 'lisa@email.com', 5, 'Atticus Finch is one of the greatest literary heroes ever created. His quiet courage and moral integrity are inspiring. A timeless classic.', 1, '2026-03-26 11:26:29', '2026-04-01 11:26:29'),
+(8, 4, NULL, 'Tom Harris', 'tom@email.com', 5, 'Stephen Hawking makes the most complex concepts of the universe accessible to everyone. I\'ve read it three times and each time I understand more.', 1, '2026-02-28 11:26:29', '2026-04-01 11:26:29'),
+(9, 4, NULL, 'Anna Lee', 'anna@email.com', 4, 'Some parts are challenging to grasp but the overall journey through cosmology is fascinating. Hawking\'s passion for the subject shines through every page.', 1, '2026-01-12 11:26:29', '2026-04-01 11:26:29'),
+(10, 5, NULL, 'Chris Taylor', 'chris@email.com', 4, 'Dawkins presents a compelling case for gene-centered evolution. It challenges how we think about life and natural selection. Dense but rewarding.', 1, '2026-02-16 11:26:29', '2026-04-01 11:26:29'),
+(11, 6, NULL, 'Sarah Mitchell', 'sarah@email.com', 5, 'Every programmer should read this book. Uncle Bob\'s principles have transformed how I write code. Clean code is not just a goal, it\'s a discipline.', 1, '2026-02-23 11:26:29', '2026-04-01 11:26:29'),
+(12, 6, NULL, 'James Wilson', 'james@email.com', 4, 'Excellent practical advice for writing maintainable code. Some examples feel dated but the core principles are timeless. A developer\'s essential guide.', 1, '2026-01-17 11:26:29', '2026-04-01 11:26:29'),
+(13, 7, NULL, 'Emily Chen', 'emily@email.com', 4, 'The Gang of Four patterns are foundational to software design. Some patterns feel over-engineered for modern development, but understanding them is invaluable.', 1, '2026-03-04 11:26:29', '2026-04-01 11:26:29'),
+(14, 8, NULL, 'Michael Brown', 'michael@email.com', 5, 'This book made me a better developer overnight. The pragmatic approach to software engineering is refreshing and immediately applicable to any project.', 1, '2026-01-02 11:26:29', '2026-04-01 11:26:29'),
+(15, 9, NULL, 'Lisa Anderson', 'lisa@email.com', 5, 'Harari weaves anthropology, history, and philosophy into an incredible narrative. It fundamentally changed how I think about human civilization and progress.', 1, '2026-03-28 11:26:29', '2026-04-01 11:26:29'),
+(16, 9, NULL, 'David Kim', 'david@email.com', 4, 'Fascinating journey through human history. Some arguments are debatable but the overall thesis is thought-provoking and well-researched.', 1, '2026-01-07 11:26:29', '2026-04-01 11:26:29'),
+(17, 10, NULL, 'Rachel Green', 'rachel@email.com', 4, 'Diamond\'s thesis about geography shaping civilization is compelling. A sweeping analysis that connects dots across continents and millennia.', 1, '2026-01-25 11:26:29', '2026-04-01 11:26:29'),
+(18, 11, NULL, 'Tom Harris', 'tom@email.com', 5, 'Atomic Habits is the best self-help book I\'ve ever read. Clear\'s four-step framework is simple yet powerful. I\'ve already seen real changes in my daily routine.', 1, '2026-03-20 11:26:29', '2026-04-01 11:26:29'),
+(19, 11, NULL, 'Anna Lee', 'anna@email.com', 5, 'Finally, a habits book that actually works! The concept of 1% improvement is transformative. Small changes really do compound into remarkable results.', 1, '2026-01-18 11:26:29', '2026-04-01 11:26:29'),
+(20, 12, NULL, 'Chris Taylor', 'chris@email.com', 4, 'Great framework for startups. The build-measure-learn loop is a game-changer. Some concepts are overused now but the original insights are still valuable.', 1, '2026-02-24 11:26:29', '2026-04-01 11:26:29'),
+(21, 13, NULL, 'Sarah Mitchell', 'sarah@email.com', 5, 'Kahneman\'s exploration of System 1 and System 2 thinking is mind-blowing. It explains so many of our irrational decisions. Essential reading for anyone.', 1, '2026-02-12 11:26:29', '2026-04-01 11:26:29'),
+(22, 13, NULL, 'James Wilson', 'james@email.com', 4, 'Dense but incredibly insightful. The research on cognitive biases is eye-opening. Be prepared to question your own thinking after reading this.', 1, '2026-03-22 11:26:29', '2026-04-01 11:26:29'),
+(23, 14, NULL, 'Emily Chen', 'emily@email.com', 5, 'Tolle\'s message about living in the present moment is simple yet profound. This book helped me find peace in the chaos of modern life.', 1, '2026-02-03 11:26:29', '2026-04-01 11:26:29'),
+(24, 14, NULL, 'Michael Brown', 'michael@email.com', 4, 'A spiritual guide that actually makes sense. The concept of the \"pain body\" resonated deeply with me. Practical wisdom for everyday mindfulness.', 1, '2026-01-30 11:26:29', '2026-04-01 11:26:29'),
+(25, 15, NULL, 'Lisa Anderson', 'lisa@email.com', 5, 'A beautiful fable about following your dreams. Coelho\'s writing is poetic and the story is universal. I return to this book every few years.', 1, '2026-02-06 11:26:29', '2026-04-01 11:26:29'),
+(26, 15, NULL, 'David Kim', 'david@email.com', 4, 'Simple yet profound. The Alchemist reminds us that the journey is as important as the destination. A quick read with lasting impact.', 1, '2026-03-19 11:26:29', '2026-04-01 11:26:29'),
+(27, 16, NULL, 'Rachel Green', 'rachel@email.com', 5, 'Carl Sagan\'s wonder at the cosmos is infectious. This book reignited my childhood fascination with space and the universe. Beautifully written and illustrated.', 1, '2026-03-27 11:26:29', '2026-04-01 11:26:29'),
+(28, 16, NULL, 'Tom Harris', 'tom@email.com', 4, 'Sagan makes astronomy and cosmology accessible to everyone. His poetic prose combined with scientific rigor creates something truly special.', 1, '2026-02-10 11:26:29', '2026-04-01 11:26:29'),
+(30, 1, NULL, 'Sarah Mitchell', 'sarah@email.com', 5, 'An absolute masterpiece! Fitzgerald\'s prose is breathtaking and the portrayal of the Jazz Age is unmatched. Every re-read reveals new layers of meaning.', 1, '2026-01-25 10:54:54', '2026-04-02 10:54:54'),
+(31, 1, NULL, 'James Wilson', 'james@email.com', 4, 'Beautiful writing but the characters are so flawed it\'s hard to root for anyone. Still, a must-read classic that everyone should experience.', 1, '2026-03-25 10:54:54', '2026-04-02 10:54:54'),
+(32, 1, NULL, 'Emily Chen', 'emily@email.com', 5, 'The symbolism in this book is incredible. The green light, the eyes of Dr. T.J. Eckleburg - every detail has meaning. A true work of art.', 1, '2026-02-12 10:54:54', '2026-04-02 10:54:54'),
+(33, 2, NULL, 'Michael Brown', 'michael@email.com', 5, 'This book changed my perspective on justice and morality. Scout\'s innocent yet perceptive narration makes the heavy themes accessible and deeply moving.', 1, '2026-03-07 10:54:54', '2026-04-02 10:54:54'),
+(34, 2, NULL, 'Lisa Anderson', 'lisa@email.com', 5, 'Atticus Finch is one of the greatest literary heroes ever created. His quiet courage and moral integrity are inspiring. A timeless classic.', 1, '2026-01-27 10:54:54', '2026-04-02 10:54:54'),
+(36, 1, NULL, 'Sarah Mitchell', 'sarah@email.com', 5, 'An absolute masterpiece! Fitzgerald\'s prose is breathtaking and the portrayal of the Jazz Age is unmatched. Every re-read reveals new layers of meaning.', 1, '2026-01-29 10:57:14', '2026-04-02 10:57:14'),
+(37, 1, NULL, 'James Wilson', 'james@email.com', 4, 'Beautiful writing but the characters are so flawed it\'s hard to root for anyone. Still, a must-read classic that everyone should experience.', 1, '2026-01-09 10:57:14', '2026-04-02 10:57:14'),
+(38, 1, NULL, 'Emily Chen', 'emily@email.com', 5, 'The symbolism in this book is incredible. The green light, the eyes of Dr. T.J. Eckleburg - every detail has meaning. A true work of art.', 1, '2026-03-07 10:57:14', '2026-04-02 10:57:14'),
+(39, 2, NULL, 'Michael Brown', 'michael@email.com', 5, 'This book changed my perspective on justice and morality. Scout\'s innocent yet perceptive narration makes the heavy themes accessible and deeply moving.', 1, '2026-01-17 10:57:14', '2026-04-02 10:57:14'),
+(40, 2, NULL, 'Lisa Anderson', 'lisa@email.com', 5, 'Atticus Finch is one of the greatest literary heroes ever created. His quiet courage and moral integrity are inspiring. A timeless classic.', 1, '2026-01-30 10:57:14', '2026-04-02 10:57:14'),
+(41, 24, NULL, 'David Kim', 'david@email.com', 4, 'Orwell\'s dystopian vision feels more relevant than ever. The concepts of doublethink and Newspeak are chillingly prescient. A must-read for our times.', 1, '2026-01-05 10:57:14', '2026-04-02 10:57:14'),
+(42, 24, NULL, 'Rachel Green', 'rachel@email.com', 5, 'Terrifyingly accurate prediction of surveillance culture. Big Brother is watching indeed. This book should be required reading in every school.', 1, '2026-03-02 10:57:14', '2026-04-02 10:57:14'),
+(43, 4, NULL, 'Tom Harris', 'tom@email.com', 5, 'Stephen Hawking makes the most complex concepts of the universe accessible to everyone. I\'ve read it three times and each time I understand more.', 1, '2026-03-23 10:57:14', '2026-04-02 10:57:14'),
+(44, 4, NULL, 'Anna Lee', 'anna@email.com', 4, 'Some parts are challenging to grasp but the overall journey through cosmology is fascinating. Hawking\'s passion for the subject shines through every page.', 1, '2026-01-02 10:57:14', '2026-04-02 10:57:14'),
+(45, 5, NULL, 'Chris Taylor', 'chris@email.com', 4, 'Dawkins presents a compelling case for gene-centered evolution. It challenges how we think about life and natural selection. Dense but rewarding.', 1, '2026-02-14 10:57:14', '2026-04-02 10:57:14'),
+(46, 6, NULL, 'Sarah Mitchell', 'sarah@email.com', 5, 'Every programmer should read this book. Uncle Bob\'s principles have transformed how I write code. Clean code is not just a goal, it\'s a discipline.', 1, '2026-03-11 10:57:14', '2026-04-02 10:57:14'),
+(47, 6, NULL, 'James Wilson', 'james@email.com', 4, 'Excellent practical advice for writing maintainable code. Some examples feel dated but the core principles are timeless. A developer\'s essential guide.', 1, '2026-01-04 10:57:14', '2026-04-02 10:57:14'),
+(48, 7, NULL, 'Emily Chen', 'emily@email.com', 4, 'The Gang of Four patterns are foundational to software design. Some patterns feel over-engineered for modern development, but understanding them is invaluable.', 1, '2026-01-07 10:57:14', '2026-04-02 10:57:14'),
+(49, 8, NULL, 'Michael Brown', 'michael@email.com', 5, 'This book made me a better developer overnight. The pragmatic approach to software engineering is refreshing and immediately applicable to any project.', 1, '2026-01-19 10:57:14', '2026-04-02 10:57:14'),
+(50, 9, NULL, 'Lisa Anderson', 'lisa@email.com', 5, 'Harari weaves anthropology, history, and philosophy into an incredible narrative. It fundamentally changed how I think about human civilization and progress.', 1, '2026-01-16 10:57:14', '2026-04-02 10:57:14'),
+(51, 9, NULL, 'David Kim', 'david@email.com', 4, 'Fascinating journey through human history. Some arguments are debatable but the overall thesis is thought-provoking and well-researched.', 1, '2026-03-17 10:57:14', '2026-04-02 10:57:14'),
+(52, 10, NULL, 'Rachel Green', 'rachel@email.com', 4, 'Diamond\'s thesis about geography shaping civilization is compelling. A sweeping analysis that connects dots across continents and millennia.', 1, '2026-04-01 10:57:14', '2026-04-02 10:57:14'),
+(53, 11, NULL, 'Tom Harris', 'tom@email.com', 5, 'Atomic Habits is the best self-help book I\'ve ever read. Clear\'s four-step framework is simple yet powerful. I\'ve already seen real changes in my daily routine.', 1, '2026-02-26 10:57:14', '2026-04-02 10:57:14'),
+(54, 11, NULL, 'Anna Lee', 'anna@email.com', 5, 'Finally, a habits book that actually works! The concept of 1% improvement is transformative. Small changes really do compound into remarkable results.', 1, '2026-03-08 10:57:14', '2026-04-02 10:57:14'),
+(55, 12, NULL, 'Chris Taylor', 'chris@email.com', 4, 'Great framework for startups. The build-measure-learn loop is a game-changer. Some concepts are overused now but the original insights are still valuable.', 1, '2026-02-17 10:57:14', '2026-04-02 10:57:14'),
+(56, 13, NULL, 'Sarah Mitchell', 'sarah@email.com', 5, 'Kahneman\'s exploration of System 1 and System 2 thinking is mind-blowing. It explains so many of our irrational decisions. Essential reading for anyone.', 1, '2026-03-25 10:57:14', '2026-04-02 10:57:14'),
+(57, 13, NULL, 'James Wilson', 'james@email.com', 4, 'Dense but incredibly insightful. The research on cognitive biases is eye-opening. Be prepared to question your own thinking after reading this.', 1, '2026-03-06 10:57:14', '2026-04-02 10:57:14'),
+(58, 14, NULL, 'Emily Chen', 'emily@email.com', 5, 'Tolle\'s message about living in the present moment is simple yet profound. This book helped me find peace in the chaos of modern life.', 1, '2026-02-16 10:57:14', '2026-04-02 10:57:14'),
+(59, 14, NULL, 'Michael Brown', 'michael@email.com', 4, 'A spiritual guide that actually makes sense. The concept of the \"pain body\" resonated deeply with me. Practical wisdom for everyday mindfulness.', 1, '2026-01-05 10:57:14', '2026-04-02 10:57:14'),
+(60, 15, NULL, 'Lisa Anderson', 'lisa@email.com', 5, 'A beautiful fable about following your dreams. Coelho\'s writing is poetic and the story is universal. I return to this book every few years.', 1, '2026-01-25 10:57:14', '2026-04-02 10:57:14'),
+(61, 15, NULL, 'David Kim', 'david@email.com', 4, 'Simple yet profound. The Alchemist reminds us that the journey is as important as the destination. A quick read with lasting impact.', 1, '2026-01-19 10:57:14', '2026-04-02 10:57:14'),
+(62, 16, NULL, 'Rachel Green', 'rachel@email.com', 5, 'Carl Sagan\'s wonder at the cosmos is infectious. This book reignited my childhood fascination with space and the universe. Beautifully written and illustrated.', 1, '2026-01-30 10:57:14', '2026-04-02 10:57:14'),
+(63, 16, NULL, 'Tom Harris', 'tom@email.com', 4, 'Sagan makes astronomy and cosmology accessible to everyone. His poetic prose combined with scientific rigor creates something truly special.', 1, '2026-03-09 10:57:14', '2026-04-02 10:57:14'),
+(64, 1, NULL, 'Sarah Mitchell', 'sarah@email.com', 5, 'An absolute masterpiece! Fitzgerald\'s prose is breathtaking and the portrayal of the Jazz Age is unmatched. Every re-read reveals new layers of meaning.', 1, '2026-01-04 11:46:15', '2026-04-02 11:46:15'),
+(65, 1, NULL, 'James Wilson', 'james@email.com', 4, 'Beautiful writing but the characters are so flawed it\'s hard to root for anyone. Still, a must-read classic that everyone should experience.', 1, '2026-03-20 11:46:15', '2026-04-02 11:46:15'),
+(66, 1, NULL, 'Emily Chen', 'emily@email.com', 5, 'The symbolism in this book is incredible. The green light, the eyes of Dr. T.J. Eckleburg - every detail has meaning. A true work of art.', 1, '2026-02-25 11:46:15', '2026-04-02 11:46:15'),
+(67, 2, NULL, 'Michael Brown', 'michael@email.com', 5, 'This book changed my perspective on justice and morality. Scout\'s innocent yet perceptive narration makes the heavy themes accessible and deeply moving.', 1, '2026-01-22 11:46:15', '2026-04-02 11:46:15'),
+(68, 2, NULL, 'Lisa Anderson', 'lisa@email.com', 5, 'Atticus Finch is one of the greatest literary heroes ever created. His quiet courage and moral integrity are inspiring. A timeless classic.', 1, '2026-02-28 11:46:15', '2026-04-02 11:46:15'),
+(69, 24, NULL, 'David Kim', 'david@email.com', 4, 'Orwell\'s dystopian vision feels more relevant than ever. The concepts of doublethink and Newspeak are chillingly prescient. A must-read for our times.', 1, '2026-03-23 11:46:15', '2026-04-02 11:46:15'),
+(70, 24, NULL, 'Rachel Green', 'rachel@email.com', 5, 'Terrifyingly accurate prediction of surveillance culture. Big Brother is watching indeed. This book should be required reading in every school.', 1, '2026-03-01 11:46:15', '2026-04-02 11:46:15'),
+(71, 4, NULL, 'Tom Harris', 'tom@email.com', 5, 'Stephen Hawking makes the most complex concepts of the universe accessible to everyone. I\'ve read it three times and each time I understand more.', 1, '2026-02-14 11:46:15', '2026-04-02 11:46:15'),
+(72, 4, NULL, 'Anna Lee', 'anna@email.com', 4, 'Some parts are challenging to grasp but the overall journey through cosmology is fascinating. Hawking\'s passion for the subject shines through every page.', 1, '2026-02-16 11:46:15', '2026-04-02 11:46:15'),
+(73, 5, NULL, 'Chris Taylor', 'chris@taylor.com', 4, 'Dawkins presents a compelling case for gene-centered evolution. It challenges how we think about life and natural selection. Dense but rewarding.', 1, '2026-01-24 11:46:15', '2026-04-02 11:46:15'),
+(74, 6, NULL, 'Sarah Mitchell', 'sarah@email.com', 5, 'Every programmer should read this book. Uncle Bob\'s principles have transformed how I write code. Clean code is not just a goal, it\'s a discipline.', 1, '2026-01-18 11:46:15', '2026-04-02 11:46:15'),
+(75, 6, NULL, 'James Wilson', 'james@email.com', 4, 'Excellent practical advice for writing maintainable code. Some examples feel dated but the core principles are timeless. A developer\'s essential guide.', 1, '2026-02-20 11:46:15', '2026-04-02 11:46:15'),
+(76, 7, NULL, 'Emily Chen', 'emily@email.com', 4, 'The Gang of Four patterns are foundational to software design. Some patterns feel over-engineered for modern development, but understanding them is invaluable.', 1, '2026-01-17 11:46:15', '2026-04-02 11:46:15'),
+(77, 8, NULL, 'Michael Brown', 'michael@email.com', 5, 'This book made me a better developer overnight. The pragmatic approach to software engineering is refreshing and immediately applicable to any project.', 1, '2026-01-04 11:46:15', '2026-04-02 11:46:15'),
+(78, 9, NULL, 'Lisa Anderson', 'lisa@email.com', 5, 'Harari weaves anthropology, history, and philosophy into an incredible narrative. It fundamentally changed how I think about human civilization and progress.', 1, '2026-01-25 11:46:15', '2026-04-02 11:46:15'),
+(79, 9, NULL, 'David Kim', 'david@email.com', 4, 'Fascinating journey through human history. Some arguments are debatable but the overall thesis is thought-provoking and well-researched.', 1, '2026-03-07 11:46:15', '2026-04-02 11:46:15'),
+(80, 10, NULL, 'Rachel Green', 'rachel@email.com', 4, 'Diamond\'s thesis about geography shaping civilization is compelling. A sweeping analysis that connects dots across continents and millennia.', 1, '2026-02-03 11:46:15', '2026-04-02 11:46:15'),
+(81, 11, NULL, 'Tom Harris', 'tom@email.com', 5, 'Atomic Habits is the best self-help book I\'ve ever read. Clear\'s four-step framework is simple yet powerful. I\'ve already seen real changes in my daily routine.', 1, '2026-01-11 11:46:15', '2026-04-02 11:46:15'),
+(82, 11, NULL, 'Anna Lee', 'anna@email.com', 5, 'Finally, a habits book that actually works! The concept of 1% improvement is transformative. Small changes really do compound into remarkable results.', 1, '2026-01-19 11:46:15', '2026-04-02 11:46:15'),
+(83, 12, NULL, 'Chris Taylor', 'chris@taylor.com', 4, 'Great framework for startups. The build-measure-learn loop is a game-changer. Some concepts are overused now but the original insights are still valuable.', 1, '2026-02-07 11:46:15', '2026-04-02 11:46:15'),
+(84, 13, NULL, 'Sarah Mitchell', 'sarah@email.com', 5, 'Kahneman\'s exploration of System 1 and System 2 thinking is mind-blowing. It explains so many of our irrational decisions. Essential reading for anyone.', 1, '2026-02-15 11:46:15', '2026-04-02 11:46:15'),
+(85, 13, NULL, 'James Wilson', 'james@email.com', 4, 'Dense but incredibly insightful. The research on cognitive biases is eye-opening. Be prepared to question your own thinking after reading this.', 1, '2026-02-05 11:46:15', '2026-04-02 11:46:15'),
+(86, 14, NULL, 'Emily Chen', 'emily@email.com', 5, 'Tolle\'s message about living in the present moment is simple yet profound. This book helped me find peace in the chaos of modern life.', 1, '2026-01-13 11:46:15', '2026-04-02 11:46:15'),
+(87, 14, NULL, 'Michael Brown', 'michael@email.com', 4, 'A spiritual guide that actually makes sense. The concept of the \"pain body\" resonated deeply with me. Practical wisdom for everyday mindfulness.', 1, '2026-03-19 11:46:15', '2026-04-02 11:46:15'),
+(88, 15, NULL, 'Lisa Anderson', 'lisa@email.com', 5, 'A beautiful fable about following your dreams. Coelho\'s writing is poetic and the story is universal. I return to this book every few years.', 1, '2026-02-23 11:46:15', '2026-04-02 11:46:15'),
+(89, 15, NULL, 'David Kim', 'david@email.com', 4, 'Simple yet profound. The Alchemist reminds us that the journey is as important as the destination. A quick read with lasting impact.', 1, '2026-01-09 11:46:15', '2026-04-02 11:46:15'),
+(90, 16, NULL, 'Rachel Green', 'rachel@email.com', 5, 'Carl Sagan\'s wonder at the cosmos is infectious. This book reignited my childhood fascination with space and the universe. Beautifully written and illustrated.', 1, '2026-01-29 11:46:15', '2026-04-02 11:46:15'),
+(91, 16, NULL, 'Tom Harris', 'tom@email.com', 4, 'Sagan makes astronomy and cosmology accessible to everyone. His poetic prose combined with scientific rigor creates something truly special.', 1, '2026-01-25 11:46:15', '2026-04-02 11:46:15'),
+(92, 1, NULL, 'Test User', NULL, 5, 'Great book!', 1, '2026-04-02 12:14:45', '2026-04-02 12:14:45');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sessions`
+--
+
+CREATE TABLE `sessions` (
+  `id` varchar(255) NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` text DEFAULT NULL,
+  `payload` longtext NOT NULL,
+  `last_activity` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `sessions`
+--
+
+INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
+('47MK1aXh8WfqNxeE3F79wLDNj17MaBBv7D988hRe', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoibk11NDNVMXZsYlhydXE2MmpOOGVuYkQxWUlTVTQzRmhHS1BNUDYyQSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1775744391),
+('BkxDdKF9YIIFN81S4yxiIQNEvoHbbiu9mXVyTvQn', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiVUhUNnZMeFplTXVzaVZYMnA1elFFWW5RQ1RuTkh3amYyT3QyTGliViI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1775744392),
+('Cd55EmOL5IO6uN1DCmi7c5G4yU7q0Zb8426V8pOH', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiREZLUW1iZ3ZocVlzZGRtSWZkYmNKUktmSjhTaGJFZE1WbEdUekNjSyI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1775746111),
+('DLyleOR5IoqiNRF73OILE48x9z2FzTfJW0w5BdVM', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiNjJQa0lucFFYRDhwd2gyU2RMWlR6Z2g5ZUN5aUoyTUpQeTl1RVdyNCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1775746229),
+('eVuDoDEOlHQKsQDvBxl3Ne4783mg9e3nL5mAiGNB', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoib1JJUERRYXR1NnBzU1ZWdkN5OEFjTkdjSk83dWh0Sk1BTk9uQk1GVyI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1775741625),
+('f6iLGxm3NhnAKCULIbloOfzQO4G7HRqHp4r2QRTt', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiU3JWcU0zb2x0NTV3YXU4YXdhTk9rREk3VTBERG81cnRWSVlzMmZndiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1775746001),
+('g3766RhgzNiSkkyhkMhrKn58tGBqTXYuIuog8vW6', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiVm9TZnlXUnhwamNQWG5BTE11Sk5lcDdRT2VDbFB0WUR0VG0xSm9tQiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1775746205),
+('grcxpH4NRfgtf8SteN4VfD0a2KtZ7p1xwY6TYiSm', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiTWxnb2FoTENTbTdZcjRKRVpabk5SMnl2TGNEU213cjJsYjRhY3dRdyI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1775741595),
+('J7ToC5MMbXD5Fi963HaBx1xS9mvcWmVAXndF5nlO', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiaG1ENU1seUs5Slk0SkpKRmhsMDB1UndQVlU1ZkVBUXE3S09hcTVlciI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1775741640),
+('LhJGSNTrfNDwPyohUhgYJH41UcPjUydmjA3vGkGl', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiODBEd1BQOVdMZjBHWWdHc0hKZ2hqTTB4YW5aWkFOa3B2YlZSd2gxViI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NjQ6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hcGkvc3RhZmYvYm9va3M/cGVyX3BhZ2U9MSZzb3J0PXByaWNlLWhpZ2giO3M6NToicm91dGUiO047fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1775746371),
+('LZbafUdQQRAYlfNRjNY5Uk5VTrMjMepUPXU8K7ab', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiWXl1aUc2ajFPcmlFSDI5emNTaU9PaHB0cnh3RHpWZjVoRkoxWmFRTCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1775744391),
+('qG8nY9thSsunI5IiSjm5iFxdOxdtzRdyH4qYfYab', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiam9hZFZwU1QxNFpINFNPSVV5MEZzN05vZmRtNGZmNkV4Tkl4SmdNZyI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1775746073),
+('s4F6avGpGoWdSqXhHAv6LXa7wLqDdvnAfJ85NZ23', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiU2k5YXJnZTRYclNqdDh1R3piYnNLVGo5MnlkQTl3RVBpalB5MmJYaCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1775746086),
+('SG1N1Va02uwb4vhShrJyvMKlkUxmRzKjltwegaZ9', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoia1V5ZU5ZdnFmTVJoZU5tM3l2bEJLczZsOFlMU3F4OXk0UlpDVGVwWiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1775745982),
+('zmwK2OSdddUzf2hLzyJjjsaStE7XO8NNG0BfTlPV', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiNGpzZ2prM2NJb1R2NmU4Z0J3M3Z2NTR3cEptOHVLMnBVdHU0aElBbSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1775744390);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `avatar` varchar(255) DEFAULT NULL,
+  `email_verified_at` timestamp NULL DEFAULT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` varchar(255) NOT NULL DEFAULT 'customer',
+  `phone` varchar(255) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `remember_token` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `name`, `email`, `avatar`, `email_verified_at`, `password`, `role`, `phone`, `address`, `remember_token`, `created_at`, `updated_at`) VALUES
+(1, 'Admin User', 'admin@luminabooks.com', NULL, NULL, '$2y$12$0FIMULzS8898WOaSposMdeQJ9mh2R/7p5mt6ZKsS5dCAYGNOSRua.', 'staff', '+1234567890', NULL, NULL, '2026-04-01 11:26:29', '2026-04-02 11:46:15'),
+(2, 'John Doe', 'john@example.com', 'avatars/P4fsOh915sILeJaQUALEZrx921IKoOchVLDeWiNb.png', NULL, '$2y$12$Ag9jYvyH2RFKr1OPkTq4AusMDTulJCvc49//PiRe50Apwf9BDM5H.', 'customer', '+1987654321', '123 Main St, New York, NY', NULL, '2026-04-01 11:26:29', '2026-04-02 11:46:15'),
+(4, 'HI', 'HW@gmail.com', NULL, NULL, '$2y$12$GSiKfBnxYYATrFFjhJA8neCzH6PicWfOnS3OEg05LkrfomHK1kI3W', 'customer', NULL, NULL, NULL, '2026-04-02 11:10:00', '2026-04-02 11:10:00'),
+(5, 'Updated Name', 'testuser@test.com', NULL, NULL, '$2y$12$JNghpYyXm82uLeGKH.csJuZqfapyjPO0cEt0aqQi4bxHE3gK8eT5C', 'customer', NULL, NULL, NULL, '2026-04-02 12:13:32', '2026-04-02 12:15:43'),
+(6, 'Rahim Ahmed', 'rahim.ahmed@email.com', NULL, NULL, '$2y$12$/UbWtr6/wFlgUg63b5CXP.CGucoDB3.oZJyuZHgfr7IiiLQIo6/ei', 'customer', NULL, NULL, NULL, '2026-04-06 02:50:09', '2026-04-06 02:50:09'),
+(7, 'Fatima Khan', 'fatima.khan@email.com', NULL, NULL, '$2y$12$whH6fl1Y5vAXhMrusneImeiXh0jXp.AcEP/Wq3A8b.yV158ZcPM6C', 'customer', NULL, NULL, NULL, '2026-04-06 02:50:10', '2026-04-06 02:50:10'),
+(8, 'Karim Hassan', 'karim.hassan@email.com', NULL, NULL, '$2y$12$IkZ88SIoIxTDu7oIgUKzyud4s5j8O75ghXuDfzOLs9F9vowq5s8aW', 'customer', NULL, NULL, NULL, '2026-04-06 02:50:10', '2026-04-06 02:50:10'),
+(9, 'Nadia Islam', 'nadia.islam@email.com', NULL, NULL, '$2y$12$TuNIyZh7uNGTZw9QTrOIIukb4Mrs0hMrxnnUvYlF5AQMkO713oziC', 'customer', NULL, NULL, NULL, '2026-04-06 02:50:10', '2026-04-06 02:50:10'),
+(10, 'Tariq Ali', 'tariq.ali@email.com', NULL, NULL, '$2y$12$V/neXmnlMdW0R.FD3vmkiuMy2h3a4FReKi7S9TqTBWU.oNRP9.q5O', 'customer', NULL, NULL, NULL, '2026-04-06 02:50:10', '2026-04-06 02:50:10'),
+(11, 'Jack', 'J@gmail.com', NULL, NULL, '$2y$12$Q1bcLn/lD4KApBFVmaF2aue6VTKJLBVBmAnYNLFknD66niIQNV.D6', 'customer', NULL, NULL, NULL, '2026-04-09 00:17:28', '2026-04-09 00:17:28'),
+(12, 'Null', 'N@gmail.com', NULL, NULL, '$2y$12$ecXe.x35UJOP.ORVGkoTL.AnCPpucTTFQhbqIbSvFD/2qHSX81Tvy', 'customer', NULL, NULL, NULL, '2026-04-09 03:00:03', '2026-04-09 03:00:03'),
+(13, 'Alex', 'A@gmail.com', NULL, NULL, '$2y$12$dxv8dalWJqtjo3cmOg0leeUktOVmDBXZh4uWn53d1XVfUGdo9CZ5e', 'customer', NULL, NULL, NULL, '2026-04-09 08:36:32', '2026-04-09 08:36:32');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wishlists`
+--
+
+CREATE TABLE `wishlists` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `book_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `wishlists`
+--
+
+INSERT INTO `wishlists` (`id`, `user_id`, `book_id`, `created_at`, `updated_at`) VALUES
+(3, 2, 2, '2026-04-01 12:37:13', '2026-04-01 12:37:13'),
+(7, 2, 4, '2026-04-01 12:39:37', '2026-04-01 12:39:37'),
+(11, 2, 23, '2026-04-02 10:36:12', '2026-04-02 10:36:12'),
+(12, 4, 24, '2026-04-02 11:10:53', '2026-04-02 11:10:53'),
+(13, 4, 19, '2026-04-02 11:10:53', '2026-04-02 11:10:53'),
+(14, 5, 1, '2026-04-02 12:13:56', '2026-04-02 12:13:56'),
+(22, 2, 78, '2026-04-08 08:58:09', '2026-04-08 08:58:09'),
+(23, 2, 25, '2026-04-08 08:58:10', '2026-04-08 08:58:10'),
+(24, 2, 27, '2026-04-08 08:58:13', '2026-04-08 08:58:13'),
+(25, 12, 26, '2026-04-09 04:06:46', '2026-04-09 04:06:46');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `about_pages`
+--
+ALTER TABLE `about_pages`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `books`
+--
+ALTER TABLE `books`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `books_status_index` (`status`),
+  ADD KEY `books_stock_index` (`stock`),
+  ADD KEY `books_is_featured_index` (`is_featured`),
+  ADD KEY `books_category_id_index` (`category_id`),
+  ADD KEY `books_created_at_index` (`created_at`),
+  ADD KEY `books_status_created_at_index` (`status`,`created_at`);
+ALTER TABLE `books` ADD FULLTEXT KEY `books_search_index` (`title`,`author`);
+
+--
+-- Indexes for table `cache`
+--
+ALTER TABLE `cache`
+  ADD PRIMARY KEY (`key`),
+  ADD KEY `cache_expiration_index` (`expiration`);
+
+--
+-- Indexes for table `cache_locks`
+--
+ALTER TABLE `cache_locks`
+  ADD PRIMARY KEY (`key`),
+  ADD KEY `cache_locks_expiration_index` (`expiration`);
+
+--
+-- Indexes for table `categories`
+--
+ALTER TABLE `categories`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `categories_slug_unique` (`slug`);
+
+--
+-- Indexes for table `courses`
+--
+ALTER TABLE `courses`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `courses_slug_unique` (`slug`);
+
+--
+-- Indexes for table `course_lessons`
+--
+ALTER TABLE `course_lessons`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `course_lessons_section_id_foreign` (`section_id`);
+
+--
+-- Indexes for table `course_questions`
+--
+ALTER TABLE `course_questions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `course_questions_course_id_foreign` (`course_id`),
+  ADD KEY `course_questions_user_id_foreign` (`user_id`);
+
+--
+-- Indexes for table `course_quizzes`
+--
+ALTER TABLE `course_quizzes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `course_quizzes_course_id_foreign` (`course_id`),
+  ADD KEY `course_quizzes_lesson_id_foreign` (`lesson_id`);
+
+--
+-- Indexes for table `course_quiz_questions`
+--
+ALTER TABLE `course_quiz_questions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `course_quiz_questions_quiz_id_foreign` (`quiz_id`);
+
+--
+-- Indexes for table `course_resources`
+--
+ALTER TABLE `course_resources`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `course_resources_lesson_id_foreign` (`lesson_id`),
+  ADD KEY `course_resources_course_id_foreign` (`course_id`);
+
+--
+-- Indexes for table `course_reviews`
+--
+ALTER TABLE `course_reviews`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `course_reviews_course_id_foreign` (`course_id`),
+  ADD KEY `course_reviews_user_id_foreign` (`user_id`);
+
+--
+-- Indexes for table `course_sections`
+--
+ALTER TABLE `course_sections`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `course_sections_course_id_foreign` (`course_id`);
+
+--
+-- Indexes for table `failed_jobs`
+--
+ALTER TABLE `failed_jobs`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
+
+--
+-- Indexes for table `gallery_photos`
+--
+ALTER TABLE `gallery_photos`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `jobs`
+--
+ALTER TABLE `jobs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `jobs_queue_index` (`queue`);
+
+--
+-- Indexes for table `job_batches`
+--
+ALTER TABLE `job_batches`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `migrations`
+--
+ALTER TABLE `migrations`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `orders`
+--
+ALTER TABLE `orders`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_user_id_created_at` (`user_id`,`created_at`);
+
+--
+-- Indexes for table `order_items`
+--
+ALTER TABLE `order_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_order_id` (`order_id`),
+  ADD KEY `idx_book_id` (`book_id`),
+  ADD KEY `order_items_course_id_foreign` (`course_id`);
+
+--
+-- Indexes for table `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  ADD PRIMARY KEY (`email`);
+
+--
+-- Indexes for table `personal_access_tokens`
+--
+ALTER TABLE `personal_access_tokens`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
+  ADD KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`),
+  ADD KEY `personal_access_tokens_expires_at_index` (`expires_at`);
+
+--
+-- Indexes for table `questions`
+--
+ALTER TABLE `questions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `questions_book_id_index` (`book_id`),
+  ADD KEY `questions_user_id_index` (`user_id`),
+  ADD KEY `questions_is_answered_index` (`is_answered`),
+  ADD KEY `questions_created_at_index` (`created_at`);
+
+--
+-- Indexes for table `reviews`
+--
+ALTER TABLE `reviews`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `reviews_book_id_foreign` (`book_id`),
+  ADD KEY `reviews_user_id_foreign` (`user_id`);
+
+--
+-- Indexes for table `sessions`
+--
+ALTER TABLE `sessions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `sessions_user_id_index` (`user_id`),
+  ADD KEY `sessions_last_activity_index` (`last_activity`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `users_email_unique` (`email`);
+
+--
+-- Indexes for table `wishlists`
+--
+ALTER TABLE `wishlists`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `wishlists_user_id_book_id_unique` (`user_id`,`book_id`),
+  ADD KEY `wishlists_book_id_foreign` (`book_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `about_pages`
+--
+ALTER TABLE `about_pages`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `books`
+--
+ALTER TABLE `books`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
+
+--
+-- AUTO_INCREMENT for table `categories`
+--
+ALTER TABLE `categories`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+
+--
+-- AUTO_INCREMENT for table `courses`
+--
+ALTER TABLE `courses`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
+--
+-- AUTO_INCREMENT for table `course_lessons`
+--
+ALTER TABLE `course_lessons`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=301;
+
+--
+-- AUTO_INCREMENT for table `course_questions`
+--
+ALTER TABLE `course_questions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `course_quizzes`
+--
+ALTER TABLE `course_quizzes`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=196;
+
+--
+-- AUTO_INCREMENT for table `course_quiz_questions`
+--
+ALTER TABLE `course_quiz_questions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=839;
+
+--
+-- AUTO_INCREMENT for table `course_resources`
+--
+ALTER TABLE `course_resources`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=776;
+
+--
+-- AUTO_INCREMENT for table `course_reviews`
+--
+ALTER TABLE `course_reviews`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `course_sections`
+--
+ALTER TABLE `course_sections`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
+
+--
+-- AUTO_INCREMENT for table `failed_jobs`
+--
+ALTER TABLE `failed_jobs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `gallery_photos`
+--
+ALTER TABLE `gallery_photos`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `jobs`
+--
+ALTER TABLE `jobs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `migrations`
+--
+ALTER TABLE `migrations`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+
+--
+-- AUTO_INCREMENT for table `orders`
+--
+ALTER TABLE `orders`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+
+--
+-- AUTO_INCREMENT for table `order_items`
+--
+ALTER TABLE `order_items`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
+
+--
+-- AUTO_INCREMENT for table `personal_access_tokens`
+--
+ALTER TABLE `personal_access_tokens`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
+
+--
+-- AUTO_INCREMENT for table `questions`
+--
+ALTER TABLE `questions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+
+--
+-- AUTO_INCREMENT for table `reviews`
+--
+ALTER TABLE `reviews`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT for table `wishlists`
+--
+ALTER TABLE `wishlists`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `books`
+--
+ALTER TABLE `books`
+  ADD CONSTRAINT `books_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `course_lessons`
+--
+ALTER TABLE `course_lessons`
+  ADD CONSTRAINT `course_lessons_section_id_foreign` FOREIGN KEY (`section_id`) REFERENCES `course_sections` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `course_questions`
+--
+ALTER TABLE `course_questions`
+  ADD CONSTRAINT `course_questions_course_id_foreign` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `course_questions_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `course_quizzes`
+--
+ALTER TABLE `course_quizzes`
+  ADD CONSTRAINT `course_quizzes_course_id_foreign` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `course_quizzes_lesson_id_foreign` FOREIGN KEY (`lesson_id`) REFERENCES `course_lessons` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `course_quiz_questions`
+--
+ALTER TABLE `course_quiz_questions`
+  ADD CONSTRAINT `course_quiz_questions_quiz_id_foreign` FOREIGN KEY (`quiz_id`) REFERENCES `course_quizzes` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `course_resources`
+--
+ALTER TABLE `course_resources`
+  ADD CONSTRAINT `course_resources_course_id_foreign` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `course_resources_lesson_id_foreign` FOREIGN KEY (`lesson_id`) REFERENCES `course_lessons` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `course_reviews`
+--
+ALTER TABLE `course_reviews`
+  ADD CONSTRAINT `course_reviews_course_id_foreign` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `course_reviews_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `course_sections`
+--
+ALTER TABLE `course_sections`
+  ADD CONSTRAINT `course_sections_course_id_foreign` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `orders`
+--
+ALTER TABLE `orders`
+  ADD CONSTRAINT `orders_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `order_items`
+--
+ALTER TABLE `order_items`
+  ADD CONSTRAINT `order_items_book_id_foreign` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `order_items_course_id_foreign` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `order_items_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `questions`
+--
+ALTER TABLE `questions`
+  ADD CONSTRAINT `questions_book_id_foreign` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `questions_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `reviews`
+--
+ALTER TABLE `reviews`
+  ADD CONSTRAINT `reviews_book_id_foreign` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `reviews_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `wishlists`
+--
+ALTER TABLE `wishlists`
+  ADD CONSTRAINT `wishlists_book_id_foreign` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `wishlists_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

@@ -3,12 +3,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { User, Package, Heart, Settings, LogOut, ChevronRight, Clock, Mail, XCircle, CheckCircle2, ChevronDown, ChevronUp, Truck, CreditCard, MapPin, Calendar, DollarSign, ExternalLink, ShoppingBag, Camera, Upload, BookOpen, Filter } from 'lucide-react';
+import { User, Package, Heart, Settings, LogOut, ChevronRight, Clock, Mail, XCircle, CheckCircle2, ChevronDown, ChevronUp, Truck, CreditCard, MapPin, Calendar, DollarSign, ExternalLink, ShoppingBag, Camera, Upload, BookOpen, Filter, GraduationCap, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { UserProfile, Order, Book } from '@/types';
 import { useAuth } from '@/context/AuthContext';
-import { api, ApiBook, mapApiBookToBook, mapApiOrderToOrder } from '@/lib/api';
+import { api, ApiBook, mapApiBookToBook, mapApiOrderToOrder, joinStorage } from '@/lib/api';
 import { toast } from 'sonner';
 
 interface ExtendedOrder extends Order {
@@ -30,10 +30,11 @@ export default function Profile() {
   
   const isStaff = user?.role === 'staff';
 
-  const [activeTab, setActiveTab] = useState<'orders' | 'my-books' | 'wishlist' | 'settings'>(isStaff ? 'settings' : 'orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'my-books' | 'my-courses' | 'wishlist' | 'settings'>(isStaff ? 'settings' : 'orders');
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [orders, setOrders] = useState<ExtendedOrder[]>([]);
   const [wishlistBooks, setWishlistBooks] = useState<Book[]>([]);
+  const [enrolledCourses, setEnrolledCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({ displayName: '', email: '' });
@@ -103,21 +104,74 @@ export default function Profile() {
         const list = Array.isArray(ordersRes) ? ordersRes : ordersRes?.data || [];
         const mapped = (list || []).map(mapApiOrderToOrder);
         console.debug('[Profile] Mapped orders:', mapped);
-        setOrders(mapped as ExtendedOrder[]);
-        localStorage.setItem('lumina_orders', JSON.stringify(mapped));
+
+        // Use ONLY API orders (from database) - don't mix with localStorage
+        // This ensures we always show the correct data for the current logged-in user
+        const allOrders = [...mapped] as ExtendedOrder[];
+        setOrders(allOrders);
+
+        // Extract enrolled courses from API orders
+        const courses: any[] = [];
+        const seenCourseIds = new Set<string>();
+
+        allOrders.forEach((order: any) => {
+          // Skip cancelled orders
+          if (order.status === 'cancelled') return;
+
+          (order.items || []).forEach((item: any) => {
+            // Check if this is a course item
+            const courseId = item.courseId || item.course_id;
+            const isCourse = item.type === 'course' || item.course || (item.course_id && !item.book_id);
+
+            if (isCourse && courseId && !seenCourseIds.has(String(courseId))) {
+              seenCourseIds.add(String(courseId));
+              const courseData = item.course || item;
+              const courseSlug = courseData?.slug || item.slug || '';
+              const courseImg = courseData?.image || courseData?.coverUrl;
+              const finalCoverUrl = courseImg
+                ? (courseImg.startsWith('http') ? courseImg : joinStorage('http://localhost:8000/storage', courseImg))
+                : null;
+
+              console.log(`[Profile] Extracting course:`, {
+                id: courseId,
+                title: courseData?.title || item.title || 'Unknown Course',
+                slug: courseSlug,
+                hasCourseObject: !!item.course,
+                itemKeys: Object.keys(item),
+              });
+
+              courses.push({
+                id: String(courseId),
+                title: courseData?.title || item.title || 'Unknown Course',
+                slug: courseSlug,
+                instructor: courseData?.instructor || item.author || 'Unknown',
+                price: item.price || courseData?.price || 0,
+                coverUrl: finalCoverUrl,
+                orderDate: order.createdAt,
+                orderId: order.id,
+                status: order.status,
+              });
+            }
+          });
+        });
+
+        console.log('[Profile] Extracted enrolled courses:', courses);
+        setEnrolledCourses(courses);
       } catch (err: any) {
         console.error('[Profile] Failed to process orders:', err?.message || err);
-        const storedOrders = JSON.parse(localStorage.getItem('lumina_orders') || '[]');
-        setOrders(storedOrders);
+        // If API fails, show empty state instead of using potentially stale localStorage
+        setOrders([]);
+        setEnrolledCourses([]);
       } finally {
         setOrdersLoading(false);
       }
     } catch (err: any) {
       console.error('[Profile] Failed to fetch data:', err?.message || err);
-      // Fallback to localStorage
-      const storedOrders = JSON.parse(localStorage.getItem('lumina_orders') || '[]');
-      setOrders(storedOrders);
+      // If everything fails, show empty state instead of stale localStorage
+      setOrders([]);
       setWishlistBooks([]);
+      setEnrolledCourses([]);
+
       setOrdersLoading(false);
       setWishlistLoading(false);
     }
@@ -399,6 +453,7 @@ export default function Profile() {
           {[
             { id: 'orders', label: 'Order History', icon: Package, hide: isStaff },
             { id: 'my-books', label: 'My Books', icon: BookOpen, hide: isStaff },
+            { id: 'my-courses', label: 'My Courses', icon: GraduationCap, hide: isStaff },
             { id: 'wishlist', label: 'My Wishlist', icon: Heart, hide: isStaff },
             { id: 'settings', label: 'Account Settings', icon: Settings, hide: false },
           ].filter(tab => !tab.hide).map(tab => (
@@ -499,7 +554,7 @@ export default function Profile() {
                           </div>
                           <div className="space-y-1 text-right">
                             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Total</p>
-                            <p className="font-bold text-gray-900">${order.total.toFixed(2)}</p>
+                            <p className="font-bold text-gray-900">৳{order.total.toFixed(2)}</p>
                           </div>
                           <div className="space-y-1">
                             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Status</p>
@@ -517,10 +572,10 @@ export default function Profile() {
                           </div>
                         </div>
 
-                        {order.status !== 'cancelled' && order.status !== 'pending' && (
-                          <div className="mt-4 pt-4 border-t border-gray-100">
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Delivery Progress</p>
-                            <div className="flex items-center gap-2">
+                         {order.status !== 'cancelled' && order.status !== 'pending' && order.items.some(item => item.type !== 'course') && (
+                           <div className="mt-4 pt-4 border-t border-gray-100">
+                             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Delivery Progress</p>
+                             <div className="flex items-center gap-2">
                               {['processing', 'shipped', 'delivered'].map((step, idx) => (
                                 <div key={step} className="flex items-center flex-1">
                                   <div className={cn(
@@ -561,21 +616,29 @@ export default function Profile() {
                           </div>
                         )}
 
-                        <div className="flex items-center gap-4">
-                          {order.items.slice(0, 4).map(item => (
-                            <Link 
-                              key={item.bookId} 
-                              href={`/book/${item.bookId}`}
-                              className="w-16 h-24 rounded-lg overflow-hidden shrink-0 border border-gray-100 shadow-sm group hover:scale-105 transition-transform"
-                            >
-                              <img src={item.coverUrl} className="w-full h-full object-cover" />
-                            </Link>
-                          ))}
-                          {order.items.length > 4 && (
-                            <div className="w-16 h-24 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 text-gray-500 font-bold text-sm">
-                              +{order.items.length - 4}
-                            </div>
-                          )}
+                         <div className="flex items-center gap-4">
+                            {order.items.slice(0, 4).map((item, idx) => (
+                              <Link 
+                                key={`${order.id}-item-${idx}`} 
+                                href={item.type === 'course' ? `/courses/${item.slug}` : `/book/${item.bookId}`}
+                                className={cn(
+                                  "rounded-lg overflow-hidden shrink-0 border border-gray-100 shadow-sm group hover:scale-105 transition-transform",
+                                  item.type === 'course' ? "w-24 h-16" : "w-16 h-24"
+                                )}
+                              >
+                                <img src={item.coverUrl} className="w-full h-full object-cover" />
+                              </Link>
+                            ))}
+                           {order.items.length > 4 && (
+                             <div className={cn(
+                               "rounded-lg bg-gray-100 flex items-center justify-center shrink-0 text-gray-500 font-bold text-sm",
+                               // We can't easily determine the shape for the "+N" bubble if it's mixed, 
+                               // so we keep a neutral or book-like shape, or just use a standard size.
+                               "w-16 h-24" 
+                             )}>
+                               +{order.items.length - 4}
+                             </div>
+                           )}
                           <div className="ml-auto flex items-center gap-2 text-sm font-bold text-orange-600">
                             <span>{expandedOrder === order.id ? 'Hide' : 'View'} Details</span>
                             {expandedOrder === order.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -642,18 +705,18 @@ export default function Profile() {
                                 </div>
                               </div>
 
-                              <div className="space-y-4">
-                                <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                                  <ShoppingBag className="w-4 h-4" />
-                                  Order Items ({order.items.length})
-                                </h3>
-                                <div className="space-y-4">
-                                  {order.items.map(item => (
-                                    <Link 
-                                      key={item.bookId} 
-                                      href={`/book/${item.bookId}`}
-                                      className="flex items-center gap-6 p-4 bg-gray-50 rounded-2xl hover:bg-orange-50/50 transition-colors group"
-                                    >
+                                 <div className="space-y-4">
+                                   <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                                     <ShoppingBag className="w-4 h-4" />
+                                     Order Items ({order.items.length})
+                                   </h3>
+                                   <div className="space-y-4">
+                                     {order.items.map((item, idx) => (
+                                       <Link 
+                                         key={`${order.id}-detail-${idx}`} 
+                                         href={`/book/${item.bookId}`}
+                                         className="flex items-center gap-6 p-4 bg-gray-50 rounded-2xl hover:bg-orange-50/50 transition-colors group"
+                                       >
                                       <div className="w-16 h-24 rounded-xl overflow-hidden shrink-0 shadow-sm group-hover:scale-105 transition-transform">
                                         <img src={item.coverUrl} className="w-full h-full object-cover" />
                                       </div>
@@ -675,7 +738,7 @@ export default function Profile() {
                               <div className="p-6 bg-gray-50 rounded-2xl space-y-4 max-w-sm ml-auto">
                                 <div className="flex justify-between text-sm">
                                   <span className="text-gray-500">Subtotal</span>
-                                  <span className="font-bold text-gray-900">${order.total.toFixed(2)}</span>
+                                  <span className="font-bold text-gray-900">৳{order.total.toFixed(2)}</span>
                                 </div>
                                 {order.discount && order.discount.amount > 0 && (
                                   <div className="flex justify-between text-sm">
@@ -689,7 +752,7 @@ export default function Profile() {
                                 </div>
                                 <div className="pt-4 border-t border-gray-200 flex justify-between">
                                   <span className="font-bold text-gray-900">Total Paid</span>
-                                  <span className="text-xl font-bold text-gray-900">${order.total.toFixed(2)}</span>
+                                  <span className="text-xl font-bold text-gray-900">৳{order.total.toFixed(2)}</span>
                                 </div>
                               </div>
 
@@ -784,7 +847,7 @@ export default function Profile() {
                       if (order.status === 'cancelled') return;
                       order.items.forEach(item => {
                         myBooks.push({
-                          bookId: item.bookId,
+                          bookId: item.bookId || '',
                           title: item.title,
                           author: item.author,
                           coverUrl: item.coverUrl,
@@ -866,6 +929,65 @@ export default function Profile() {
                       </div>
                     );
                   })()}
+                </div>
+              )}
+
+              {activeTab === 'my-courses' && (
+                <div className="space-y-6">
+                  <h2 className="text-2xl font-serif font-bold text-gray-900 mb-8">My Courses</h2>
+                  {enrolledCourses.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {enrolledCourses.map((course) => (
+                        <Link
+                          key={course.id}
+                          href={`/courses/${course.slug}/watch`}
+                          className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md hover:border-orange-100 transition-all group"
+                        >
+                           <div className="relative h-48 bg-gradient-to-br from-orange-100 to-amber-50 overflow-hidden">
+                             {course.coverUrl ? (
+                               <img src={course.coverUrl} alt={course.title} className="w-full h-full object-cover" />
+                             ) : (
+                               <div className="w-full h-full bg-orange-100 flex items-center justify-center">
+                                 <BookOpen className="w-12 h-12 text-orange-300" />
+                               </div>
+                             )}
+                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                               <div className="w-16 h-16 bg-white/80 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                                 <Play className="w-7 h-7 text-orange-600 ml-1" />
+                               </div>
+                             </div>
+                             <div className="absolute top-3 right-3">
+                               <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-50 text-green-600 shadow-sm">
+                                 Enrolled
+                               </span>
+                             </div>
+                           </div>
+                          <div className="p-6">
+                            <h3 className="font-serif font-bold text-lg text-gray-900 truncate group-hover:text-orange-600 transition-colors">{course.title}</h3>
+                            <p className="text-sm text-gray-500 mt-1">by {course.instructor}</p>
+                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+                              <div className="flex items-center gap-2 text-xs text-gray-400">
+                                <Calendar className="w-3.5 h-3.5" />
+                                <span>{new Date(course.orderDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                              </div>
+                              <div className="flex items-center gap-1 text-sm font-bold text-orange-600">
+                                <span>Watch Now</span>
+                                <ChevronRight className="w-4 h-4" />
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-20 bg-gray-50 rounded-[40px] border border-dashed border-gray-200">
+                      <GraduationCap className="w-16 h-16 text-gray-200 mx-auto mb-6" />
+                      <p className="text-gray-500 mb-8">You haven't enrolled in any courses yet.</p>
+                      <Link href="/courses" className="px-8 py-4 bg-orange-600 text-white rounded-2xl font-bold hover:bg-orange-700 transition-all">
+                        Browse Courses
+                      </Link>
+                    </div>
+                  )}
                 </div>
               )}
 

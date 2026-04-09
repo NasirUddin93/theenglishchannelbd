@@ -3,17 +3,56 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Book } from '@/types';
+import { Book, Course } from '@/types';
 import BookCard from '@/components/BookCard';
-import { ArrowRight, BookOpen, Truck, ShieldCheck, Sparkles } from 'lucide-react';
+import CourseCard from '@/components/CourseCard';
+import CourseHero from '@/components/CourseHero';
+import CourseBenefits from '@/components/CourseBenefits';
+import AnimatedCounter from '@/components/AnimatedCounter';
+import {
+  ArrowRight,
+  BookOpen,
+  Truck,
+  ShieldCheck,
+  Sparkles,
+  GraduationCap,
+  Library,
+  Users,
+  Star,
+  Play,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useInView } from 'react-intersection-observer';
 import { cn } from '@/lib/utils';
 import { api, ApiBook, mapApiBookToBook, ApiCategory } from '@/lib/api';
 import { useWishlist } from '@/context/WishlistContext';
 
+interface ApiCourse {
+  id: number;
+  title: string;
+  slug: string;
+  instructor: string;
+  description: string;
+  price: string;
+  duration_hours: number;
+  lessons_count: number;
+  level: string;
+  category: string;
+  image: string | null;
+  is_featured: boolean;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  average_rating?: number;
+  reviews_count?: number;
+  enrolled_count?: number;
+}
+
 export default function Home() {
   const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
   const [newArrivals, setNewArrivals] = useState<Book[]>([]);
+  const [featuredCourses, setFeaturedCourses] = useState<Course[]>([]);
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [categories, setCategories] = useState<ApiCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const { checkWishlist } = useWishlist();
@@ -23,14 +62,53 @@ export default function Home() {
       api.get<{ data: ApiBook[] }>('/books', { featured: 'true' }),
       api.get<{ data: ApiBook[] }>('/books', { sort: 'newest' }),
       api.get<ApiCategory[]>('/categories'),
+      api.get<{ data: ApiCourse[] }>('/courses', { featured: 'true' }),
+      api.get<{ data: ApiCourse[] }>('/courses'),
     ])
-      .then(([featuredRes, allRes, catRes]) => {
+      .then(([featuredRes, allRes, catRes, featuredCoursesRes, allCoursesRes]) => {
         const featured = (featuredRes.data || []).map(mapApiBookToBook);
         const newArr = (allRes.data || []).slice(0, 4).map(mapApiBookToBook);
+        const featCourses = (featuredCoursesRes.data || []).map((c) => ({
+          id: c.id,
+          title: c.title,
+          slug: c.slug,
+          instructor: c.instructor,
+          description: c.description,
+          price: parseFloat(c.price),
+          duration_hours: c.duration_hours,
+          lessons_count: c.lessons_count,
+          level: c.level,
+          category: c.category,
+          image: c.image,
+          is_featured: c.is_featured,
+          average_rating: c.average_rating,
+          reviews_count: c.reviews_count,
+          enrolled_count: c.enrolled_count,
+        }));
+        const allCour = (allCoursesRes.data || []).map((c) => ({
+          id: c.id,
+          title: c.title,
+          slug: c.slug,
+          instructor: c.instructor,
+          description: c.description,
+          price: parseFloat(c.price),
+          duration_hours: c.duration_hours,
+          lessons_count: c.lessons_count,
+          level: c.level,
+          category: c.category,
+          image: c.image,
+          is_featured: c.is_featured,
+          average_rating: c.average_rating,
+          reviews_count: c.reviews_count,
+          enrolled_count: c.enrolled_count,
+        }));
+
         setFeaturedBooks(featured);
         setNewArrivals(newArr);
+        setFeaturedCourses(featCourses);
+        setAllCourses(allCour);
         setCategories(catRes || []);
-        
+
         const allBookIds = [...featured, ...newArr].map(b => b.id);
         if (allBookIds.length > 0) {
           checkWishlist(allBookIds);
@@ -313,112 +391,325 @@ export default function Home() {
   }
 
   return (
-    <div className="space-y-24 pb-20">
-      <section className="relative overflow-hidden rounded-3xl bg-gray-900 text-white p-8 md:p-16 lg:p-24">
-        <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-l from-orange-500/20 to-transparent"></div>
-          <img src="https://picsum.photos/seed/library/800/1200" className="w-full h-full object-cover" alt="" />
+    <div className="space-y-32 pb-20">
+      {/* 1. HERO SECTION - Enhanced with parallax and animations */}
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="relative overflow-hidden rounded-3xl bg-gray-900 text-white p-8 md:p-16 lg:p-24"
+      >
+        {/* Animated background blobs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <motion.div
+            animate={{
+              scale: [1, 1.2, 1],
+              rotate: [0, 90, 0],
+              opacity: [0.2, 0.3, 0.2],
+            }}
+            transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-orange-500/20 to-amber-500/20 rounded-full blur-3xl"
+          />
+          <motion.div
+            animate={{
+              scale: [1, 1.3, 1],
+              rotate: [0, -90, 0],
+              opacity: [0.15, 0.25, 0.15],
+            }}
+            transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-orange-600/15 to-transparent rounded-full blur-3xl"
+          />
         </div>
-        
+
+        {/* Floating icons */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[BookOpen, GraduationCap, Library, Star].map((Icon, i) => (
+            <motion.div
+              key={i}
+              animate={{
+                y: [0, -20, 0],
+                rotate: [0, 10, -10, 0],
+                opacity: [0.1, 0.2, 0.1],
+              }}
+              transition={{
+                duration: 6 + i * 2,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: i * 0.5,
+              }}
+              className="absolute text-orange-400"
+              style={{
+                top: `${20 + i * 15}%`,
+                right: `${10 + i * 20}%`,
+              }}
+            >
+              <Icon className="w-12 h-12" />
+            </motion.div>
+          ))}
+        </div>
+
         <div className="relative z-10 max-w-2xl">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-widest text-orange-400 mb-6"
-          >
-            <Sparkles className="w-3 h-3" />
-            <span>Curated with Love</span>
-          </motion.div>
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="font-serif text-5xl md:text-7xl font-bold leading-tight mb-8"
-          >
-            Discover Your Next <span className="text-orange-500 italic">Masterpiece</span>
-          </motion.h1>
-          <motion.p 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-lg text-gray-400 mb-10 leading-relaxed max-w-lg"
+            className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-widest text-orange-400 mb-6"
           >
-            Explore our hand-picked collection of literary gems, from timeless classics to contemporary breakthroughs.
-          </motion.p>
-          <motion.div 
+            <Sparkles className="w-3 h-3" />
+            <span>Welcome to The English Channel</span>
+          </motion.div>
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
+            className="font-serif text-5xl md:text-7xl font-bold leading-tight mb-8"
+          >
+            Learn, Read & <span className="text-orange-500 italic">Grow</span>
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="text-lg text-gray-400 mb-10 leading-relaxed max-w-lg"
+          >
+            Discover expert-led courses and hand-picked books to accelerate your learning journey.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
             className="flex flex-wrap gap-4"
           >
-            <Link href="/shop" className="px-8 py-4 bg-orange-600 text-white rounded-full font-bold hover:bg-orange-700 transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-orange-600/20">
-              Browse Collection
+            <Link
+              href="/courses"
+              className="px-8 py-4 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-full font-bold hover:shadow-xl hover:shadow-orange-500/30 transition-all transform hover:scale-105 active:scale-95"
+            >
+              Explore Courses
             </Link>
-            <Link href="/auth" className="px-8 py-4 bg-white/10 backdrop-blur-md text-white rounded-full font-bold hover:bg-white/20 transition-all border border-white/10">
-              Join Community
+            <Link
+              href="/shop"
+              className="px-8 py-4 bg-white/10 backdrop-blur-md text-white rounded-full font-bold hover:bg-white/20 transition-all border border-white/10"
+            >
+              Browse Books
             </Link>
           </motion.div>
         </div>
+      </motion.section>
+
+      {/* 2. STATS SECTION - Animated Counters */}
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <AnimatedCounter
+          end={featuredBooks.length > 0 ? featuredBooks.length : 500}
+          suffix="+"
+          label="Books Available"
+          icon={<Library className="w-8 h-8" />}
+        />
+        <AnimatedCounter
+          end={allCourses.length > 0 ? allCourses.length : 50}
+          suffix="+"
+          label="Expert Courses"
+          icon={<GraduationCap className="w-8 h-8" />}
+        />
+        <AnimatedCounter
+          end={10}
+          suffix="K+"
+          label="Active Students"
+          icon={<Users className="w-8 h-8" />}
+        />
+        <AnimatedCounter
+          end={5}
+          suffix=".0"
+          label="Average Rating"
+          icon={<Star className="w-8 h-8" />}
+        />
       </section>
 
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {[
-          { icon: BookOpen, title: 'Curated Selection', desc: 'Every book is hand-picked by our literary experts.' },
-          { icon: Truck, title: 'Fast Delivery', desc: 'Free worldwide shipping on orders over $50.' },
-          { icon: ShieldCheck, title: 'Secure Shopping', desc: 'Your data is protected with enterprise-grade security.' },
-        ].map((feature, i) => (
-          <div key={i} className="p-8 bg-white rounded-2xl border border-gray-100 hover:border-orange-100 transition-all">
-            <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 mb-6">
-              <feature.icon className="w-6 h-6" />
+      {/* 3. FEATURED COURSES SECTION - Hero + Grid */}
+      {featuredCourses.length > 0 && (
+        <section>
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full text-sm font-bold text-orange-600 uppercase tracking-wider mb-4">
+                <GraduationCap className="w-4 h-4" />
+                Featured Courses
+              </div>
+              <h2 className="font-serif text-4xl font-bold text-gray-900 mb-2">
+                Learn from the <span className="text-orange-600 italic">Best</span>
+              </h2>
+              <p className="text-gray-500">Hand-picked courses to accelerate your learning.</p>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-            <p className="text-gray-500 leading-relaxed">{feature.desc}</p>
+            <Link
+              href="/courses"
+              className="group flex items-center gap-2 text-sm font-bold text-orange-600 uppercase tracking-widest"
+            >
+              <span>View All</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
-        ))}
+
+          {/* Course Hero - Auto-rotating showcase */}
+          <div className="mb-8">
+            <CourseHero courses={featuredCourses} />
+          </div>
+
+          {/* Course Grid */}
+          {allCourses.length > 4 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {allCourses.slice(0, 6).map((course, index) => (
+                <CourseCard key={course.id} course={course} index={index} />
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* 4. COURSE BENEFITS SECTION */}
+      <section className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-3xl p-12 md:p-16">
+        <CourseBenefits />
       </section>
 
+      {/* 5. FEATURED BOOKS SECTION - Horizontal Scroll */}
       <section>
         <div className="flex items-end justify-between mb-12">
           <div>
-            <h2 className="font-serif text-4xl font-bold text-gray-900 mb-4">Featured Books</h2>
-            <p className="text-gray-500">Our editors' top picks for this month.</p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full text-sm font-bold text-orange-600 uppercase tracking-wider mb-4">
+              <BookOpen className="w-4 h-4" />
+              Featured Books
+            </div>
+            <h2 className="font-serif text-4xl font-bold text-gray-900 mb-2">
+              Editor's <span className="text-orange-600 italic">Picks</span>
+            </h2>
+            <p className="text-gray-500">Our top recommendations for this month.</p>
           </div>
-          <Link href="/shop" className="group flex items-center gap-2 text-sm font-bold text-orange-600 uppercase tracking-widest">
-            <span>View All</span>
+          <Link
+            href="/shop"
+            className="group flex items-center gap-2 text-sm font-bold text-orange-600 uppercase tracking-widest"
+          >
+            <span>Browse All</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
-        {/* Auto-sliding featured carousel (SeamlessTicker) */}
-        <div className="relative">
-          <SeamlessTicker books={featuredBooks} />
-        </div>
+        {featuredBooks.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {featuredBooks.slice(0, 10).map((book, index) => (
+              <BookCard key={book.id} book={book} index={index} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">No featured books yet</h3>
+            <p className="text-gray-500">Check back soon for our curated selections!</p>
+          </div>
+        )}
       </section>
 
-      <section className="bg-white rounded-3xl p-12 border border-gray-100">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="font-serif text-4xl font-bold text-gray-900 mb-4">Explore Categories</h2>
-          <p className="text-gray-500">Find your favorite genre and dive into a new world.</p>
-        </div>
-        <div>
-          <CategoryTicker cats={categories} />
-        </div>
-      </section>
+      {/* 6. CATEGORIES SECTION - Enhanced Ticker */}
+      {categories.length > 0 && (
+        <section className="bg-white rounded-3xl p-12 border border-gray-100">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full text-sm font-bold text-orange-600 uppercase tracking-wider mb-6">
+              <Sparkles className="w-4 h-4" />
+              Browse by Category
+            </div>
+            <h2 className="font-serif text-4xl font-bold text-gray-900 mb-4">Explore Categories</h2>
+            <p className="text-gray-500">Find your favorite genre and dive into a new world.</p>
+          </div>
+          <div>
+            <CategoryTicker cats={categories} />
+          </div>
+        </section>
+      )}
 
+      {/* 7. NEW ARRIVALS SECTION - Grid Layout */}
       <section>
         <div className="flex items-end justify-between mb-12">
           <div>
-            <h2 className="font-serif text-4xl font-bold text-gray-900 mb-4">New Arrivals</h2>
-            <p className="text-gray-500">Freshly added to our shelves.</p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full text-sm font-bold text-blue-600 uppercase tracking-wider mb-4">
+              <Sparkles className="w-4 h-4" />
+              Just Arrived
+            </div>
+            <h2 className="font-serif text-4xl font-bold text-gray-900 mb-2">
+              New <span className="text-orange-600 italic">Arrivals</span>
+            </h2>
+            <p className="text-gray-500">Freshly added to our collection.</p>
           </div>
-          <Link href="/shop" className="group flex items-center gap-2 text-sm font-bold text-orange-600 uppercase tracking-widest">
-            <span>Explore New</span>
+          <Link
+            href="/shop"
+            className="group flex items-center gap-2 text-sm font-bold text-orange-600 uppercase tracking-widest"
+          >
+            <span>See All</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
-        <div>
-          <SeamlessTicker books={newArrivals.slice(0, 10)} speed={50} />
-        </div>
+
+        {newArrivals.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {newArrivals.map((book, index) => (
+              <BookCard key={book.id} book={book} index={index} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">No new arrivals</h3>
+            <p className="text-gray-500">New books will be added soon!</p>
+          </div>
+        )}
+      </section>
+
+      {/* 8. CTA SECTION - Split Call to Action */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Books CTA */}
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-500 to-amber-500 p-12 text-white group"
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl" />
+          <div className="relative z-10">
+            <BookOpen className="w-12 h-12 mb-6 opacity-80" />
+            <h3 className="font-serif text-3xl font-bold mb-4">Discover Great Books</h3>
+            <p className="text-orange-100 mb-8 leading-relaxed">
+              Explore our curated collection of literary masterpieces.
+            </p>
+            <Link
+              href="/shop"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-orange-600 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105"
+            >
+              Start Reading
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
+        </motion.div>
+
+        {/* Courses CTA */}
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-gray-900 to-gray-800 p-12 text-white group"
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl" />
+          <div className="relative z-10">
+            <GraduationCap className="w-12 h-12 mb-6 opacity-80" />
+            <h3 className="font-serif text-3xl font-bold mb-4">Master New Skills</h3>
+            <p className="text-gray-400 mb-8 leading-relaxed">
+              Learn from expert instructors with our comprehensive courses.
+            </p>
+            <Link
+              href="/courses"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-full font-bold hover:shadow-xl hover:shadow-orange-500/30 transition-all transform hover:scale-105"
+            >
+              Start Learning
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
+        </motion.div>
       </section>
     </div>
   );
