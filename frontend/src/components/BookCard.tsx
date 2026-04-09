@@ -9,17 +9,24 @@ import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { toast } from 'sonner';
+import { motion } from 'motion/react';
+import { useInView } from 'react-intersection-observer';
 
 interface BookCardProps {
   book: Book;
   viewMode?: 'grid' | 'list';
+  index?: number;
 }
 
-export default function BookCard({ book, viewMode = 'grid' }: BookCardProps) {
+export default function BookCard({ book, viewMode = 'grid', index = 0 }: BookCardProps) {
   const { addToCart } = useCart();
   const { user } = useAuth();
   const { isInWishlist, toggleWishlist: toggleWishlistFromContext } = useWishlist();
   const [wishlistLoading, setWishlistLoading] = useState(false);
+  const { ref, inView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
 
   const isStaff = user && user.role === 'staff';
   const isInList = isInWishlist(book.id);
@@ -51,9 +58,24 @@ export default function BookCard({ book, viewMode = 'grid' }: BookCardProps) {
 
   if (viewMode === 'list') {
     return (
-      <div className="group flex gap-6 p-4 bg-white rounded-2xl border border-gray-100 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/5 transition-all duration-300">
+      <motion.div
+        ref={ref}
+        initial={{ opacity: 0, x: -50 }}
+        animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
+        transition={{ duration: 0.5, delay: index * 0.08, ease: 'easeOut' }}
+        whileHover={{ x: 8 }}
+        className="group flex gap-6 p-4 bg-white rounded-2xl border border-gray-100 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/5 transition-all duration-300"
+      >
         <Link href={`/book/${book.id}`} className="shrink-0 w-32 h-48 rounded-xl overflow-hidden shadow-md group-hover:shadow-lg transition-all relative">
-          <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img
+            src={book.coverUrl || 'https://via.placeholder.com/400x600?text=No+Image'}
+            alt={book.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={(e) => {
+              const el = e.currentTarget as HTMLImageElement;
+              el.src = 'https://via.placeholder.com/400x600?text=No+Image';
+            }}
+          />
           {!isStaff && (
             <button 
               onClick={toggleWishlist}
@@ -100,12 +122,19 @@ export default function BookCard({ book, viewMode = 'grid' }: BookCardProps) {
             )}
           </div>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="group flex flex-col bg-white rounded-2xl border border-gray-100 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/5 transition-all duration-300 overflow-hidden relative">
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50, scale: 0.95 }}
+      animate={inView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 50, scale: 0.95 }}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: 'easeOut' }}
+      whileHover={{ y: -8, scale: 1.02 }}
+      className="group flex flex-col bg-white rounded-2xl border border-gray-100 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/5 transition-all duration-300 overflow-hidden relative"
+    >
       {!isStaff && (
         <button 
           onClick={toggleWishlist}
@@ -118,7 +147,15 @@ export default function BookCard({ book, viewMode = 'grid' }: BookCardProps) {
         </button>
       )}
       <Link href={`/book/${book.id}`} className="relative aspect-[2/3] overflow-hidden">
-        <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        <img
+          src={book.coverUrl || 'https://via.placeholder.com/400x600?text=No+Image'}
+          alt={book.title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          onError={(e) => {
+            const el = e.currentTarget as HTMLImageElement;
+            el.src = 'https://via.placeholder.com/400x600?text=No+Image';
+          }}
+        />
         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
           <div className="p-3 bg-white rounded-full text-gray-900 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
             <ArrowRight className="w-6 h-6" />
@@ -161,6 +198,6 @@ export default function BookCard({ book, viewMode = 'grid' }: BookCardProps) {
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -7,8 +7,8 @@ import { WishlistProvider } from "@/context/WishlistContext";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "Lumina Books",
-  description: "Curating the world's most inspiring literature",
+  title: "The English Channel BD",
+  description: "Your premier destination for English literature, language courses, and educational resources",
 };
 
 export default function RootLayout({
@@ -44,8 +44,8 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
-            <h3 className="font-serif text-2xl font-bold text-gray-900 mb-4">Lumina Books</h3>
-            <p className="text-gray-500 max-w-sm">Curating the world's most inspiring literature, one page at a time. Join our community of readers today.</p>
+            <h3 className="font-serif text-2xl font-bold text-gray-900 mb-4">The English Channel BD</h3>
+            <p className="text-gray-500 max-w-sm">Your premier destination for English literature, language courses, and educational resources. Join our community of learners today.</p>
           </div>
           <div>
             <h4 className="font-semibold text-gray-900 mb-4 uppercase text-xs tracking-wider">Shop</h4>
@@ -67,7 +67,7 @@ function Footer() {
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-gray-50 text-center text-xs text-gray-400">
-          © {new Date().getFullYear()} Lumina Books. All rights reserved.
+          © {new Date().getFullYear()} The English Channel BD. All rights reserved.
         </div>
       </div>
     </footer>

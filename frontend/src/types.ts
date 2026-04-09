@@ -16,6 +16,24 @@ export interface Book {
   status?: 'pending' | 'approved' | 'rejected' | 'draft' | 'pending_deletion';
 }
 
+export interface Course {
+  id: number;
+  title: string;
+  slug: string;
+  instructor: string;
+  description: string;
+  price: number;
+  duration_hours: number;
+  lessons_count: number;
+  level: string;
+  category: string;
+  image?: string | null;
+  is_featured: boolean;
+  average_rating?: number;
+  reviews_count?: number;
+  enrolled_count?: number;
+}
+
 export interface CategoryRequest {
   id: string;
   type: 'add' | 'delete';
@@ -55,13 +73,17 @@ export interface UserProfile {
 }
 
 export interface CartItem {
-  bookId: string;
+  bookId?: string;
+  courseId?: string;
+  type: 'book' | 'course';
   title: string;
   author: string;
   price: number;
   quantity: number;
   coverUrl: string;
   stock: number;
+  instructor?: string;
+  slug?: string;
 }
 
 export interface Order {
@@ -84,4 +106,20 @@ export interface Order {
   estimatedDelivery?: string;
   deliveredAt?: string;
   statusHistory?: { status: string; date: string; note?: string }[];
+}
+
+export interface CourseCartItem {
+  id: number;
+  title: string;
+  slug: string;
+  instructor: string;
+  description: string;
+  price: number;
+  duration_hours: number;
+  lessons_count: number;
+  level: string;
+  category: string;
+  preview_video: string | null;
+  is_featured: boolean;
+  image?: string | null;
 }

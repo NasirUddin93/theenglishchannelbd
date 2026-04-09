@@ -1,4 +1,12 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+// Storage base URL for public assets. Can be overridden per env (e.g., Vercel, Netlify, .env).
+const STORAGE_BASE_URL = (typeof process !== 'undefined' && (process as any).env?.NEXT_PUBLIC_STORAGE_BASE) || 'http://localhost:8000/storage';
+
+export function joinStorage(base: string, path: string) {
+  const b = base.endsWith('/') ? base.slice(0, -1) : base;
+  const p = path.startsWith('/') ? path.slice(1) : path;
+  return `${b}/${p}`;
+}
 
 interface FetchOptions extends RequestInit {
   params?: Record<string, string>;
@@ -8,7 +16,8 @@ async function apiFetch<T>(endpoint: string, options: FetchOptions = {}): Promis
   const { params, headers: customHeaders, ...restOptions } = options;
 
   const fullUrl = `${API_URL}${endpoint}`;
-  const url = new URL(fullUrl);
+  const base = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+  const url = new URL(fullUrl, base);
 
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
@@ -45,6 +54,13 @@ async function apiFetch<T>(endpoint: string, options: FetchOptions = {}): Promis
     try {
       error = JSON.parse(errorText);
     } catch {}
+
+    if ((error as any).errors) {
+      const detailedErrors = Object.entries((error as any).errors)
+        .map(([field, messages]) => `${field}: ${(messages as string[])[0]}`)
+        .join(', ');
+      throw new Error(`${error.message} (${detailedErrors})`);
+    }
     throw new Error(error.message || `API Error: ${response.status}`);
   }
 
@@ -151,12 +167,16 @@ export function mapApiBookToBook(apiBook: ApiBook) {
     price: parseFloat(apiBook.price),
     stock: apiBook.stock,
     category: apiBook.category?.name || 'Unknown',
-    coverUrl: apiBook.image || `https://picsum.photos/seed/book${apiBook.id}/400/600`,
+    coverUrl: apiBook.image
+      ? (apiBook.image.startsWith('http')
+          ? apiBook.image
+          : joinStorage(STORAGE_BASE_URL, apiBook.image))
+      : `https://picsum.photos/seed/book${apiBook.id}/400/600`,
     previewContent: (apiBook.preview_content && apiBook.preview_content.length > 0)
       ? apiBook.preview_content
       : [fallbackPreview],
     previewImages: (apiBook.preview_images && apiBook.preview_images.length > 0)
-      ? apiBook.preview_images.map(img => img.startsWith('http') ? img : `http://localhost:8000/storage/${img}`)
+      ? apiBook.preview_images.map(img => img.startsWith('http') ? img : joinStorage(STORAGE_BASE_URL, img))
       : undefined,
     isFeatured: apiBook.is_featured,
     isNewArrival: false,
@@ -186,14 +206,43 @@ export function mapApiOrderToOrder(apiOrder: ApiOrder) {
   return {
     id: String(apiOrder.id),
     userId: String(apiOrder.user_id),
-    items: (apiOrder.items || []).map((item) => ({
-      bookId: String(item.book_id),
-      title: item.book?.title || 'Unknown',
-      author: item.book?.author || 'Unknown',
-      price: parseFloat(item.price),
-      quantity: item.quantity,
-      coverUrl: item.book?.image || `https://picsum.photos/seed/book${item.book_id}/400/600`,
-    })),
+    items: (apiOrder.items || []).map((item) => {
+      // Check if this is a course item
+      const isCourse = item.course_id && !item.book_id;
+      
+      if (isCourse && item.course) {
+        // Course item
+        return {
+          type: 'course',
+          courseId: String(item.course_id),
+          bookId: null,
+          title: item.course?.title || 'Unknown Course',
+          author: item.course?.instructor || 'Unknown',
+          instructor: item.course?.instructor || 'Unknown',
+          price: parseFloat(item.price),
+          quantity: item.quantity,
+          coverUrl: item.course?.image
+            ? (item.course.image.startsWith('http') ? item.course.image : `http://localhost:8000/storage/${item.course.image}`)
+            : `https://picsum.photos/seed/course${item.course_id}/400/600`,
+          slug: item.course?.slug || '',
+          course: item.course,
+        };
+      } else {
+        // Book item
+        return {
+          type: 'book',
+          bookId: String(item.book_id),
+          courseId: null,
+          title: item.book?.title || 'Unknown',
+          author: item.book?.author || 'Unknown',
+          price: parseFloat(item.price),
+          quantity: item.quantity,
+          coverUrl: item.book?.image
+            ? (item.book.image.startsWith('http') ? item.book.image : `http://localhost:8000/storage/${item.book.image}`)
+            : `https://picsum.photos/seed/book${item.book_id}/400/600`,
+        };
+      }
+    }),
     total: parseFloat(apiOrder.total),
     status: apiOrder.status as 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled',
     paymentMethod: apiOrder.payment_method || 'Unknown',

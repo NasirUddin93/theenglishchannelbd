@@ -13,18 +13,19 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = 20;
+        // Return all orders for the user (needed for profile to show all course enrollments)
         $orders = $request->user()->orders()
             ->select('id', 'user_id', 'total', 'status', 'payment_method', 'shipping_address', 'city', 'state', 'postal_code', 'phone', 'notes', 'created_at', 'updated_at')
             ->with(['items' => function($query) {
-                $query->select('id', 'order_id', 'book_id', 'quantity', 'price');
+                $query->select('id', 'order_id', 'book_id', 'course_id', 'quantity', 'price');
             }, 'items.book' => function($query) {
                 $query->select('id', 'title', 'author', 'price', 'image');
+            }, 'items.course' => function($query) {
+                $query->select('id', 'title', 'slug', 'instructor', 'price', 'image');
             }])
             ->orderBy('created_at', 'desc')
-            ->limit($perPage)
             ->get();
-
+        
         foreach ($orders as $order) {
             foreach ($order->items as $item) {
                 if ($item->book && $item->book->image) {
@@ -32,71 +33,114 @@ class OrderController extends Controller
                         $item->book->image = asset('storage/' . ltrim($item->book->image, '/'));
                     }
                 }
+                if ($item->course && $item->course->image) {
+                    if (!preg_match('#^https?://#i', $item->course->image)) {
+                        $item->course->image = asset('storage/' . ltrim($item->course->image, '/'));
+                    }
+                }
             }
         }
-
+        
         return response()->json($orders)->header('Cache-Control', 'public, max-age=60');
     }
 
     public function store(Request $request)
     {
+        // Validate for course enrollments (simplified - no shipping needed)
         $validated = $request->validate([
-            'shipping_address' => 'required|string|max:500',
-            'city' => 'required|string|max:100',
+            'payment_method' => 'required|string',
+            'items' => 'required|array',
+            'items.*.type' => 'required|string|in:book,course',
+            'items.*.book_id' => 'nullable|integer',
+            'items.*.course_id' => 'nullable|integer',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.price' => 'required|numeric|min:0',
+            // Shipping fields (optional for course-only orders)
+            'shipping_address' => 'nullable|string|max:500',
+            'city' => 'nullable|string|max:100',
             'state' => 'nullable|string|max:100',
             'postal_code' => 'nullable|string|max:20',
-            'phone' => 'required|string|max:20',
-            'payment_method' => 'required|string',
+            'phone' => 'nullable|string|max:20',
             'notes' => 'nullable|string|max:1000',
         ]);
-
-        $cart = $request->session()->get('cart', []);
-
-        if (empty($cart)) {
-            return response()->json([
-                'message' => 'Cart is empty',
-            ], 400);
-        }
 
         try {
             DB::beginTransaction();
 
             $total = 0;
             $orderItems = [];
+            $hasOnlyCourses = collect($validated['items'])->every(fn($item) => $item['type'] === 'course');
+            $userId = $request->user()->id;
 
-            foreach ($cart as $bookId => $quantity) {
-                $book = Book::lockForUpdate()->find($bookId);
-
-                if (!$book) {
-                    throw new \Exception("Book not found: {$bookId}");
+            // Check for duplicate course enrollments
+            foreach ($validated['items'] as $item) {
+                if ($item['type'] === 'course') {
+                    $exists = OrderItem::where('course_id', $item['course_id'])
+                        ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                        ->where('orders.user_id', $userId)
+                        ->whereIn('orders.status', ['delivered', 'completed'])
+                        ->exists();
+                    
+                    if ($exists) {
+                        $course = \App\Models\Course::find($item['course_id']);
+                        throw new \Exception("You already own '{$course->title}'");
+                    }
                 }
-
-                if ($book->stock < $quantity) {
-                    throw new \Exception("Not enough stock for: {$book->title}");
-                }
-
-                $subtotal = $book->price * $quantity;
-                $total += $subtotal;
-
-                $orderItems[] = [
-                    'book_id' => $bookId,
-                    'quantity' => $quantity,
-                    'price' => $book->price,
-                ];
-
-                $book->decrement('stock', $quantity);
             }
+
+            foreach ($validated['items'] as $item) {
+                if ($item['type'] === 'course') {
+                    // Course enrollment - no stock check needed
+                    $course = \App\Models\Course::find($item['course_id']);
+                    if (!$course) {
+                        throw new \Exception("Course not found: {$item['course_id']}");
+                    }
+
+                    $subtotal = $item['price'] * $item['quantity'];
+                    $total += $subtotal;
+
+                    $orderItems[] = [
+                        'course_id' => $item['course_id'],
+                        'quantity' => $item['quantity'],
+                        'price' => $item['price'],
+                    ];
+                } else {
+                    // Book purchase - check stock
+                    $book = Book::lockForUpdate()->find($item['book_id']);
+                    if (!$book) {
+                        throw new \Exception("Book not found: {$item['book_id']}");
+                    }
+
+                    if ($book->stock < $item['quantity']) {
+                        throw new \Exception("Not enough stock for: {$book->title}");
+                    }
+
+                    $subtotal = $item['price'] * $item['quantity'];
+                    $total += $subtotal;
+
+                    $orderItems[] = [
+                        'book_id' => $item['book_id'],
+                        'quantity' => $item['quantity'],
+                        'price' => $item['price'],
+                    ];
+
+                    $book->decrement('stock', $item['quantity']);
+                }
+            }
+
+            // Determine status based on order type
+            $status = $hasOnlyCourses ? 'completed' : 'pending';
 
             $order = Order::create([
                 'user_id' => $request->user()->id,
                 'total' => $total,
-                'status' => 'pending',
+                'status' => $status,
                 'payment_method' => $validated['payment_method'],
-                'shipping_address' => $validated['shipping_address'],
-                'city' => $validated['city'],
+                'shipping_address' => $validated['shipping_address'] ?? null,
+                'city' => $validated['city'] ?? null,
                 'state' => $validated['state'] ?? null,
                 'postal_code' => $validated['postal_code'] ?? null,
-                'phone' => $validated['phone'],
+                'phone' => $validated['phone'] ?? null,
                 'notes' => $validated['notes'] ?? null,
             ]);
 
@@ -105,12 +149,10 @@ class OrderController extends Controller
                 OrderItem::create($item);
             }
 
-            $request->session()->forget('cart');
-
             DB::commit();
 
             return response()->json([
-                'order' => $order->load('items.book'),
+                'order' => $order->load(['items.book', 'items.course']),
                 'message' => 'Order placed successfully',
             ], 201);
 

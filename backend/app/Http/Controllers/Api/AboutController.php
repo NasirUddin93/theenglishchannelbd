@@ -14,14 +14,14 @@ class AboutController extends Controller
 
         if (!$about) {
             $about = AboutPage::create([
-                'title' => 'About Lumina Books',
-                'hero_description' => 'Your premier destination for literary discoveries and timeless classics.',
-                'our_story' => 'Founded with a passion for literature, Lumina Books has grown from a small community bookstore into a trusted online destination for book lovers worldwide. Our journey began with a simple belief that great stories deserve to be shared with everyone.',
-                'our_mission' => 'To connect readers with exceptional books while fostering a love for reading across all ages and backgrounds.',
-                'our_values' => 'We believe in quality over quantity, carefully curating our collection to ensure every book meets our high standards. Our commitment to customer satisfaction drives everything we do.',
-                'contact_email' => 'contact@luminabooks.com',
-                'contact_phone' => '+1 (555) 123-4567',
-                'contact_address' => '123 Book Street, Reading City, RC 12345',
+                'title' => 'About The English Channel BD',
+                'hero_description' => 'Your premier destination for English literature, language courses, and educational resources.',
+                'our_story' => 'Founded with a passion for English education, The English Channel BD has grown from a small community initiative into a trusted online destination for learners and book lovers. Our journey began with a simple belief that quality English education deserves to be accessible to everyone.',
+                'our_mission' => 'To connect learners with exceptional books and courses while fostering English proficiency and a love for reading across all ages and backgrounds.',
+                'our_values' => 'We believe in quality over quantity, carefully curating our collection of books and courses to ensure every resource meets our high standards. Our commitment to student success drives everything we do.',
+                'contact_email' => 'contact@englishchannelbd.com',
+                'contact_phone' => '+880 1XXX-XXXXXX',
+                'contact_address' => 'Dhaka, Bangladesh',
             ]);
         }
 

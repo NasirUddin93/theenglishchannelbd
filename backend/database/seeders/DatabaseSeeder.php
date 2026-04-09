@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\User;
 use App\Models\Review;
 use App\Models\Question;
+use App\Models\Course;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -927,6 +928,9 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now()->subDays(rand(1, 60)),
             ]);
         }
+
+        // Seed courses
+        $this->call(\Database\Seeders\CoursesSeeder::class);
 
         // Seed orders after creating users and books
         $this->call(\Database\Seeders\OrdersSeeder::class);

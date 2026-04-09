@@ -47,6 +47,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     fetchUser();
   }, [fetchUser]);
 
+  // When user changes, verify orders belong to them
+  useEffect(() => {
+    if (user) {
+      const storedOrders = localStorage.getItem('lumina_orders');
+      if (storedOrders) {
+        try {
+          const orders = JSON.parse(storedOrders);
+          // Filter orders to only include those belonging to current user
+          const userOrders = orders.filter((order: any) => order.userId === user.uid);
+          if (userOrders.length !== orders.length) {
+            console.log('[Auth] Cleaned up orders: removed orders from other users');
+            localStorage.setItem('lumina_orders', JSON.stringify(userOrders));
+          }
+        } catch (e) {
+          console.error('[Auth] Error validating orders:', e);
+        }
+      }
+    }
+  }, [user]);
+
   useEffect(() => {
     const handleAuthChange = () => {
       fetchUser();
@@ -79,7 +99,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       localStorage.removeItem('auth_token');
       setUser(null);
-      try { window.dispatchEvent(new Event('auth-change')); } catch (err) {}
+      // Clear wishlist on logout
+      try { 
+        window.dispatchEvent(new Event('auth-change'));
+        window.dispatchEvent(new CustomEvent('wishlist-clear'));
+      } catch (err) {}
     }
   };
 
