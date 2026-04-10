@@ -52,9 +52,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ slug: string; id: string }> }) {
-  const { id } = await params;
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const body = await request.json();
+  const id = body.id || request.nextUrl.searchParams.get('id');
   
   try {
     const res = await fetch(`${LARAVEL_API}/reviews/${id}`, {
