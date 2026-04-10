@@ -217,8 +217,8 @@ export default function Checkout() {
       payment_method: paymentMethod,
       items: cart.map(item => ({
         type: item.type,
-        book_id: item.type === 'book' ? parseInt(item.bookId) : null,
-        course_id: item.type === 'course' ? parseInt(item.courseId) : null,
+        book_id: item.type === 'book' && item.bookId ? parseInt(item.bookId) : null,
+        course_id: item.type === 'course' && item.courseId ? parseInt(item.courseId) : null,
         quantity: item.quantity || 1,
         price: item.price,
       })),
