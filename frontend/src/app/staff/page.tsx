@@ -49,7 +49,7 @@ interface StaffBook extends Book {
 
 interface StaffQuestion {
   id: number;
-  book_id: number;
+  book_id?: number;
   user_name: string;
   question: string;
   answer: string | null;
@@ -57,6 +57,9 @@ interface StaffQuestion {
   created_at: string;
   book_title?: string;
   book_cover_url?: string;
+  course_id?: number;
+  course_title?: string;
+  course_image?: string;
 }
 
 export default function StaffDashboard() {

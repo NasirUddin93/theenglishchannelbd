@@ -146,10 +146,12 @@ export interface ApiOrder {
 export interface ApiOrderItem {
   id: number;
   order_id: number;
-  book_id: number;
+  book_id?: number | null;
+  course_id?: number | null;
   quantity: number;
   price: string;
   book?: ApiBook;
+  course?: any;
 }
 
 export function mapApiBookToBook(apiBook: ApiBook) {

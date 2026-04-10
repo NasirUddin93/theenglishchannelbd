@@ -226,12 +226,12 @@ export default function Checkout() {
         // Course-only order: minimal required fields
         shipping_address: 'N/A - Course Enrollment',
         city: 'N/A',
-        phone: user.phone || '0000000000',
+        phone: (user as any).phone || '0000000000',
       } : {
         // Mixed order: include shipping details
         shipping_address: shippingData.address,
         city: shippingData.city,
-        state: shippingData.state,
+        state: (shippingData as any).state || 'N/A',
         postal_code: shippingData.zipCode,
         phone: shippingData.phone,
       }),
