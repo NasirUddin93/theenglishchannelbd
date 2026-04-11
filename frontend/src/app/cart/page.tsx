@@ -149,10 +149,6 @@ export default function Cart() {
                 <span>Subtotal</span>
                 <span className="font-bold text-gray-900">৳{totalPrice.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-gray-600">
-                <span>Shipping</span>
-                <span className="text-green-600 font-bold uppercase text-xs tracking-widest">Free</span>
-              </div>
               <div className="pt-4 border-t border-gray-100 flex justify-between items-end">
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total Amount</p>

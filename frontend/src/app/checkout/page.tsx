@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
-import { CreditCard, Truck, CheckCircle2, ArrowRight, ArrowLeft, ShieldCheck, ShoppingBag, Tag, GraduationCap } from 'lucide-react';
+import { Truck, CheckCircle2, ArrowRight, ArrowLeft, ShieldCheck, ShoppingBag, Tag, GraduationCap, Phone, Percent, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { MOCK_PROMO_CODES } from '@/lib/mockData';
 import { toast } from 'sonner';
 
 import { useAuth } from '@/context/AuthContext';
+import { api } from '@/lib/api';
 
 export default function Checkout() {
   const { cart, totalPrice, clearCart } = useCart();
@@ -21,8 +22,24 @@ export default function Checkout() {
   const hasCourses = cart.some(item => item.type === 'course');
   const onlyCourses = hasCourses && !hasBooks;
 
+  const generateOrderNumber = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 10; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return `ORD-${result}`;
+  };
+
   const [step, setStep] = useState<'shipping' | 'payment' | 'success'>('shipping');
   const [loading, setLoading] = useState(false);
+  const [orderNumber, setOrderNumber] = useState<string>('');
+
+  useEffect(() => {
+    if (step === 'shipping') {
+      setOrderNumber('');
+    }
+  }, [step]);
   const [shippingData, setShippingData] = useState({
     fullName: '',
     email: '',
@@ -31,22 +48,20 @@ export default function Checkout() {
     zipCode: '',
     phone: '',
   });
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'paypal' | 'cod'>('card');
-  const [cardData, setCardData] = useState({
-    number: '',
-    expiry: '',
-    cvv: '',
-    name: '',
-  });
-  const [cardErrors, setCardErrors] = useState({
-    number: '',
-    expiry: '',
-    cvv: '',
-    name: '',
-  });
-  const [cardType, setCardType] = useState<'visa' | 'mastercard' | 'amex' | 'discover' | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'bkash' | 'nagad'>(hasBooks && !cart.some(item => item.type === 'course') ? 'cod' : 'bkash');
   const [promoCode, setPromoCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState<{ code: string, amount: number } | null>(null);
+  const [paymentDetails, setPaymentDetails] = useState({
+    mobileNumber: '',
+    transactionId: '',
+  });
+  const [siteSettings, setSiteSettings] = useState<{
+    bkash_number: string;
+    nagad_number: string;
+    cod_charge: number;
+    bkash_discount_percent: number;
+    nagad_discount_percent: number;
+  } | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -54,6 +69,10 @@ export default function Checkout() {
         ...prev,
         fullName: user.displayName || '',
         email: user.email || '',
+        address: user.address || '',
+        city: user.city || '',
+        zipCode: user.zipCode || '',
+        phone: user.phone || '',
       }));
     }
   }, [user]);
@@ -64,104 +83,19 @@ export default function Checkout() {
     }
   }, [onlyCourses, step]);
 
-  const detectCardType = (number: string): 'visa' | 'mastercard' | 'amex' | 'discover' | null => {
-    const cleaned = number.replace(/\s/g, '');
-    if (/^4/.test(cleaned)) return 'visa';
-    if (/^5[1-5]/.test(cleaned) || /^2[2-7]/.test(cleaned)) return 'mastercard';
-    if (/^3[47]/.test(cleaned)) return 'amex';
-    if (/^6(?:011|5)/.test(cleaned)) return 'discover';
-    return null;
-  };
-
-  const formatCardNumber = (value: string): string => {
-    const cleaned = value.replace(/\D/g, '').slice(0, 16);
-    const groups = cleaned.match(/.{1,4}/g);
-    return groups ? groups.join(' ') : cleaned;
-  };
-
-  const formatExpiry = (value: string): string => {
-    const cleaned = value.replace(/\D/g, '').slice(0, 4);
-    if (cleaned.length >= 2) {
-      return cleaned.slice(0, 2) + '/' + cleaned.slice(2);
-    }
-    return cleaned;
-  };
-
-  const validateCardNumber = (value: string): string => {
-    const cleaned = value.replace(/\s/g, '');
-    if (!cleaned) return '';
-    if (cleaned.length < 13) return 'Card number is too short';
-    if (cleaned.length > 16) return 'Card number is too long';
-    let sum = 0;
-    let isEven = false;
-    for (let i = cleaned.length - 1; i >= 0; i--) {
-      let digit = parseInt(cleaned[i], 10);
-      if (isEven) {
-        digit *= 2;
-        if (digit > 9) digit -= 9;
+  useEffect(() => {
+    const fetchSiteSettings = async () => {
+      try {
+        const res = await api.get('/site-settings');
+        if (res && typeof res === 'object' && 'bkash_number' in res) {
+          setSiteSettings(res as any);
+        }
+      } catch (err) {
+        console.error('Failed to fetch site settings:', err);
       }
-      sum += digit;
-      isEven = !isEven;
-    }
-    if (sum % 10 !== 0) return 'Invalid card number';
-    return '';
-  };
-
-  const validateExpiry = (value: string): string => {
-    if (!value) return '';
-    const match = value.match(/^(\d{2})\/(\d{2})$/);
-    if (!match) return 'Use MM/YY format';
-    const month = parseInt(match[1], 10);
-    const year = parseInt('20' + match[2], 10);
-    if (month < 1 || month > 12) return 'Invalid month';
-    const now = new Date();
-    const expiry = new Date(year, month);
-    if (expiry < now) return 'Card has expired';
-    return '';
-  };
-
-  const validateCVV = (value: string): string => {
-    if (!value) return '';
-    const isAmex = cardType === 'amex';
-    if (value.length < (isAmex ? 4 : 3)) return 'CVV is too short';
-    if (value.length > (isAmex ? 4 : 3)) return 'CVV is too long';
-    return '';
-  };
-
-  const validateCardName = (value: string): string => {
-    if (!value.trim()) return 'Cardholder name is required';
-    if (value.trim().length < 2) return 'Name is too short';
-    return '';
-  };
-
-  const handleCardNumberChange = (value: string) => {
-    const formatted = formatCardNumber(value);
-    const type = detectCardType(value);
-    setCardType(type);
-    setCardData(prev => ({ ...prev, number: formatted }));
-    const error = validateCardNumber(formatted);
-    setCardErrors(prev => ({ ...prev, number: error }));
-  };
-
-  const handleExpiryChange = (value: string) => {
-    const formatted = formatExpiry(value);
-    setCardData(prev => ({ ...prev, expiry: formatted }));
-    const error = validateExpiry(formatted);
-    setCardErrors(prev => ({ ...prev, expiry: error }));
-  };
-
-  const handleCVVChange = (value: string) => {
-    const cleaned = value.replace(/\D/g, '').slice(0, cardType === 'amex' ? 4 : 3);
-    setCardData(prev => ({ ...prev, cvv: cleaned }));
-    const error = validateCVV(cleaned);
-    setCardErrors(prev => ({ ...prev, cvv: error }));
-  };
-
-  const handleCardNameChange = (value: string) => {
-    const cleaned = value.replace(/[^a-zA-Z\s]/g, '');
-    setCardData(prev => ({ ...prev, name: cleaned }));
-    setCardErrors(prev => ({ ...prev, name: cleaned.trim() ? '' : 'Cardholder name is required' }));
-  };
+    };
+    fetchSiteSettings();
+  }, []);
 
   const handleApplyPromo = () => {
     if (!promoCode.trim()) {
@@ -184,7 +118,17 @@ export default function Checkout() {
     }
   };
 
-  const finalTotal = totalPrice - (appliedDiscount?.amount || 0);
+  const finalTotal = (() => {
+    let total = Number(totalPrice || 0) - Number(appliedDiscount?.amount || 0);
+    if (paymentMethod === 'bkash' && siteSettings?.bkash_discount_percent) {
+      total = total * (1 - siteSettings.bkash_discount_percent / 100);
+    } else if (paymentMethod === 'nagad' && siteSettings?.nagad_discount_percent) {
+      total = total * (1 - siteSettings.nagad_discount_percent / 100);
+    } else if (paymentMethod === 'cod' && siteSettings?.cod_charge) {
+      total = total + Number(siteSettings.cod_charge);
+    }
+    return total;
+  })();
 
   const handlePlaceOrder = async () => {
     if (!user) {
@@ -192,35 +136,37 @@ export default function Checkout() {
       return;
     }
 
-    if (paymentMethod === 'card') {
-      const nameError = validateCardName(cardData.name);
-      const numberError = validateCardNumber(cardData.number);
-      const expiryError = validateExpiry(cardData.expiry);
-      const cvvError = validateCVV(cardData.cvv);
-      
-      if (nameError || numberError || expiryError || cvvError) {
-        toast.error('Please fix card details errors');
-        return;
-      }
-      
-      if (!cardData.name.trim() || !cardData.number.trim() || !cardData.expiry.trim() || !cardData.cvv.trim()) {
-        toast.error('Please fill in all card details');
-        return;
-      }
+    if ((paymentMethod === 'bkash' || paymentMethod === 'nagad') && (!paymentDetails.mobileNumber.trim() || !paymentDetails.transactionId.trim())) {
+      toast.error('Please enter your mobile number and transaction ID');
+      return;
     }
 
     setLoading(true);
 
     // Prepare order payload for API
     const hasOnlyCourses = cart.every(item => item.type === 'course');
+    const discountAmount = (() => {
+      if (paymentMethod === 'bkash' && siteSettings?.bkash_discount_percent) {
+        return (totalPrice - (appliedDiscount?.amount || 0)) * (siteSettings.bkash_discount_percent / 100);
+      } else if (paymentMethod === 'nagad' && siteSettings?.nagad_discount_percent) {
+        return (totalPrice - (appliedDiscount?.amount || 0)) * (siteSettings.nagad_discount_percent / 100);
+      }
+      return 0;
+    })();
+    const codCharge = (paymentMethod === 'cod' && siteSettings?.cod_charge) ? Number(siteSettings.cod_charge) : 0;
     const orderPayload = {
       payment_method: paymentMethod,
+      payment_mobile: (paymentMethod === 'bkash' || paymentMethod === 'nagad') ? paymentDetails.mobileNumber : null,
+      transaction_id: (paymentMethod === 'bkash' || paymentMethod === 'nagad') ? paymentDetails.transactionId : null,
+      discount_amount: Number(discountAmount) || 0,
+      cod_charge: codCharge,
+      notes: `Discount: ৳${discountAmount.toFixed(2)}, COD Charge: ৳${codCharge.toFixed(2)}`,
       items: cart.map(item => ({
         type: item.type,
-        book_id: item.type === 'book' ? parseInt(item.bookId) : null,
-        course_id: item.type === 'course' ? parseInt(item.courseId) : null,
+        book_id: item.type === 'book' ? parseInt(item.bookId || '0') : null,
+        course_id: item.type === 'course' ? parseInt(item.courseId || '0') : null,
         quantity: item.quantity || 1,
-        price: item.price,
+        price: Number(item.price || 0),
       })),
       ...(hasOnlyCourses ? {
         // Course-only order: minimal required fields
@@ -231,13 +177,12 @@ export default function Checkout() {
         // Mixed order: include shipping details
         shipping_address: shippingData.address,
         city: shippingData.city,
-        state: shippingData.state,
         postal_code: shippingData.zipCode,
-        phone: shippingData.phone,
+        phone: shippingData.phone || user.phone || '0000000000',
       }),
     };
 
-    console.log('[Checkout] Sending order to API:', orderPayload);
+    console.log('[Checkout] Sending order to API:', JSON.stringify(orderPayload, null, 2));
 
     try {
       // Save order to database via API
@@ -254,10 +199,18 @@ export default function Checkout() {
       const responseData = await response.json();
       
       if (!response.ok) {
-        console.error('[Checkout] API Error:', response.status, responseData);
+        console.error('[Checkout] API Error:', response.status, JSON.stringify(responseData, null, 2));
         console.error('[Checkout] Response message:', responseData.message);
+        toast.error(responseData.message || 'Failed to place order');
+        setLoading(false);
+        return;
       } else {
         console.log('[Checkout] Order saved to database successfully:', responseData);
+        if (responseData.order?.order_number) {
+          setOrderNumber(responseData.order.order_number);
+        } else if (responseData.order?.id) {
+          setOrderNumber(`ORD-${responseData.order.id}`);
+        }
       }
     } catch (error) {
       console.error('[Checkout] Error saving order to database:', error);
@@ -265,8 +218,9 @@ export default function Checkout() {
 
     // Also save to localStorage for immediate use
     setTimeout(() => {
+      const newOrderId = orderNumber || generateOrderNumber();
       const orderData = {
-        id: `LMN-${Math.floor(Math.random() * 1000000)}`,
+        id: newOrderId,
         userId: user.uid,
         items: cart,
         total: finalTotal,
@@ -308,7 +262,7 @@ export default function Checkout() {
       <div className="flex items-center justify-center gap-8 mb-12">
         {[
           { id: 'shipping', label: 'Shipping', icon: Truck },
-          { id: 'payment', label: 'Payment', icon: CreditCard },
+          { id: 'payment', label: 'Payment', icon: Phone },
           { id: 'success', label: 'Confirmation', icon: CheckCircle2 },
         ].map((s, i) => (
           <div key={s.id} className="flex items-center gap-4">
@@ -389,6 +343,17 @@ export default function Checkout() {
                       className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
                     />
                   </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Phone Number</label>
+                    <input 
+                      type="tel" 
+                      value={shippingData.phone}
+                      onChange={(e) => setShippingData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 11) }))}
+                      placeholder="01XXXXXXXXX"
+                      maxLength={11}
+                      className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
+                    />
+                  </div>
                 </div>
               </div>
               <div className="flex justify-between">
@@ -398,8 +363,12 @@ export default function Checkout() {
                 </Link>
                 <button 
                   onClick={() => {
-                    if (!shippingData.address.trim() || !shippingData.city.trim() || !shippingData.zipCode.trim()) {
+                    if (!shippingData.address.trim() || !shippingData.city.trim() || !shippingData.zipCode.trim() || !shippingData.phone.trim()) {
                       toast.error('Please fill in all shipping details');
+                      return;
+                    }
+                    if (shippingData.phone.length < 11) {
+                      toast.error('Please enter a valid 11-digit phone number');
                       return;
                     }
                     setStep('payment');
@@ -421,6 +390,8 @@ export default function Checkout() {
                 handleApplyPromo={handleApplyPromo}
                 appliedDiscount={appliedDiscount}
                 finalTotal={finalTotal}
+                paymentMethod={paymentMethod}
+                siteSettings={siteSettings}
               />
             </div>
           </motion.div>
@@ -445,9 +416,9 @@ export default function Checkout() {
                 )}
                 <div className="space-y-4">
                   {[
-                    { id: 'card', label: 'Credit / Debit Card', icon: CreditCard, desc: 'Secure payment with Stripe' },
-                    { id: 'paypal', label: 'PayPal', icon: ShoppingBag, desc: 'Fast and secure checkout' },
-                    { id: 'cod', label: 'Cash on Delivery', icon: Truck, desc: 'Pay when you receive your books' },
+                    { id: 'bkash', label: 'bKash', icon: Phone, desc: 'Pay via bKash mobile wallet' },
+                    { id: 'nagad', label: 'Nagad', icon: Phone, desc: 'Pay via Nagad mobile wallet' },
+                    ...(hasBooks && !cart.some(item => item.type === 'course') ? [{ id: 'cod', label: 'Cash on Delivery', icon: Truck, desc: 'Pay when you receive your books' }] : []),
                   ].map(method => (
                     <button
                       key={method.id}
@@ -477,79 +448,50 @@ export default function Checkout() {
                   ))}
                 </div>
 
-                {paymentMethod === 'card' && (
+                {(paymentMethod === 'bkash' || paymentMethod === 'nagad') && (
                   <div className="p-6 bg-gray-50 rounded-3xl space-y-4">
+                    {paymentMethod === 'bkash' && siteSettings?.bkash_discount_percent && siteSettings.bkash_discount_percent > 0 && (
+                      <div className="p-3 bg-green-50 rounded-xl border border-green-100">
+                        <p className="text-sm text-green-700 font-medium">
+                          🎉 You get {siteSettings.bkash_discount_percent}% discount on bKash payment!
+                        </p>
+                      </div>
+                    )}
+                    {paymentMethod === 'nagad' && siteSettings?.nagad_discount_percent && siteSettings.nagad_discount_percent > 0 && (
+                      <div className="p-3 bg-green-50 rounded-xl border border-green-100">
+                        <p className="text-sm text-green-700 font-medium">
+                          🎉 You get {siteSettings.nagad_discount_percent}% discount on Nagad payment!
+                        </p>
+                      </div>
+                    )}
+                    <div className="p-4 bg-orange-50 rounded-xl border border-orange-100">
+                      <p className="text-sm text-orange-700 font-medium">
+                        <span className="font-bold">Instructions:</span> Send ৳{finalTotal.toFixed(2)} to our {paymentMethod === 'bkash' ? 'bKash' : 'Nagad'} number <span className="font-bold">{paymentMethod === 'bkash' ? (siteSettings?.bkash_number || '01XXXXXXXXX') : (siteSettings?.nagad_number || '01XXXXXXXXX')}</span> and enter the transaction details below.
+                      </p>
+                    </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Cardholder Name</label>
+                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Your {paymentMethod === 'bkash' ? 'bKash' : 'Nagad'} Number</label>
+                      <input 
+                        type="tel" 
+                        placeholder="01XXXXXXXXX" 
+                        value={paymentDetails.mobileNumber}
+                        onChange={(e) => setPaymentDetails({ ...paymentDetails, mobileNumber: e.target.value })}
+                        className="w-full p-4 bg-white border border-gray-100 rounded-2xl outline-none focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Transaction ID</label>
                       <input 
                         type="text" 
-                        placeholder="John Doe" 
-                        value={cardData.name}
-                        onChange={(e) => handleCardNameChange(e.target.value)}
-                        className={cn(
-                          "w-full p-4 bg-white border rounded-2xl outline-none transition-all",
-                          cardErrors.name ? "border-red-200 focus:border-red-500/20 focus:ring-2 focus:ring-red-500/10" : "border-gray-100 focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10"
-                        )} 
+                        placeholder="Enter transaction ID" 
+                        value={paymentDetails.transactionId}
+                        onChange={(e) => setPaymentDetails({ ...paymentDetails, transactionId: e.target.value })}
+                        className="w-full p-4 bg-white border border-gray-100 rounded-2xl outline-none focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10"
                       />
-                      {cardErrors.name && <p className="text-xs text-red-500 mt-1">{cardErrors.name}</p>}
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Card Number</label>
-                      <div className="relative">
-                        <input 
-                          type="text" 
-                          placeholder="**** **** **** ****" 
-                          value={cardData.number}
-                          onChange={(e) => handleCardNumberChange(e.target.value)}
-                          maxLength={19}
-                          className={cn(
-                            "w-full p-4 pr-16 bg-white border rounded-2xl outline-none transition-all",
-                            cardErrors.number ? "border-red-200 focus:border-red-500/20 focus:ring-2 focus:ring-red-500/10" : "border-gray-100 focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10"
-                          )} 
-                        />
-                        {cardType && (
-                          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                            {cardType === 'visa' && <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">VISA</span>}
-                            {cardType === 'mastercard' && <span className="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded">MC</span>}
-                            {cardType === 'amex' && <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded">AMEX</span>}
-                            {cardType === 'discover' && <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded">DISC</span>}
-                          </div>
-                        )}
-                      </div>
-                      {cardErrors.number && <p className="text-xs text-red-500 mt-1">{cardErrors.number}</p>}
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Expiry Date</label>
-                        <input 
-                          type="text" 
-                          placeholder="MM/YY" 
-                          value={cardData.expiry}
-                          onChange={(e) => handleExpiryChange(e.target.value)}
-                          maxLength={5}
-                          className={cn(
-                            "w-full p-4 bg-white border rounded-2xl outline-none transition-all",
-                            cardErrors.expiry ? "border-red-200 focus:border-red-500/20 focus:ring-2 focus:ring-red-500/10" : "border-gray-100 focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10"
-                          )} 
-                        />
-                        {cardErrors.expiry && <p className="text-xs text-red-500 mt-1">{cardErrors.expiry}</p>}
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">CVV</label>
-                        <input 
-                          type="text" 
-                          placeholder={cardType === 'amex' ? '****' : '***'} 
-                          value={cardData.cvv}
-                          onChange={(e) => handleCVVChange(e.target.value)}
-                          maxLength={cardType === 'amex' ? 4 : 3}
-                          className={cn(
-                            "w-full p-4 bg-white border rounded-2xl outline-none transition-all",
-                            cardErrors.cvv ? "border-red-200 focus:border-red-500/20 focus:ring-2 focus:ring-red-500/10" : "border-gray-100 focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10"
-                          )} 
-                        />
-                        {cardErrors.cvv && <p className="text-xs text-red-500 mt-1">{cardErrors.cvv}</p>}
-                      </div>
-                    </div>
+                    <p className="text-xs text-gray-500">
+                      You will receive a confirmation once the payment is verified.
+                    </p>
                   </div>
                 )}
               </div>
@@ -595,6 +537,8 @@ export default function Checkout() {
                 handleApplyPromo={handleApplyPromo}
                 appliedDiscount={appliedDiscount}
                 finalTotal={finalTotal}
+                paymentMethod={paymentMethod}
+                siteSettings={siteSettings}
               />
             </div>
           </motion.div>
@@ -624,7 +568,7 @@ export default function Checkout() {
             <div className="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm space-y-4">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400 font-bold uppercase tracking-widest">Order Number</span>
-                <span className="text-gray-900 font-bold">#LMN-{Math.floor(Math.random() * 1000000)}</span>
+                <span className="text-gray-900 font-bold">{orderNumber || generateOrderNumber()}</span>
               </div>
               {onlyCourses ? (
                 <div className="flex justify-between text-sm">
@@ -660,7 +604,9 @@ function OrderSummary({
   setPromoCode, 
   handleApplyPromo,
   appliedDiscount,
-  finalTotal
+  finalTotal,
+  paymentMethod,
+  siteSettings
 }: { 
   cart: any[], 
   totalPrice: number,
@@ -668,8 +614,21 @@ function OrderSummary({
   setPromoCode: (v: string) => void,
   handleApplyPromo: () => void,
   appliedDiscount: { code: string, amount: number } | null,
-  finalTotal: number
+  finalTotal: number,
+  paymentMethod: string,
+  siteSettings: any
 }) {
+  const paymentDiscount = (() => {
+    if (paymentMethod === 'bkash' && siteSettings?.bkash_discount_percent) {
+      return (totalPrice - (appliedDiscount?.amount || 0)) * (siteSettings.bkash_discount_percent / 100);
+    } else if (paymentMethod === 'nagad' && siteSettings?.nagad_discount_percent) {
+      return (totalPrice - (appliedDiscount?.amount || 0)) * (siteSettings.nagad_discount_percent / 100);
+    }
+    return 0;
+  })();
+  
+  const codCharge = (paymentMethod === 'cod' && siteSettings?.cod_charge) ? Number(siteSettings.cod_charge) : 0;
+
   return (
     <div className="sticky top-24 p-8 bg-white rounded-3xl border border-gray-100 shadow-xl shadow-orange-900/5 space-y-8">
       <h3 className="text-2xl font-serif font-bold text-gray-900">Order Summary</h3>
@@ -726,15 +685,29 @@ function OrderSummary({
             <div className="flex justify-between text-green-600 text-sm">
               <div className="flex items-center gap-1">
                 <Tag className="w-3 h-3" />
-                <span>Discount ({appliedDiscount.code})</span>
+                <span>Promo ({appliedDiscount.code})</span>
               </div>
-              <span className="font-bold">-${appliedDiscount.amount.toFixed(2)}</span>
+              <span className="font-bold">-৳{appliedDiscount.amount.toFixed(2)}</span>
             </div>
           )}
-          <div className="flex justify-between text-gray-600 text-sm">
-            <span>Shipping</span>
-            <span className="text-green-600 font-bold uppercase text-xs tracking-widest">Free</span>
-          </div>
+          {paymentDiscount > 0 && (
+            <div className="flex justify-between text-green-600 text-sm">
+              <div className="flex items-center gap-1">
+                <Percent className="w-3 h-3" />
+                <span>{paymentMethod === 'bkash' ? 'bKash' : 'Nagad'} Discount</span>
+              </div>
+              <span className="font-bold">-৳{paymentDiscount.toFixed(2)}</span>
+            </div>
+          )}
+          {codCharge > 0 && (
+            <div className="flex justify-between text-orange-600 text-sm">
+              <div className="flex items-center gap-1">
+                <CreditCard className="w-3 h-3" />
+                <span>COD Charge</span>
+              </div>
+              <span className="font-bold">+৳{codCharge.toFixed(2)}</span>
+            </div>
+          )}
           <div className="pt-4 flex justify-between items-end">
             <div>
               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total</p>

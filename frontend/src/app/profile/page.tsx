@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { User, Package, Heart, Settings, LogOut, ChevronRight, Clock, Mail, XCircle, CheckCircle2, ChevronDown, ChevronUp, Truck, CreditCard, MapPin, Calendar, DollarSign, ExternalLink, ShoppingBag, Camera, Upload, BookOpen, Filter, GraduationCap, Play } from 'lucide-react';
+import { User, Package, Heart, Settings, LogOut, ChevronRight, Clock, Mail, XCircle, CheckCircle2, ChevronDown, ChevronUp, Truck, CreditCard, MapPin, Calendar, DollarSign, ExternalLink, ShoppingBag, Camera, Upload, BookOpen, Filter, GraduationCap, Play, Percent, Tag } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { UserProfile, Order, Book } from '@/types';
@@ -21,6 +21,14 @@ interface ExtendedOrder extends Order {
     phone: string;
   };
   discount?: { code: string; amount: number } | null;
+  discount_amount?: number;
+  cod_charge?: number;
+  payment_mobile?: string;
+  transaction_id?: string;
+  shipping_address?: string;
+  postal_code?: string;
+  city?: string;
+  phone?: string;
 }
 
 export default function Profile() {
@@ -37,7 +45,7 @@ export default function Profile() {
   const [enrolledCourses, setEnrolledCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
-  const [formData, setFormData] = useState({ displayName: '', email: '' });
+  const [formData, setFormData] = useState({ displayName: '', email: '', phone: '', address: '', city: '', zipCode: '' });
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [orderSort, setOrderSort] = useState<'newest' | 'oldest' | 'total-high' | 'total-low'>('newest');
   const [ordersLoading, setOrdersLoading] = useState(true);
@@ -75,7 +83,7 @@ export default function Profile() {
     
     const profileData = user;
     setProfile(profileData);
-    setFormData({ displayName: profileData.displayName, email: profileData.email });
+      setFormData({ displayName: profileData.displayName, email: profileData.email, phone: profileData.phone || '', address: profileData.address || '', city: profileData.city || '', zipCode: profileData.zipCode || '' });
     setAvatarUrl(profileData.photoUrl || null);
 
     // Fetch orders and wishlist in parallel for faster loading
@@ -102,12 +110,14 @@ export default function Profile() {
       try {
         console.debug('[Profile] Fetched orders from API:', ordersRes);
         const list = Array.isArray(ordersRes) ? ordersRes : ordersRes?.data || [];
+        console.debug('[Profile] Raw order list:', list);
         const mapped = (list || []).map(mapApiOrderToOrder);
         console.debug('[Profile] Mapped orders:', mapped);
 
         // Use ONLY API orders (from database) - don't mix with localStorage
         // This ensures we always show the correct data for the current logged-in user
         const allOrders = [...mapped] as ExtendedOrder[];
+        console.debug('[Profile] Final orders set:', allOrders.map(o => ({ id: o.id, orderId: o.orderId })));
         setOrders(allOrders);
 
         // Extract enrolled courses from API orders
@@ -148,7 +158,7 @@ export default function Profile() {
                 price: item.price || courseData?.price || 0,
                 coverUrl: finalCoverUrl,
                 orderDate: order.createdAt,
-                orderId: order.id,
+                orderId: order.orderId || order.id,
                 status: order.status,
               });
             }
@@ -260,10 +270,22 @@ export default function Profile() {
     if (!user) return;
     setLoading(true);
     
-    setTimeout(() => {
+    try {
+      await api.post('/auth/update-profile', {
+        name: formData.displayName,
+        phone: formData.phone,
+        address: formData.address,
+        city: formData.city,
+        zip_code: formData.zipCode,
+      });
+      setProfile(prev => prev ? { ...prev, displayName: formData.displayName, phone: formData.phone, address: formData.address, city: formData.city, zipCode: formData.zipCode } : null);
+      toast.success('Profile updated successfully');
       setEditing(false);
+    } catch (err) {
+      toast.error('Failed to update profile');
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   const handleChangePassword = async (e: React.FormEvent) => {
@@ -313,7 +335,7 @@ export default function Profile() {
     }
   };
 
-  const handleCancelOrder = async (orderId: string) => {
+  const handleCancelOrder = async (orderId: string, orderDbId?: string) => {
     if (!window.confirm("Are you sure you want to cancel this order?")) return;
     
     const updatedOrders = orders.map(o => o.id === orderId ? { ...o, status: 'cancelled' } : o);
@@ -343,8 +365,13 @@ export default function Profile() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file');
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+    
+    const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+
+    if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+      toast.error('Please select a valid image file (JPEG, PNG, JPG, GIF)');
       return;
     }
 
@@ -391,6 +418,252 @@ export default function Profile() {
   };
 
   if (loading && !profile) return <div className="flex items-center justify-center min-h-[60vh]"><div className="w-12 h-12 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin"></div></div>;
+
+  const renderOrders = () => {
+    const sortedOrders = [...orders].sort((a, b) => {
+      if (orderSort === 'newest') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      if (orderSort === 'oldest') return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      if (orderSort === 'total-high') return b.total - a.total;
+      if (orderSort === 'total-low') return a.total - b.total;
+      return 0;
+    });
+
+    return sortedOrders.map(order => {
+      const displayOrderId = order.id;
+      return (
+      <div key={order.id} className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+        <div 
+          className="p-8 cursor-pointer hover:bg-gray-50/50 transition-colors"
+          onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
+        >
+          <div className="flex flex-wrap justify-between items-start gap-4 mb-6">
+            <div className="space-y-1">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Order ID</p>
+              <p className="font-bold text-gray-900">{displayOrderId}</p>
+            </div>
+            <div className="space-y-1 text-right">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Date</p>
+              <p className="font-bold text-gray-900">{new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            </div>
+            <div className="space-y-1 text-right">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Total</p>
+              <p className="font-bold text-gray-900">৳{order.total.toFixed(2)}</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Status</p>
+              <span className={cn(
+                "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1",
+                order.status === 'delivered' ? "bg-green-50 text-green-600" :
+                order.status === 'cancelled' ? "bg-red-50 text-red-600" :
+                order.status === 'shipped' ? "bg-blue-50 text-blue-600" :
+                order.status === 'processing' ? "bg-purple-50 text-purple-600" : "bg-orange-50 text-orange-600"
+              )}>
+                {order.status === 'delivered' ? <CheckCircle2 className="w-3 h-3" /> : 
+                 order.status === 'cancelled' ? <XCircle className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
+                {order.status}
+              </span>
+            </div>
+          </div>
+
+          {order.status !== 'cancelled' && order.status !== 'pending' && order.items.some(item => item.type !== 'course') && (
+           <div className="mt-4 pt-4 border-t border-gray-100">
+             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Delivery Progress</p>
+             <div className="flex items-center gap-2">
+              {['processing', 'shipped', 'delivered'].map((step, idx) => (
+                <div key={step} className="flex items-center flex-1">
+                  <div className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold",
+                    order.status === step ? "bg-orange-600 text-white" :
+                    ['processing', 'shipped', 'delivered'].indexOf(order.status) > idx ? "bg-green-600 text-white" : "bg-gray-200 text-gray-400"
+                  )}>
+                    {['processing', 'shipped', 'delivered'].indexOf(order.status) > idx ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}
+                  </div>
+                  <span className={cn(
+                    "text-xs font-bold ml-2 capitalize",
+                    order.status === step ? "text-orange-600" :
+                    ['processing', 'shipped', 'delivered'].indexOf(order.status) > idx ? "text-green-600" : "text-gray-400"
+                  )}>{step}</span>
+                  {idx < 2 && (
+                    <div className={cn(
+                      "flex-1 h-1 mx-2 rounded-full",
+                      ['processing', 'shipped', 'delivered'].indexOf(order.status) > idx ? "bg-green-600" : "bg-gray-200"
+                    )} />
+                  )}
+                </div>
+              ))}
+             </div>
+           </div>
+          )}
+
+          {order.status !== 'cancelled' && order.items.filter(item => item.type === 'course').length > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Enrolled Courses</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {order.items.filter(item => item.type === 'course').map((item, idx) => (
+                  <Link 
+                    key={`${order.id}-course-${idx}`} 
+                    href={`/courses/${item.slug}`}
+                    className="flex items-center gap-4 p-3 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors group"
+                  >
+                    <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0">
+                      <img src={item.coverUrl} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-purple-900 text-sm truncate group-hover:text-purple-700">{item.title}</p>
+                      <p className="text-xs text-purple-600">{item.instructor}</p>
+                    </div>
+                    <Play className="w-5 h-5 text-purple-400 group-hover:text-purple-600" />
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {expandedOrder === order.id && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="border-t border-gray-100"
+          >
+            <div className="p-8 space-y-6">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-gray-500">
+                  <Package className="w-4 h-4" />
+                  <span className="text-xs font-bold uppercase tracking-widest">Items</span>
+                </div>
+                <div className="space-y-3">
+                  {order.items.map((item, idx) => {
+                    if (item.type === 'course') {
+                      return (
+                        <div key={`${order.id}-course-${idx}`} className="flex items-center gap-4 p-4 bg-purple-50 rounded-2xl">
+                          <div className="w-12 h-16 rounded-lg overflow-hidden shrink-0">
+                            <img src={item.coverUrl} className="w-full h-full object-cover" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-serif font-bold text-gray-900">{item.title}</p>
+                            <p className="text-sm text-gray-500">{item.instructor}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold text-gray-900">৳{item.price.toFixed(2)}</p>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return (
+                      <Link 
+                        key={`${order.id}-detail-${idx}`} 
+                        href={`/book/${item.bookId}`}
+                        className="flex items-center gap-6 p-4 bg-gray-50 rounded-2xl hover:bg-orange-50/50 transition-colors group"
+                      >
+                        <div className="w-16 h-24 rounded-xl overflow-hidden shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                          <img src={item.coverUrl} className="w-full h-full object-cover" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-serif text-lg font-bold text-gray-900 group-hover:text-orange-600 transition-colors truncate">{item.title}</p>
+                          <p className="text-sm text-gray-500">by {item.author}</p>
+                          <p className="text-sm text-gray-500 mt-1">Quantity: {item.quantity}</p>
+                          {item.isbn && (
+                            <p className="text-xs text-blue-600 mt-1">ISBN: {item.isbn}</p>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-gray-900">৳{(item.price * item.quantity).toFixed(2)}</p>
+                          <p className="text-xs text-gray-400">৳{item.price.toFixed(2)} each</p>
+                        </div>
+                        <ExternalLink className="w-4 h-4 text-gray-300 group-hover:text-orange-600 transition-colors" />
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="p-6 bg-gray-50 rounded-2xl space-y-4 max-w-sm ml-auto">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Subtotal</span>
+                  <span className="font-bold text-gray-900">৳{((Number(order.total) || 0) + (Number(order.discount_amount) || 0) - (Number(order.cod_charge) || 0)).toFixed(2)}</span>
+                </div>
+                {order.discount_amount && order.discount_amount > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-green-600 flex items-center gap-1">
+                      <Tag className="w-3 h-3" />
+                      Discount
+                    </span>
+                    <span className="font-bold text-green-600">-৳{Number(order.discount_amount).toFixed(2)}</span>
+                  </div>
+                )}
+                {order.cod_charge && order.cod_charge > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">COD Charge</span>
+                    <span className="font-bold text-gray-900">৳{Number(order.cod_charge).toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm border-t border-gray-200 pt-4">
+                  <span className="font-bold text-gray-900">Total</span>
+                  <span className="font-bold text-gray-900">৳{Number(order.total).toFixed(2)}</span>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-4">
+                {order.shipping_address && (
+                  <div className="flex-1 min-w-[200px] p-6 bg-gray-50 rounded-2xl space-y-3">
+                    <div className="flex items-center gap-2 text-gray-500">
+                      <MapPin className="w-4 h-4" />
+                      <span className="text-xs font-bold uppercase tracking-widest">Order Details</span>
+                    </div>
+                    <div className="text-sm text-gray-700 space-y-2">
+                      <p><span className="font-semibold">Order ID:</span> {displayOrderId}</p>
+                      <p><span className="font-semibold">Phone:</span> {order.phone || 'N/A'}</p>
+                      <p><span className="font-semibold">Address:</span> {order.shipping_address || 'N/A'}</p>
+                      <p>{order.city} {order.postal_code}</p>
+                      {order.trackingNumber && (
+                        <p><span className="font-semibold">Tracking:</span> {order.trackingNumber}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <div className="p-6 bg-gray-50 rounded-2xl space-y-3">
+                  <div className="flex items-center gap-2 text-gray-500">
+                    <CreditCard className="w-4 h-4" />
+                    <span className="text-xs font-bold uppercase tracking-widest">Payment</span>
+                  </div>
+                  <div className="text-sm text-gray-700 space-y-1">
+                    <p><span className="font-semibold">Method:</span> <span className="capitalize">{order.paymentMethod === 'cod' ? 'Cash on Delivery' : order.paymentMethod === 'bkash' ? 'bKash' : order.paymentMethod === 'nagad' ? 'Nagad' : order.paymentMethod}</span></p>
+                    {order.paymentMethod !== 'cod' && order.transaction_id && (
+                      <p><span className="font-semibold">Transaction:</span> {order.transaction_id}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-gray-100 flex justify-between items-center">
+                <p className="text-sm text-gray-500 flex items-center gap-2">
+                  <Truck className="w-4 h-4" />
+                  Paid via <span className="font-bold text-gray-900 capitalize">{order.paymentMethod === 'cod' ? 'Cash on Delivery' : order.paymentMethod === 'bkash' ? 'bKash' : order.paymentMethod === 'nagad' ? 'Nagod' : order.paymentMethod}</span>
+                </p>
+                {order.status === 'pending' && (
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCancelOrder(order.id, order.orderId);
+                    }}
+                    className="text-sm font-bold text-red-600 hover:underline flex items-center gap-1"
+                  >
+                    <XCircle className="w-4 h-4" />
+                    Cancel Order
+                  </button>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </div>
+      );
+    });
+  };
 
   return (
     <div className="space-y-12 pb-20">
@@ -529,257 +802,7 @@ export default function Profile() {
                         </div>
                       ))}
                     </div>
-                  ) : orders.length > 0 ? (() => {
-                    const sortedOrders = [...orders].sort((a, b) => {
-                      if (orderSort === 'newest') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-                      if (orderSort === 'oldest') return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-                      if (orderSort === 'total-high') return b.total - a.total;
-                      if (orderSort === 'total-low') return a.total - b.total;
-                      return 0;
-                    });
-                    return sortedOrders.map(order => (
-                    <div key={order.id} className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                      <div 
-                        className="p-8 cursor-pointer hover:bg-gray-50/50 transition-colors"
-                        onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
-                      >
-                        <div className="flex flex-wrap justify-between items-start gap-4 mb-6">
-                          <div className="space-y-1">
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Order ID</p>
-                            <p className="font-bold text-gray-900">#{order.id}</p>
-                          </div>
-                          <div className="space-y-1 text-right">
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Date</p>
-                            <p className="font-bold text-gray-900">{new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                          </div>
-                          <div className="space-y-1 text-right">
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Total</p>
-                            <p className="font-bold text-gray-900">৳{order.total.toFixed(2)}</p>
-                          </div>
-                          <div className="space-y-1">
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Status</p>
-                            <span className={cn(
-                              "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1",
-                              order.status === 'delivered' ? "bg-green-50 text-green-600" :
-                              order.status === 'cancelled' ? "bg-red-50 text-red-600" :
-                              order.status === 'shipped' ? "bg-blue-50 text-blue-600" :
-                              order.status === 'processing' ? "bg-purple-50 text-purple-600" : "bg-orange-50 text-orange-600"
-                            )}>
-                              {order.status === 'delivered' ? <CheckCircle2 className="w-3 h-3" /> : 
-                               order.status === 'cancelled' ? <XCircle className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
-                              {order.status}
-                            </span>
-                          </div>
-                        </div>
-
-                         {order.status !== 'cancelled' && order.status !== 'pending' && order.items.some(item => item.type !== 'course') && (
-                           <div className="mt-4 pt-4 border-t border-gray-100">
-                             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Delivery Progress</p>
-                             <div className="flex items-center gap-2">
-                              {['processing', 'shipped', 'delivered'].map((step, idx) => (
-                                <div key={step} className="flex items-center flex-1">
-                                  <div className={cn(
-                                    "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold",
-                                    order.status === step ? "bg-orange-600 text-white" :
-                                    ['processing', 'shipped', 'delivered'].indexOf(order.status) > idx ? "bg-green-600 text-white" : "bg-gray-200 text-gray-400"
-                                  )}>
-                                    {['processing', 'shipped', 'delivered'].indexOf(order.status) > idx ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}
-                                  </div>
-                                  <span className={cn(
-                                    "text-xs font-bold ml-2 capitalize",
-                                    order.status === step ? "text-orange-600" :
-                                    ['processing', 'shipped', 'delivered'].indexOf(order.status) > idx ? "text-green-600" : "text-gray-400"
-                                  )}>{step}</span>
-                                  {idx < 2 && (
-                                    <div className={cn(
-                                      "flex-1 h-1 mx-2 rounded-full",
-                                      ['processing', 'shipped', 'delivered'].indexOf(order.status) > idx ? "bg-green-600" : "bg-gray-200"
-                                    )} />
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                            {(order as any).trackingNumber && (
-                              <div className="mt-3 p-3 bg-blue-50 rounded-xl flex items-center justify-between">
-                                <div>
-                                  <p className="text-xs font-bold text-blue-400 uppercase">Tracking Number</p>
-                                  <p className="text-sm font-mono text-blue-700">{(order as any).trackingNumber}</p>
-                                </div>
-                                {(order as any).estimatedDelivery && (
-                                  <div className="text-right">
-                                    <p className="text-xs font-bold text-blue-400 uppercase">Est. Delivery</p>
-                                    <p className="text-sm font-bold text-blue-700">{new Date((order as any).estimatedDelivery).toLocaleDateString()}</p>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                         <div className="flex items-center gap-4">
-                            {order.items.slice(0, 4).map((item, idx) => (
-                              <Link 
-                                key={`${order.id}-item-${idx}`} 
-                                href={item.type === 'course' ? `/courses/${item.slug}` : `/book/${item.bookId}`}
-                                className={cn(
-                                  "rounded-lg overflow-hidden shrink-0 border border-gray-100 shadow-sm group hover:scale-105 transition-transform",
-                                  item.type === 'course' ? "w-24 h-16" : "w-16 h-24"
-                                )}
-                              >
-                                <img src={item.coverUrl} className="w-full h-full object-cover" />
-                              </Link>
-                            ))}
-                           {order.items.length > 4 && (
-                             <div className={cn(
-                               "rounded-lg bg-gray-100 flex items-center justify-center shrink-0 text-gray-500 font-bold text-sm",
-                               // We can't easily determine the shape for the "+N" bubble if it's mixed, 
-                               // so we keep a neutral or book-like shape, or just use a standard size.
-                               "w-16 h-24" 
-                             )}>
-                               +{order.items.length - 4}
-                             </div>
-                           )}
-                          <div className="ml-auto flex items-center gap-2 text-sm font-bold text-orange-600">
-                            <span>{expandedOrder === order.id ? 'Hide' : 'View'} Details</span>
-                            {expandedOrder === order.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                          </div>
-                        </div>
-                      </div>
-
-                      <AnimatePresence>
-                        {expandedOrder === order.id && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="overflow-hidden"
-                          >
-                            <div className="border-t border-gray-100 p-8 space-y-8">
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="p-6 bg-gray-50 rounded-2xl space-y-3">
-                                  <div className="flex items-center gap-2 text-gray-500">
-                                    <MapPin className="w-4 h-4" />
-                                    <span className="text-xs font-bold uppercase tracking-widest">Shipping Address</span>
-                                  </div>
-                                  <div className="text-sm text-gray-700">
-                                    <p className="font-semibold">{order.shippingAddress?.fullName}</p>
-                                    <p>{order.shippingAddress?.address}</p>
-                                    <p>{order.shippingAddress?.city} {order.shippingAddress?.zipCode}</p>
-                                    <p className="text-gray-500">{order.shippingAddress?.phone}</p>
-                                  </div>
-                                </div>
-
-                                <div className="p-6 bg-gray-50 rounded-2xl space-y-3">
-                                  <div className="flex items-center gap-2 text-gray-500">
-                                    <CreditCard className="w-4 h-4" />
-                                    <span className="text-xs font-bold uppercase tracking-widest">Payment</span>
-                                  </div>
-                                  <div className="text-sm text-gray-700">
-                                    <p className="font-semibold capitalize">{order.paymentMethod === 'cod' ? 'Cash on Delivery' : order.paymentMethod === 'paypal' ? 'PayPal' : 'Credit/Debit Card'}</p>
-                                    <p className="text-gray-500">Transaction completed</p>
-                                  </div>
-                                </div>
-
-                                <div className="p-6 bg-gray-50 rounded-2xl space-y-3">
-                                  <div className="flex items-center gap-2 text-gray-500">
-                                    <Calendar className="w-4 h-4" />
-                                    <span className="text-xs font-bold uppercase tracking-widest">Estimated Delivery</span>
-                                  </div>
-                                  <div className="text-sm text-gray-700">
-                                    <p className="font-semibold">
-                                      {order.status === 'delivered' 
-                                        ? 'Delivered' 
-                                        : order.status === 'cancelled' 
-                                          ? 'Order cancelled'
-                                          : '3-5 Business Days'}
-                                    </p>
-                                    <p className="text-gray-500">
-                                      {order.status === 'pending' || order.status === 'processing' 
-                                        ? 'Processing your order' 
-                                        : order.status === 'shipped' 
-                                          ? 'On its way' 
-                                          : ''}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-
-                                 <div className="space-y-4">
-                                   <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                                     <ShoppingBag className="w-4 h-4" />
-                                     Order Items ({order.items.length})
-                                   </h3>
-                                   <div className="space-y-4">
-                                     {order.items.map((item, idx) => (
-                                       <Link 
-                                         key={`${order.id}-detail-${idx}`} 
-                                         href={`/book/${item.bookId}`}
-                                         className="flex items-center gap-6 p-4 bg-gray-50 rounded-2xl hover:bg-orange-50/50 transition-colors group"
-                                       >
-                                      <div className="w-16 h-24 rounded-xl overflow-hidden shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-                                        <img src={item.coverUrl} className="w-full h-full object-cover" />
-                                      </div>
-                                      <div className="flex-1 min-w-0">
-                                        <p className="font-serif text-lg font-bold text-gray-900 group-hover:text-orange-600 transition-colors truncate">{item.title}</p>
-                                        <p className="text-sm text-gray-500">by {item.author}</p>
-                                        <p className="text-sm text-gray-500 mt-1">Quantity: {item.quantity}</p>
-                                      </div>
-                                      <div className="text-right">
-                                        <p className="font-bold text-gray-900">৳{(item.price * item.quantity).toFixed(2)}</p>
-                                        <p className="text-xs text-gray-400">৳{item.price.toFixed(2)} each</p>
-                                      </div>
-                                      <ExternalLink className="w-4 h-4 text-gray-300 group-hover:text-orange-600 transition-colors" />
-                                    </Link>
-                                  ))}
-                                </div>
-                              </div>
-
-                              <div className="p-6 bg-gray-50 rounded-2xl space-y-4 max-w-sm ml-auto">
-                                <div className="flex justify-between text-sm">
-                                  <span className="text-gray-500">Subtotal</span>
-                                  <span className="font-bold text-gray-900">৳{order.total.toFixed(2)}</span>
-                                </div>
-                                {order.discount && order.discount.amount > 0 && (
-                                  <div className="flex justify-between text-sm">
-                                    <span className="text-green-600">Discount ({order.discount.code})</span>
-                                    <span className="font-bold text-green-600">-${order.discount.amount.toFixed(2)}</span>
-                                  </div>
-                                )}
-                                <div className="flex justify-between text-sm">
-                                  <span className="text-gray-500">Shipping</span>
-                                  <span className="font-bold text-green-600">Free</span>
-                                </div>
-                                <div className="pt-4 border-t border-gray-200 flex justify-between">
-                                  <span className="font-bold text-gray-900">Total Paid</span>
-                                  <span className="text-xl font-bold text-gray-900">৳{order.total.toFixed(2)}</span>
-                                </div>
-                              </div>
-
-                              <div className="pt-6 border-t border-gray-100 flex justify-between items-center">
-                                <p className="text-sm text-gray-500 flex items-center gap-2">
-                                  <Truck className="w-4 h-4" />
-                                  Paid via <span className="font-bold text-gray-900 capitalize">{order.paymentMethod === 'cod' ? 'Cash on Delivery' : order.paymentMethod}</span>
-                                </p>
-                                {order.status === 'pending' && (
-                                  <button 
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleCancelOrder(order.id);
-                                    }}
-                                    className="text-sm font-bold text-red-600 hover:underline flex items-center gap-1"
-                                  >
-                                    <XCircle className="w-4 h-4" />
-                                    Cancel Order
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  ))})() : (
+                  ) : orders.length > 0 ? renderOrders() : (
                     <div className="text-center py-20 bg-gray-50 rounded-[40px] border border-dashed border-gray-200">
                       <Package className="w-16 h-16 text-gray-200 mx-auto mb-6" />
                       <p className="text-gray-500 mb-8">You haven't placed any orders yet.</p>
@@ -846,6 +869,8 @@ export default function Profile() {
                     orders.forEach(order => {
                       if (order.status === 'cancelled') return;
                       order.items.forEach(item => {
+                        const isCourse = item.type === 'course';
+                        if (isCourse) return;
                         myBooks.push({
                           bookId: item.bookId || '',
                           title: item.title,
@@ -855,7 +880,7 @@ export default function Profile() {
                           quantity: item.quantity,
                           status: order.status,
                           orderDate: order.createdAt,
-                          orderId: order.id,
+                orderId: order.orderId || order.id,
                         });
                       });
                     });
@@ -1074,8 +1099,21 @@ export default function Profile() {
                           <input 
                             type="text" 
                             value={formData.displayName}
-                            onChange={(e) => setFormData(prev => ({ ...prev, displayName: e.target.value }))}
+                            onChange={(e) => setFormData(prev => ({ ...prev, displayName: e.target.value.slice(0, 100) }))}
                             disabled={!editing}
+                            maxLength={100}
+                            className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none disabled:opacity-50"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Phone Number</label>
+                          <input 
+                            type="tel" 
+                            value={formData.phone}
+                            onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 11) }))}
+                            disabled={!editing}
+                            placeholder="01XXXXXXXXX"
+                            maxLength={11}
                             className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none disabled:opacity-50"
                           />
                         </div>
@@ -1086,6 +1124,39 @@ export default function Profile() {
                             value={formData.email}
                             disabled
                             className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl outline-none opacity-50"
+                          />
+                        </div>
+                        <div className="md:col-span-2 space-y-2">
+                          <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Address</label>
+                          <input 
+                            type="text" 
+                            value={formData.address}
+                            onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                            disabled={!editing}
+                            placeholder="Street address"
+                            className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none disabled:opacity-50"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">City</label>
+                          <input 
+                            type="text" 
+                            value={formData.city}
+                            onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+                            disabled={!editing}
+                            placeholder="City"
+                            className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none disabled:opacity-50"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Zip Code</label>
+                          <input 
+                            type="text" 
+                            value={formData.zipCode}
+                            onChange={(e) => setFormData(prev => ({ ...prev, zipCode: e.target.value }))}
+                            disabled={!editing}
+                            placeholder="Zip Code"
+                            className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none disabled:opacity-50"
                           />
                         </div>
                       </div>
@@ -1102,7 +1173,7 @@ export default function Profile() {
                             type="button"
                             onClick={() => {
                               setEditing(false);
-                              setFormData({ displayName: profile?.displayName || '', email: profile?.email || '' });
+                              setFormData({ displayName: profile?.displayName || '', email: profile?.email || '', phone: profile?.phone || '', address: profile?.address || '', city: profile?.city || '', zipCode: profile?.zipCode || '' });
                             }}
                             className="px-8 py-3 bg-gray-100 text-gray-600 rounded-2xl font-bold hover:bg-gray-200 transition-all"
                           >

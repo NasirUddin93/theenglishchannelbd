@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\Book;
 use App\Models\User;
 use App\Models\Category;
+use App\Models\CourseLevel;
 use Illuminate\Http\Request;
 
 class StaffController extends Controller
@@ -81,7 +82,12 @@ class StaffController extends Controller
 
     public function orders()
     {
-        $orders = Order::with(['user', 'items.book'])
+        $orders = Order::select('id', 'order_number', 'user_id', 'total', 'status', 'tracking_number', 'payment_method', 'payment_mobile', 'transaction_id', 'discount_amount', 'cod_charge', 'shipping_address', 'city', 'state', 'postal_code', 'phone', 'notes', 'created_at', 'updated_at')
+            ->with(['user', 'items' => function($query) {
+                $query->select('id', 'order_id', 'book_id', 'course_id', 'quantity', 'price', 'isbn', 'tra_number');
+            }, 'items.book' => function($query) {
+                $query->select('id', 'title', 'author', 'price', 'image');
+            }])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
@@ -102,15 +108,44 @@ class StaffController extends Controller
     public function updateOrderStatus(Request $request, $id)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
+            'status' => 'nullable|in:pending,processing,shipped,delivered,cancelled',
+            'tracking_number' => 'nullable|string|max:100',
+            'items' => 'nullable|array',
+            'items.*.item_id' => 'required_with:items|integer',
+            'items.*.isbn' => 'nullable|string|max:50',
         ]);
 
         $order = Order::findOrFail($id);
-        $order->update(['status' => $validated['status']]);
+        
+        $updateData = [];
+        
+        if (isset($validated['status']) && !empty($validated['status'])) {
+            $updateData['status'] = $validated['status'];
+        }
+        
+        if (isset($validated['tracking_number']) && !empty($validated['tracking_number'])) {
+            $updateData['tracking_number'] = $validated['tracking_number'];
+        }
+        
+        if (!empty($updateData)) {
+            $order->update($updateData);
+        }
+
+        if (isset($validated['items'])) {
+            foreach ($validated['items'] as $itemUpdate) {
+                $orderItem = \App\Models\OrderItem::where('id', $itemUpdate['item_id'])
+                    ->where('order_id', $id)
+                    ->first();
+                
+                if ($orderItem && isset($itemUpdate['isbn'])) {
+                    $orderItem->update(['isbn' => $itemUpdate['isbn']]);
+                }
+            }
+        }
 
         return response()->json([
-            'order' => $order,
-            'message' => 'Order status updated',
+            'order' => $order->fresh(['items']),
+            'message' => 'Order updated',
         ]);
     }
 
@@ -414,6 +449,45 @@ class StaffController extends Controller
 
         return response()->json([
             'message' => 'Course category deleted successfully',
+        ]);
+    }
+
+    public function courseLevels()
+    {
+        $levels = CourseLevel::orderBy('order', 'asc')->get();
+        return response()->json($levels);
+    }
+
+    public function storeCourseLevel(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:500',
+            'order' => 'nullable|integer|min:0',
+        ]);
+
+        $validated['slug'] = \Str::slug($validated['name']);
+
+        $exists = CourseLevel::where('slug', $validated['slug'])->first();
+        if ($exists) {
+            return response()->json(['message' => 'Level already exists'], 422);
+        }
+
+        $level = CourseLevel::create($validated);
+
+        return response()->json([
+            'level' => $level,
+            'message' => 'Level created successfully',
+        ], 201);
+    }
+
+    public function deleteCourseLevel($id)
+    {
+        $level = CourseLevel::findOrFail($id);
+        $level->delete();
+
+        return response()->json([
+            'message' => 'Level deleted successfully',
         ]);
     }
 

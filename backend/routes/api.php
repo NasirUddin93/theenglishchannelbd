@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\CourseReviewController;
 use App\Http\Controllers\Api\CourseQuestionController;
 use App\Http\Controllers\Api\VideoStreamController;
 use App\Http\Controllers\Api\GalleryController;
+use App\Http\Controllers\Api\SiteSettingsController;
 
 Route::get('/test', function () {
     return response()->json(['message' => 'The English Channel BD API is running!']);
@@ -39,8 +40,35 @@ Route::get('/categories', [BookController::class, 'categories']);
 
 Route::get('/about', [AboutController::class, 'show']);
 
+Route::get('/stats', function() {
+    $totalBooks = \DB::table('books')->where('status', 'approved')->count();
+    $totalCourses = \DB::table('courses')->where('is_active', true)->count();
+    $totalStudents = \DB::table('orders')
+        ->join('order_items', 'orders.id', '=', 'order_items.order_id')
+        ->whereIn('orders.status', ['delivered', 'completed'])
+        ->distinct('orders.user_id')
+        ->count('orders.user_id');
+    $bookAvgRating = \DB::table('reviews')
+        ->where('is_approved', true)
+        ->avg('rating') ?? 0;
+    $courseAvgRating = \DB::table('course_reviews')
+        ->where('is_approved', true)
+        ->avg('rating') ?? 0;
+    
+    return response()->json([
+        'total_books' => $totalBooks,
+        'total_courses' => $totalCourses,
+        'total_students' => $totalStudents,
+        'book_average_rating' => round($bookAvgRating, 1),
+        'course_average_rating' => round($courseAvgRating, 1),
+    ]);
+});
+
+Route::get('/site-settings', [SiteSettingsController::class, 'show']);
+
 Route::get('/courses', [CourseController::class, 'index']);
 Route::get('/courses/categories', [CourseController::class, 'categories']);
+Route::get('/courses/levels', [CourseController::class, 'levels']);
 Route::get('/courses/{slug}', [CourseController::class, 'show']);
 Route::get('/courses/{slug}/reviews', [CourseReviewController::class, 'index']);
 Route::post('/courses/{slug}/reviews', [CourseReviewController::class, 'store']);
@@ -128,6 +156,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/course-categories', [StaffController::class, 'courseCategories']);
         Route::post('/course-categories', [StaffController::class, 'storeCourseCategory']);
         Route::delete('/course-categories/{id}', [StaffController::class, 'deleteCourseCategory']);
+        
+        // Course Levels
+        Route::get('/course-levels', [StaffController::class, 'courseLevels']);
+        Route::post('/course-levels', [StaffController::class, 'storeCourseLevel']);
+        Route::delete('/course-levels/{id}', [StaffController::class, 'deleteCourseLevel']);
+
         Route::get('/all-questions', [StaffController::class, 'allQuestions']);
         Route::put('/course-questions/{id}/answer', [CourseQuestionController::class, 'answer']);
         Route::get('/all-course-questions', [StaffController::class, 'allCourseQuestions']);
@@ -144,5 +178,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/gallery/upload-image', [GalleryController::class, 'uploadImage']);
         Route::put('/gallery/{id}', [GalleryController::class, 'update']);
         Route::delete('/gallery/{id}', [GalleryController::class, 'destroy']);
+
+        // Payment settings
+        Route::put('/site-settings', [SiteSettingsController::class, 'update']);
     });
 });

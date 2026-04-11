@@ -361,6 +361,18 @@ export default function CourseWatchPage({ params }: { params: Promise<{ slug: st
     }
   };
 
+  const downloadResource = (doc: { file_path: string; title: string }) => {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:8000';
+    const fileUrl = `${baseUrl}/storage/${doc.file_path}`;
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = doc.title;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const initPlayer = (videoId: string) => {
     if (window.ytPlayer) window.ytPlayer.destroy();
     window.ytPlayer = new window.YT.Player('yt-player', {
@@ -666,7 +678,7 @@ export default function CourseWatchPage({ params }: { params: Promise<{ slug: st
                   </div>
                   <div className="space-y-3">
                     {currentLesson.resources.map((doc) => (
-                      <div key={doc.id} className="group flex items-center gap-4 p-4 bg-gray-700/25 rounded-xl hover:bg-gray-700/40 border border-gray-700/40 transition-all cursor-pointer">
+                      <div key={doc.id} onClick={() => downloadResource(doc)} className="group flex items-center gap-4 p-4 bg-gray-700/25 rounded-xl hover:bg-gray-700/40 border border-gray-700/40 transition-all cursor-pointer">
                         <div className="w-11 h-11 bg-gradient-to-br from-orange-600/20 to-amber-500/10 rounded-xl flex items-center justify-center border border-orange-700/40"><FileText className="w-4.5 h-4.5 text-orange-400" /></div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-200 truncate">{doc.title}</p>

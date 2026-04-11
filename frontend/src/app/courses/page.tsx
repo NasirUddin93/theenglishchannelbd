@@ -52,12 +52,27 @@ export default function CoursesPage() {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedLevel, setSelectedLevel] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
   const [categories, setCategories] = useState<{ name: string; slug: string; count: number }[]>([]);
+  const [levels, setLevels] = useState<{ id: number; name: string; slug: string }[]>([]);
 
   useEffect(() => {
     fetchCourses();
     fetchCategories();
-  }, [selectedCategory, selectedLevel, search]);
+    fetchLevels();
+  }, [selectedCategory, selectedLevel, search, sortBy]);
+
+  const fetchLevels = async () => {
+    try {
+      const res = await fetch('/api/courses/levels');
+      if (res.ok) {
+        const data = await res.json();
+        setLevels(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch levels:', error);
+    }
+  };
 
   const fetchCategories = async () => {
     try {
@@ -78,6 +93,7 @@ export default function CoursesPage() {
       if (selectedCategory !== 'all') params.category = selectedCategory;
       if (selectedLevel !== 'all') params.level = selectedLevel;
       if (search) params.search = search;
+      if (sortBy !== 'newest') params.sort = sortBy;
 
       const res = await fetch(`/api/courses?${new URLSearchParams(params)}`);
       if (res.ok) {
@@ -138,9 +154,21 @@ export default function CoursesPage() {
                 className="px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 appearance-none bg-white cursor-pointer"
               >
                 <option value="all">All Levels</option>
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
+                {levels.map(level => (
+                  <option key={level.id} value={level.slug}>{level.name}</option>
+                ))}
+              </select>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 appearance-none bg-white cursor-pointer"
+              >
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="price_low">Price: Low to High</option>
+                <option value="price_high">Price: High to Low</option>
+                <option value="popular">Most Popular</option>
+                <option value="rating">Highest Rated</option>
               </select>
             </div>
           </div>

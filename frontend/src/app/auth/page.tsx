@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, User, ArrowRight, Sparkles, UserCheck } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Sparkles, UserCheck, Phone } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
@@ -11,7 +11,9 @@ export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -50,15 +52,26 @@ export default function Auth() {
     setError('');
     setLoading(true);
 
-    try {
+      try {
       if (isLogin) {
         await login(email, password);
       } else {
+        if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/.test(password)) {
+          setError('Password must be at least 8 characters with at least one letter and one number');
+          setLoading(false);
+          return;
+        }
+        if (password !== confirmPassword) {
+          setError('Passwords do not match');
+          setLoading(false);
+          return;
+        }
         await register({
           name,
+          phone,
           email,
           password,
-          password_confirmation: password,
+          password_confirmation: confirmPassword,
         });
       }
       router.push('/');
@@ -96,17 +109,32 @@ export default function Auth() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
-            <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input 
-                type="text"
-                placeholder="Full Name"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
-              />
-            </div>
+            <>
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input 
+                  type="text"
+                  placeholder="Full Name"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value.slice(0, 100))}
+                  maxLength={100}
+                  className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
+                />
+              </div>
+              <div className="relative">
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input 
+                  type="tel"
+                  placeholder="Phone Number (11 digits)"
+                  required
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
+                  maxLength={11}
+                  className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
+                />
+              </div>
+            </>
           )}
           <div className="relative">
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -123,13 +151,26 @@ export default function Auth() {
             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input 
               type="password"
-              placeholder="Password"
+              placeholder="Password (min 8 chars, letter + number)"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
             />
           </div>
+          {!isLogin && (
+            <div className="relative">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input 
+                type="password"
+                placeholder="Confirm Password"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
+              />
+            </div>
+          )}
           
           <button 
             type="submit"

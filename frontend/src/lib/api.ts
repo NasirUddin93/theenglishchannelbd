@@ -2,6 +2,16 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 // Storage base URL for public assets. Can be overridden per env (e.g., Vercel, Netlify, .env).
 const STORAGE_BASE_URL = (typeof process !== 'undefined' && (process as any).env?.NEXT_PUBLIC_STORAGE_BASE) || 'http://localhost:8000/storage';
 
+export interface ApiCourse {
+  id: number;
+  title: string;
+  slug: string;
+  instructor: string;
+  image: string;
+  price: number;
+  description?: string;
+}
+
 export function joinStorage(base: string, path: string) {
   const b = base.endsWith('/') ? base.slice(0, -1) : base;
   const p = path.startsWith('/') ? path.slice(1) : path;
@@ -121,15 +131,19 @@ export interface ApiUser {
   role: string;
   phone: string | null;
   address: string | null;
+  city: string | null;
+  zip_code: string | null;
   created_at: string;
   updated_at: string;
 }
 
 export interface ApiOrder {
   id: number;
+  order_number: string | null;
   user_id: number;
   total: string;
   status: string;
+  tracking_number: string | null;
   payment_method: string | null;
   shipping_address: string;
   city: string;
@@ -146,10 +160,13 @@ export interface ApiOrder {
 export interface ApiOrderItem {
   id: number;
   order_id: number;
-  book_id: number;
+  book_id: number | null;
+  course_id: number | null;
   quantity: number;
   price: string;
+  isbn: string | null;
   book?: ApiBook;
+  course?: ApiCourse;
 }
 
 export function mapApiBookToBook(apiBook: ApiBook) {
@@ -199,12 +216,17 @@ export function mapApiUserToUserProfile(apiUser: ApiUser) {
     photoUrl: avatarUrl,
     role: (apiUser.role === 'staff' ? 'staff' : 'user') as 'user' | 'staff',
     wishlist: [],
+    phone: apiUser.phone || '',
+    address: apiUser.address || '',
+    city: apiUser.city || '',
+    zipCode: apiUser.zip_code || '',
   };
 }
 
 export function mapApiOrderToOrder(apiOrder: ApiOrder) {
   return {
-    id: String(apiOrder.id),
+    id: apiOrder.order_number || String(apiOrder.id),
+    orderId: String(apiOrder.id),
     userId: String(apiOrder.user_id),
     items: (apiOrder.items || []).map((item) => {
       // Check if this is a course item
@@ -240,12 +262,18 @@ export function mapApiOrderToOrder(apiOrder: ApiOrder) {
           coverUrl: item.book?.image
             ? (item.book.image.startsWith('http') ? item.book.image : `http://localhost:8000/storage/${item.book.image}`)
             : `https://picsum.photos/seed/book${item.book_id}/400/600`,
+          isbn: item.isbn || '',
         };
       }
     }),
     total: parseFloat(apiOrder.total),
     status: apiOrder.status as 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled',
+    trackingNumber: apiOrder.tracking_number || '',
     paymentMethod: apiOrder.payment_method || 'Unknown',
     createdAt: apiOrder.created_at,
+    shipping_address: apiOrder.shipping_address || '',
+    city: apiOrder.city || '',
+    postal_code: apiOrder.postal_code || '',
+    phone: apiOrder.phone || '',
   };
 }

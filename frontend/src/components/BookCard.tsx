@@ -98,7 +98,7 @@ export default function BookCard({ book, viewMode = 'grid', index = 0 }: BookCar
               <h3 className="font-serif text-xl font-bold text-gray-900 mb-1 group-hover:text-orange-600 transition-colors">{book.title}</h3>
             </Link>
             <p className="text-sm text-gray-500 mb-3 italic">by {book.author}</p>
-            <p className="text-sm text-gray-400 line-clamp-2 mb-4 leading-relaxed">{book.description}</p>
+            <p className="text-sm text-gray-400 line-clamp-3 mb-4 leading-relaxed">{book.description || 'No description available.'}</p>
           </div>
           <div className="flex items-center justify-between">
             <div>

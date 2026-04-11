@@ -70,6 +70,10 @@ export interface UserProfile {
   photoUrl: string | null;
   role: 'user' | 'staff';
   wishlist?: string[];
+  phone?: string;
+  address?: string;
+  city?: string;
+  zipCode?: string;
 }
 
 export interface CartItem {
@@ -84,10 +88,12 @@ export interface CartItem {
   stock: number;
   instructor?: string;
   slug?: string;
+  isbn?: string;
 }
 
 export interface Order {
   id: string;
+  orderId?: string;
   userId: string;
   items: CartItem[];
   total: number;

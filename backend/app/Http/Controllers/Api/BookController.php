@@ -27,7 +27,7 @@ class BookController extends Controller
     
     private function buildBookQuery($request)
     {
-        $query = Book::select('id', 'title', 'author', 'price', 'stock', 'image', 'preview_images', 'status', 'is_featured', 'category_id', 'created_at')
+        $query = Book::select('id', 'title', 'author', 'description', 'price', 'stock', 'image', 'preview_images', 'status', 'is_featured', 'category_id', 'created_at')
             ->with(['category' => function($q) {
                 $q->select('id', 'name', 'slug');
             }]);
