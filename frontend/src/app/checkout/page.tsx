@@ -160,14 +160,24 @@ export default function Checkout() {
       cod_charge: codCharge,
       items: cart.map(item => ({
         type: item.type,
-        book_id:   item.type==='book'   ? parseInt(item.bookId||'0')   : null,
-        course_id: item.type==='course' ? parseInt(item.courseId||'0') : null,
-        quantity: item.quantity||1,
-        price: Number(item.price||0),
+        book_id: item.type === 'book' && item.bookId ? parseInt(item.bookId) : null,
+        course_id: item.type === 'course' && item.courseId ? parseInt(item.courseId) : null,
+        quantity: item.quantity || 1,
+        price: item.price,
       })),
-      ...(hasOnlyCourses
-        ? { shipping_address:'N/A', city:'N/A', phone: user.phone||'0000000000' }
-        : { shipping_address: shippingData.address, city: shippingData.city, postal_code: shippingData.zipCode, phone: shippingData.phone||user.phone||'0000000000' }),
+      ...(hasOnlyCourses ? {
+        // Course-only order: minimal required fields
+        shipping_address: 'N/A - Course Enrollment',
+        city: 'N/A',
+        phone: (user as any).phone || '0000000000',
+      } : {
+        // Mixed order: include shipping details
+        shipping_address: shippingData.address,
+        city: shippingData.city,
+        state: (shippingData as any).state || 'N/A',
+        postal_code: shippingData.zipCode,
+        phone: shippingData.phone,
+      }),
     };
     try {
       const token = localStorage.getItem('auth_token');

@@ -52,7 +52,7 @@ interface StaffBook extends Book {
 
 interface StaffQuestion {
   id: number;
-  book_id: number;
+  book_id?: number;
   user_name: string;
   question: string;
   answer: string | null;
