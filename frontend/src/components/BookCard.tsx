@@ -66,7 +66,7 @@ export default function BookCard({ book, viewMode = 'grid', index = 0 }: BookCar
         whileHover={{ x: 8 }}
         className="group flex gap-6 p-4 bg-white rounded-2xl border border-gray-100 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/5 transition-all duration-300"
       >
-        <Link href={`/book/${book.id}`} className="shrink-0 w-32 h-48 rounded-xl overflow-hidden shadow-md group-hover:shadow-lg transition-all relative">
+<Link href={`/book/${book.id}`} className="shrink-0 w-32 h-48 rounded-xl overflow-hidden shadow-md group-hover:shadow-lg transition-all relative">
           <img
             src={book.coverUrl || 'https://via.placeholder.com/400x600?text=No+Image'}
             alt={book.title}
@@ -76,15 +76,20 @@ export default function BookCard({ book, viewMode = 'grid', index = 0 }: BookCar
               el.src = 'https://via.placeholder.com/400x600?text=No+Image';
             }}
           />
-          {!isStaff && (
+          {(!isStaff && isInList) && (
             <button 
-              onClick={toggleWishlist}
-              className={cn(
-                "absolute top-2 right-2 p-2 rounded-full backdrop-blur-md transition-all z-10",
-                isInList ? "bg-orange-600 text-white" : "bg-white/80 text-gray-400 hover:text-orange-600"
-              )}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(e as any); }}
+              className="absolute top-2 right-2 z-50 p-2 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-[0_4px_15px_rgba(249,115,22,0.5)] transition-transform hover:scale-110"
             >
-              <Heart className={cn("w-4 h-4", isInList && "fill-current")} />
+              <Heart className="w-4 h-4 fill-current" />
+            </button>
+          )}
+          {(!isStaff && !isInList) && (
+            <button 
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(e as any); }}
+              className="absolute top-2 right-2 p-2 rounded-full bg-white/90 text-gray-400 hover:text-orange-500 backdrop-blur-md transition-all z-40 shadow-sm hover:z-50"
+            >
+              <Heart className="w-4 h-4" />
             </button>
           )}
         </Link>
@@ -98,7 +103,7 @@ export default function BookCard({ book, viewMode = 'grid', index = 0 }: BookCar
               <h3 className="font-serif text-xl font-bold text-gray-900 mb-1 group-hover:text-orange-600 transition-colors">{book.title}</h3>
             </Link>
             <p className="text-sm text-gray-500 mb-3 italic">by {book.author}</p>
-            <p className="text-sm text-gray-400 line-clamp-2 mb-4 leading-relaxed">{book.description}</p>
+            <p className="text-sm text-gray-400 line-clamp-3 mb-4 leading-relaxed">{book.description || 'No description available.'}</p>
           </div>
           <div className="flex items-center justify-between">
             <div>
@@ -135,17 +140,22 @@ export default function BookCard({ book, viewMode = 'grid', index = 0 }: BookCar
       whileHover={{ y: -8, scale: 1.02 }}
       className="group flex flex-col bg-white rounded-2xl border border-gray-100 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/5 transition-all duration-300 overflow-hidden relative"
     >
-      {!isStaff && (
-        <button 
-          onClick={toggleWishlist}
-          className={cn(
-            "absolute top-3 right-3 p-2.5 rounded-full backdrop-blur-md transition-all z-10 shadow-sm",
-            isInList ? "bg-orange-600 text-white" : "bg-white/90 text-gray-400 hover:text-orange-600"
-          )}
-        >
-          <Heart className={cn("w-4 h-4", isInList && "fill-current")} />
-        </button>
-      )}
+{(!isStaff && isInList) && (
+          <button 
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(e as any); }}
+            className="absolute top-3 right-3 z-50 p-2.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-[0_4px_15px_rgba(249,115,22,0.5)] transition-transform hover:scale-110"
+          >
+            <Heart className="w-4 h-4 fill-current" />
+          </button>
+        )}
+        {(!isStaff && !isInList) && (
+          <button 
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(e as any); }}
+            className="absolute top-3 right-3 p-2.5 rounded-full bg-white/90 text-gray-400 hover:text-orange-500 backdrop-blur-md transition-all z-40 shadow-sm hover:z-50"
+          >
+            <Heart className="w-4 h-4" />
+          </button>
+        )}
       <Link href={`/book/${book.id}`} className="relative aspect-[2/3] overflow-hidden">
         <img
           src={book.coverUrl || 'https://via.placeholder.com/400x600?text=No+Image'}
@@ -162,7 +172,10 @@ export default function BookCard({ book, viewMode = 'grid', index = 0 }: BookCar
           </div>
         </div>
         {book.isFeatured && (
-          <div className="absolute top-3 left-3 px-2 py-1 bg-white/90 backdrop-blur-sm text-orange-600 text-[10px] font-bold uppercase tracking-wider rounded shadow-sm">Featured</div>
+          <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-gradient-to-r from-orange-600 via-amber-400 to-orange-500 px-2.5 py-1.5 text-[11px] font-bold text-white shadow-lg shadow-orange-500/30 z-20">
+            <Star className="h-3 w-3 fill-current" />
+            Featured
+          </div>
         )}
       </Link>
       <div className="p-5 flex flex-col flex-1">

@@ -55,6 +55,7 @@ export default function Home() {
   const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [categories, setCategories] = useState<ApiCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ total_books: 0, total_courses: 0, total_students: 0, book_average_rating: 0, course_average_rating: 0 });
   const { checkWishlist } = useWishlist();
 
   useEffect(() => {
@@ -64,8 +65,9 @@ export default function Home() {
       api.get<ApiCategory[]>('/categories'),
       api.get<{ data: ApiCourse[] }>('/courses', { featured: 'true' }),
       api.get<{ data: ApiCourse[] }>('/courses'),
+      api.get<{ total_books: number; total_courses: number; total_students: number; book_average_rating: number; course_average_rating: number }>('/stats'),
     ])
-      .then(([featuredRes, allRes, catRes, featuredCoursesRes, allCoursesRes]) => {
+      .then(([featuredRes, allRes, catRes, featuredCoursesRes, allCoursesRes, statsRes]) => {
         const featured = (featuredRes.data || []).map(mapApiBookToBook);
         const newArr = (allRes.data || []).slice(0, 4).map(mapApiBookToBook);
         const featCourses = (featuredCoursesRes.data || []).map((c) => ({
@@ -108,6 +110,9 @@ export default function Home() {
         setFeaturedCourses(featCourses);
         setAllCourses(allCour);
         setCategories(catRes || []);
+        if (statsRes) {
+          setStats(statsRes);
+        }
 
         const allBookIds = [...featured, ...newArr].map(b => b.id);
         if (allBookIds.length > 0) {
@@ -497,29 +502,35 @@ export default function Home() {
       </motion.section>
 
       {/* 2. STATS SECTION - Animated Counters */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <AnimatedCounter
-          end={featuredBooks.length > 0 ? featuredBooks.length : 500}
+          end={stats.total_books}
           suffix="+"
           label="Books Available"
           icon={<Library className="w-8 h-8" />}
         />
         <AnimatedCounter
-          end={allCourses.length > 0 ? allCourses.length : 50}
+          end={stats.total_courses}
           suffix="+"
           label="Expert Courses"
           icon={<GraduationCap className="w-8 h-8" />}
         />
         <AnimatedCounter
-          end={10}
-          suffix="K+"
+          end={stats.total_students}
+          suffix="+"
           label="Active Students"
           icon={<Users className="w-8 h-8" />}
         />
         <AnimatedCounter
-          end={5}
+          end={stats.book_average_rating}
           suffix=".0"
-          label="Average Rating"
+          label="Book Rating"
+          icon={<Star className="w-8 h-8" />}
+        />
+        <AnimatedCounter
+          end={stats.course_average_rating}
+          suffix=".0"
+          label="Course Rating"
           icon={<Star className="w-8 h-8" />}
         />
       </section>

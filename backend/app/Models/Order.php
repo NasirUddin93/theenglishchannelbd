@@ -10,10 +10,16 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
+        'order_number',
         'user_id',
         'total',
         'status',
+        'tracking_number',
         'payment_method',
+        'payment_mobile',
+        'transaction_id',
+        'discount_amount',
+        'cod_charge',
         'shipping_address',
         'city',
         'state',
@@ -24,6 +30,8 @@ class Order extends Model
 
     protected $casts = [
         'total' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'cod_charge' => 'decimal:2',
     ];
 
     public function user()

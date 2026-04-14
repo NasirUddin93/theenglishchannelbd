@@ -28,6 +28,9 @@ import {
   List,
   GraduationCap,
   X,
+  CreditCard,
+  Phone,
+  Percent,
   Plus,
   Upload,
   ArrowLeft,
@@ -57,12 +60,15 @@ interface StaffQuestion {
   created_at: string;
   book_title?: string;
   book_cover_url?: string;
+  course_id?: number;
+  course_title?: string;
+  course_image?: string;
 }
 
 export default function StaffDashboard() {
   const { user } = useAuth();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'overview' | 'my-books' | 'drafts' | 'add-book' | 'add-course' | 'inventory' | 'categories' | 'qanda' | 'orders' | 'gallery' | 'about'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'my-books' | 'drafts' | 'add-book' | 'add-course' | 'inventory' | 'categories' | 'qanda' | 'orders' | 'gallery' | 'about' | 'payments'>('overview');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [myBooks, setMyBooks] = useState<StaffBook[]>([]);
   const [draftBooks, setDraftBooks] = useState<StaffBook[]>([]);
@@ -78,6 +84,7 @@ export default function StaffDashboard() {
   const [replyText, setReplyText] = useState('');
   const [staffOrders, setStaffOrders] = useState<{
     id: string;
+    orderId?: string;
     userId: string;
     items: CartItem[];
     total: number;
@@ -98,6 +105,7 @@ export default function StaffDashboard() {
   const qandaPerPage = 10;
   const [qandaTotal, setQandaTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [restockModal, setRestockModal] = useState<{ open: boolean; book: StaffBook | null; value: string }>({ open: false, book: null, value: '0' });
   const [courseOverview, setCourseOverview] = useState<{ total: number; recent: any[] } | null>(null);
   const [booksMetrics, setBooksMetrics] = useState({ totalTitles: 0, warehouseStock: 0, categories: 0, totalRevenue: 0 });
   const [coursesMetrics, setCoursesMetrics] = useState({ total: 0, total_videos: 0, categories: 0, revenue: 0 });
@@ -194,6 +202,8 @@ export default function StaffDashboard() {
   const [apiCategories, setApiCategories] = useState<ApiCategory[]>([]);
   const [courseCategories, setCourseCategories] = useState<{ id?: number; name: string; slug: string; count?: number }[]>([]);
   const [newCourseCategory, setNewCourseCategory] = useState('');
+  const [courseLevels, setCourseLevels] = useState<{ id?: number; name: string; slug: string }[]>([]);
+  const [newCourseLevel, setNewCourseLevel] = useState('');
 
   const [inventorySearch, setInventorySearch] = useState('');
   const debouncedInventorySearch = useDebounce(inventorySearch, 300);
@@ -204,6 +214,7 @@ export default function StaffDashboard() {
   const debouncedCourseSearch = useDebounce(courseSearch, 300);
   const [courseSort, setCourseSort] = useState('newest');
   const [courseStatusFilter, setCourseStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [courseLevelFilter, setCourseLevelFilter] = useState<string>('all');
   const [editingCourse, setEditingCourse] = useState<any | null>(null);
   const [courseEditForm, setCourseEditForm] = useState({
     title: '',
@@ -240,6 +251,13 @@ export default function StaffDashboard() {
   const [inventoryCategories, setInventoryCategories] = useState<string[]>([]);
   const [inventorySort, setInventorySort] = useState('title');
   const [inventoryStockFilter, setInventoryStockFilter] = useState('all');
+  const [stockAlertThreshold, setStockAlertThreshold] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('stockAlertThreshold');
+      return saved ? parseInt(saved) : 10;
+    }
+    return 10;
+  });
   const [inventoryPriceRange, setInventoryPriceRange] = useState<[number, number]>([0, 10000]);
   const [inventoryMaxPrice, setInventoryMaxPrice] = useState(10000);
   const [inventoryCurrentPage, setInventoryCurrentPage] = useState(1);
@@ -264,6 +282,27 @@ export default function StaffDashboard() {
     contact_address: '',
   });
   const [aboutSaving, setAboutSaving] = useState(false);
+
+  useEffect(() => {
+    const fetchPaymentSettings = async () => {
+      try {
+        const res = await api.get('/site-settings');
+        if (res) {
+          const data = res as any;
+          setPaymentSettings({
+            bkash_number: data.bkash_number || '',
+            nagad_number: data.nagad_number || '',
+            cod_charge: data.cod_charge || 0,
+            bkash_discount_percent: data.bkash_discount_percent || 0,
+            nagad_discount_percent: data.nagad_discount_percent || 0,
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch payment settings:', err);
+      }
+    };
+    fetchPaymentSettings();
+  }, []);
   const [editingInventoryBook, setEditingInventoryBook] = useState<StaffBook | null>(null);
   const [editForm, setEditForm] = useState({
     title: '',
@@ -281,6 +320,14 @@ export default function StaffDashboard() {
   const [coverUploading, setCoverUploading] = useState(false);
   const [previewFiles, setPreviewFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [paymentSettings, setPaymentSettings] = useState({
+    bkash_number: '',
+    nagad_number: '',
+    cod_charge: 0,
+    bkash_discount_percent: 0,
+    nagad_discount_percent: 0,
+  });
+  const [paymentSaving, setPaymentSaving] = useState(false);
 
   const loadInventoryBooks = async () => {
     setInventoryLoading(true);
@@ -680,7 +727,7 @@ export default function StaffDashboard() {
       setAllBooks(mappedBooks);
       setMyBooks(mappedBooks.filter(b => b.status !== 'draft'));
       setDraftBooks(mappedBooks.filter(b => b.status === 'draft'));
-      setLowStockBooks(mappedBooks.filter(b => b.stock < 10));
+      setLowStockBooks(mappedBooks.filter(b => b.stock <= stockAlertThreshold));
     } catch {
       setAllBooks([]);
       setMyBooks([]);
@@ -694,9 +741,11 @@ export default function StaffDashboard() {
       const ordersRes = await api.get<any>('/staff/orders', { per_page: String(ordersPerPage), page: String(orderCurrentPage) });
       const ordersData = ordersRes.data || [];
       setStaffOrders(ordersData.map((order: any) => ({
-        id: String(order.id),
+        id: order.order_number || String(order.id),
+        orderId: String(order.id),
         userId: String(order.user_id),
         items: (order.items || []).map((item: any) => ({
+          itemId: item.id,
           bookId: String(item.book_id),
           id: String(item.book_id),
           title: item.book?.title || 'Unknown Book',
@@ -706,9 +755,11 @@ export default function StaffDashboard() {
           coverUrl: item.book?.image || '',
           stock: item.book?.stock || 0,
           type: 'book' as const,
+          isbn: item.isbn || '',
         } as CartItem)),
         total: parseFloat(order.total),
         status: order.status,
+        trackingNumber: order.tracking_number || '',
         paymentMethod: order.payment_method || 'unknown',
         createdAt: order.created_at,
         shippingAddress: {
@@ -785,6 +836,16 @@ export default function StaffDashboard() {
         setCourseCategories(courseCatRes || []);
       } catch {
         setCourseCategories([]);
+      }
+
+      // Fetch course levels
+      try {
+        const levelRes = await api.get<{ id: number; name: string; slug: string }[]>('/staff/course-levels');
+        console.log('Course levels loaded:', levelRes);
+        setCourseLevels(levelRes || []);
+      } catch (err) {
+        console.error('Failed to load course levels:', err);
+        setCourseLevels([]);
       }
 
       // Fetch about data
@@ -922,9 +983,9 @@ export default function StaffDashboard() {
                          book.author.toLowerCase().includes(inventorySearch.toLowerCase());
     const matchesCategory = inventoryCategories.length === 0 || inventoryCategories.includes(book.category);
     const matchesStock = inventoryStockFilter === 'all' || 
-                        (inventoryStockFilter === 'low' && book.stock < 10) ||
+                        (inventoryStockFilter === 'low' && book.stock <= stockAlertThreshold) ||
                         (inventoryStockFilter === 'out' && book.stock === 0) ||
-                        (inventoryStockFilter === 'in' && book.stock >= 10);
+                        (inventoryStockFilter === 'in' && book.stock > stockAlertThreshold);
     const matchesPrice = book.price >= inventoryPriceRange[0] && book.price <= inventoryPriceRange[1];
     return matchesSearch && matchesCategory && matchesStock && matchesPrice;
   }).sort((a, b) => {
@@ -942,6 +1003,7 @@ export default function StaffDashboard() {
     const matchesFilter = orderFilter === 'all' || order.status === orderFilter;
     const matchesSearch = !orderSearch || 
       order.id.toLowerCase().includes(orderSearch.toLowerCase()) ||
+      (order.orderId && order.orderId.toLowerCase().includes(orderSearch.toLowerCase())) ||
       (order.shippingAddress?.fullName || '').toLowerCase().includes(orderSearch.toLowerCase()) ||
       (order.shippingAddress?.email || '').toLowerCase().includes(orderSearch.toLowerCase());
     return matchesFilter && matchesSearch;
@@ -1014,6 +1076,37 @@ export default function StaffDashboard() {
     }
   };
 
+  const handleAddCourseLevel = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCourseLevel.trim() || !user) return;
+    try {
+      const existingLevel = courseLevels.find(l => l.name.toLowerCase() === newCourseLevel.trim().toLowerCase());
+      if (existingLevel) {
+        toast.error('Course level already exists');
+        return;
+      }
+      await api.post('/staff/course-levels', { name: newCourseLevel.trim() });
+      toast.success('Course level added successfully');
+      setNewCourseLevel('');
+      const levelRes = await api.get<{ id: number; name: string; slug: string }[]>('/staff/course-levels');
+      setCourseLevels(levelRes || []);
+    } catch {
+      toast.error('Failed to add course level');
+    }
+  };
+
+  const handleDeleteCourseLevel = async (id: number) => {
+    if (!user) return;
+    try {
+      await api.delete(`/staff/course-levels/${id}`);
+      toast.success('Course level deleted successfully');
+      const levelRes = await api.get<{ id: number; name: string; slug: string }[]>('/staff/course-levels');
+      setCourseLevels(levelRes || []);
+    } catch {
+      toast.error('Failed to delete course level');
+    }
+  };
+
   const handleAddBook = async (e: React.FormEvent, saveAsDraft: boolean = false) => {
     e.preventDefault();
     if (!newBook.title || !newBook.author || !newBook.description) {
@@ -1072,7 +1165,7 @@ export default function StaffDashboard() {
       setAllBooks(mappedBooks);
       setMyBooks(mappedBooks.filter(b => b.submittedBy === user?.uid && b.status !== 'draft'));
       setDraftBooks(mappedBooks.filter(b => b.status === 'draft'));
-      setLowStockBooks(mappedBooks.filter(b => b.stock < 5));
+      setLowStockBooks(mappedBooks.filter(b => b.stock <= stockAlertThreshold));
       
       
       setActiveTab('my-books');
@@ -1256,7 +1349,7 @@ export default function StaffDashboard() {
       setAllBooks(mappedBooks);
       setMyBooks(mappedBooks.filter(b => b.submittedBy === user?.uid && b.status !== 'draft'));
       setDraftBooks(mappedBooks.filter(b => b.status === 'draft'));
-      setLowStockBooks(mappedBooks.filter(b => b.stock < 5));
+      setLowStockBooks(mappedBooks.filter(b => b.stock <= stockAlertThreshold));
       
     } catch {
       toast.error('Failed to update book');
@@ -1276,10 +1369,10 @@ export default function StaffDashboard() {
           toast.success('Book deleted successfully');
           const booksRes = await api.get<{ data: ApiBook[] }>('/staff/books');
           const mappedBooks = (booksRes.data || []).map(mapApiBookToBook) as StaffBook[];
-          setAllBooks(mappedBooks);
-          setMyBooks(mappedBooks.filter(b => b.submittedBy === user?.uid && b.status !== 'draft'));
-          setDraftBooks(mappedBooks.filter(b => b.status === 'draft'));
-          setLowStockBooks(mappedBooks.filter(b => b.stock < 5));
+      setAllBooks(mappedBooks);
+      setMyBooks(mappedBooks.filter(b => b.submittedBy === user?.uid && b.status !== 'draft'));
+      setDraftBooks(mappedBooks.filter(b => b.status === 'draft'));
+      setLowStockBooks(mappedBooks.filter(b => b.stock <= stockAlertThreshold));
           
         } catch {
           toast.error('Failed to delete book');
@@ -1317,7 +1410,7 @@ export default function StaffDashboard() {
       setAllBooks(mappedBooks);
       setMyBooks(mappedBooks.filter(b => b.submittedBy === user?.uid && b.status !== 'draft'));
       setDraftBooks(mappedBooks.filter(b => b.status === 'draft'));
-      setLowStockBooks(mappedBooks.filter(b => b.stock < 5));
+      setLowStockBooks(mappedBooks.filter(b => b.stock <= stockAlertThreshold));
       
       
       setActiveTab('drafts');
@@ -1386,6 +1479,7 @@ export default function StaffDashboard() {
             { id: 'orders', label: 'Order Management', icon: Package },
             { id: 'gallery', label: 'Manage Gallery', icon: Images },
             { id: 'about', label: 'Edit About Page', icon: Info },
+            { id: 'payments', label: 'Payment Settings', icon: CreditCard },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -1458,7 +1552,10 @@ export default function StaffDashboard() {
                               <div className="text-sm text-red-600">Only {book.stock} left in stock</div>
                             </div>
                           </div>
-                          <button className="px-4 py-2 rounded-lg border border-red-600 text-red-600 bg-white text-sm font-semibold hover:bg-red-600 hover:text-white transition-all">Restock Now</button>
+                          <button 
+                            onClick={() => setRestockModal({ open: true, book, value: '0' })}
+                            className="px-4 py-2 rounded-lg border border-red-600 text-red-600 bg-white text-sm font-semibold hover:bg-red-600 hover:text-white transition-all"
+                          >Restock Now</button>
                         </div>
                       ))}
                     </div>
@@ -1895,10 +1992,31 @@ export default function StaffDashboard() {
                     className="px-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm font-bold focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
                   >
                     <option value="all">All Stock</option>
-                    <option value="in">In Stock (10+)</option>
-                    <option value="low">Low Stock (&lt;10)</option>
+                    <option value="in">In Stock ({'>'}{stockAlertThreshold})</option>
+                    <option value="low">Low Stock ({'<='}{stockAlertThreshold})</option>
                     <option value="out">Out of Stock</option>
                   </select>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500 font-bold">Alert at:</span>
+                    <input
+                      type="number"
+                      value={stockAlertThreshold}
+                      onChange={(e) => setStockAlertThreshold(Math.max(0, parseInt(e.target.value) || 0))}
+                      className="w-20 px-3 py-2 bg-white border border-gray-100 rounded-xl text-sm font-bold focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
+                      min="0"
+                    />
+                    <button
+                      onClick={() => {
+                        localStorage.setItem('stockAlertThreshold', String(stockAlertThreshold));
+                        loadInventoryBooks();
+                        loadOverviewBooks();
+                        toast.success('Stock alert threshold saved');
+                      }}
+                      className="px-3 py-2 bg-orange-600 text-white text-xs font-bold rounded-xl hover:bg-orange-700 transition-all"
+                    >
+                      Save
+                    </button>
+                  </div>
                   <div className="flex items-center gap-2 px-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm font-bold">
                     <span className="text-gray-500">৳</span>
                     <input
@@ -1950,6 +2068,16 @@ export default function StaffDashboard() {
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                   </select>
+                  <select
+                    value={courseLevelFilter}
+                    onChange={(e) => setCourseLevelFilter(e.target.value)}
+                    className="px-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm font-bold focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
+                  >
+                    <option value="all">All Levels</option>
+                    {courseLevels.map(level => (
+                      <option key={level.id} value={level.slug}>{level.name}</option>
+                    ))}
+                  </select>
                 </div>
                 )}
 
@@ -1978,10 +2106,10 @@ export default function StaffDashboard() {
                                 <span className={cn(
                                   "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
                                   book.stock === 0 ? "bg-red-50 text-red-600" :
-                                  book.stock < 10 ? "bg-orange-50 text-orange-600" :
+                                  book.stock <= stockAlertThreshold ? "bg-orange-50 text-orange-600" :
                                   "bg-green-50 text-green-600"
                                 )}>
-                                  {book.stock === 0 ? "Out of Stock" : book.stock < 10 ? `Low Stock (${book.stock})` : `In Stock (${book.stock})`}
+                                  {book.stock === 0 ? "Out of Stock" : book.stock <= stockAlertThreshold ? `Low Stock (${book.stock})` : `In Stock (${book.stock})`}
                                 </span>
                               </div>
                             </div>
@@ -2078,10 +2206,10 @@ export default function StaffDashboard() {
                                 <span className={cn(
                                   "px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider",
                                   book.stock === 0 ? "bg-red-50 text-red-600" :
-                                  book.stock < 10 ? "bg-orange-50 text-orange-600" :
+                                  book.stock <= stockAlertThreshold ? "bg-orange-50 text-orange-600" :
                                   "bg-green-50 text-green-600"
                                 )}>
-                                  {book.stock === 0 ? "Out of Stock" : book.stock < 10 ? `Low (${book.stock})` : `${book.stock}`}
+                                  {book.stock === 0 ? "Out of Stock" : book.stock <= stockAlertThreshold ? `Low (${book.stock})` : `${book.stock}`}
                                 </span>
                               </td>
                               <td className="p-4">
@@ -2144,10 +2272,11 @@ export default function StaffDashboard() {
                   const filteredCourses = inventoryCourses.filter(course => {
                     const matchesSearch = course.title?.toLowerCase().includes(courseSearch.toLowerCase()) ||
                                          course.instructor?.toLowerCase().includes(courseSearch.toLowerCase());
-                    const matchesStatus = courseStatusFilter === 'all' ||
-                                         (courseStatusFilter === 'active' && course.is_active) ||
-                                         (courseStatusFilter === 'inactive' && !course.is_active);
-                    return matchesSearch && matchesStatus;
+const matchesStatus = courseStatusFilter === 'all' ||
+                                          (courseStatusFilter === 'active' && course.is_active) ||
+                                          (courseStatusFilter === 'inactive' && !course.is_active);
+                    const matchesLevel = courseLevelFilter === 'all' || course.level === courseLevelFilter;
+                    return matchesSearch && matchesStatus && matchesLevel;
                   }).sort((a, b) => {
                     if (courseSort === 'newest') return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
                     if (courseSort === 'oldest') return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
@@ -2462,6 +2591,42 @@ export default function StaffDashboard() {
                   </div>
                   {courseCategories.length === 0 && (
                     <div className="text-center py-8 text-gray-500">No course categories yet</div>
+                  )}
+                </div>
+
+                {/* Course Levels */}
+                <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">Course Levels</h3>
+                  <form onSubmit={handleAddCourseLevel} className="flex gap-4 mb-4">
+                    <input
+                      type="text"
+                      value={newCourseLevel}
+                      onChange={(e) => setNewCourseLevel(e.target.value)}
+                      placeholder="New course level name..."
+                      className="flex-1 p-3 bg-gray-50 border border-gray-100 rounded-xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
+                    />
+                    <button
+                      type="submit"
+                      className="px-5 py-3 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition-all"
+                    >
+                      Add
+                    </button>
+                  </form>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {courseLevels.map((level, idx) => (
+                      <div key={level.id ?? `level-${idx}`} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <span className="font-semibold text-gray-800 text-sm">{level.name}</span>
+                        <button
+                          onClick={() => handleDeleteCourseLevel(level.id!)}
+                          className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  {courseLevels.length === 0 && (
+                    <div className="text-center py-8 text-gray-500">No course levels yet</div>
                   )}
                 </div>
               </motion.div>
@@ -2823,9 +2988,15 @@ export default function StaffDashboard() {
                         <select value={newCourse.level}
                           onChange={(e) => setNewCourse(prev => ({ ...prev, level: e.target.value }))}
                           className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none">
-                          <option value="beginner">Beginner</option>
-                          <option value="intermediate">Intermediate</option>
-                          <option value="advanced">Advanced</option>
+                          {courseLevels.length > 0 ? courseLevels.map(level => (
+                            <option key={level.id} value={level.slug}>{level.name}</option>
+                          )) : (
+                            <>
+                              <option value="beginner">Beginner</option>
+                              <option value="intermediate">Intermediate</option>
+                              <option value="advanced">Advanced</option>
+                            </>
+                          )}
                         </select>
                       </div>
                     </div>
@@ -3765,21 +3936,36 @@ export default function StaffDashboard() {
 
                         <div className="mb-4">
                           <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Items</p>
-                          <div className="flex flex-wrap gap-2">
+                          <div className="space-y-2">
                             {order.items.map((item, idx) => (
-                              <div key={idx} className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2">
-                                <div className="w-8 h-10 rounded overflow-hidden bg-gray-100">
+                              <div key={idx} className="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
+                                <div className="w-10 h-14 rounded overflow-hidden bg-gray-100 shrink-0">
                                   {item.coverUrl ? (
                                     <img src={item.coverUrl} alt="" className="w-full h-full object-cover" />
                                   ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                      <BookOpen className="w-3 h-3" />
+                                      <BookOpen className="w-4 h-4" />
                                     </div>
                                   )}
                                 </div>
-                                <div>
-                                  <p className="text-sm font-bold text-gray-900">{item.title}</p>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-bold text-gray-900 truncate">{item.title}</p>
                                   <p className="text-xs text-gray-500">Qty: {item.quantity} × ৳{item.price}</p>
+                                  {(item as any).itemId && (
+                                    <div className="flex items-center gap-2 mt-2">
+                                      <input
+                                        type="text"
+                                        placeholder="ISBN"
+                                        value={(item as any).isbn || ''}
+                                        onChange={(e) => {
+                                          const newItems = [...order.items];
+                                          (newItems[idx] as any).isbn = e.target.value;
+                                          setStaffOrders(prev => prev.map(o => o.id === order.id ? { ...o, items: newItems } : o));
+                                        }}
+                                        className="px-2 py-1 text-xs border border-gray-200 rounded focus:border-orange-500/20 focus:ring-1 focus:ring-orange-500/10 outline-none w-32"
+                                      />
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             ))}
@@ -3808,7 +3994,17 @@ export default function StaffDashboard() {
                             onChange={async (e) => {
                               const newStatus = e.target.value;
                               try {
-                                await api.put(`/staff/orders/${order.id}`, { status: newStatus });
+                                const itemsPayload = order.items
+                                  .filter((item: any) => item.itemId)
+                                  .map((item: any) => ({
+                                    item_id: item.itemId,
+                                    isbn: item.isbn || null,
+                                  }));
+                                
+                                await api.put(`/staff/orders/${order.orderId}`, { 
+                                  status: newStatus,
+                                  items: itemsPayload,
+                                });
                                 setStaffOrders(prev => prev.map(o => 
                                   o.id === order.id ? { ...o, status: newStatus } : o
                                 ));
@@ -3825,22 +4021,55 @@ export default function StaffDashboard() {
                             <option value="delivered">Delivered</option>
                             <option value="cancelled">Cancelled</option>
                           </select>
-                          <input
-                            type="text"
-                            placeholder="Tracking number"
-                            defaultValue={(order as any).trackingNumber || ''}
-                            onBlur={(e) => {
-                              const val = e.target.value;
-                              if (!val) return;
-                              const updatedOrders = staffOrders.map(o =>
-                                o.id === order.id ? { ...o, trackingNumber: val } : o
-                              );
-                              setStaffOrders(updatedOrders);
-                              localStorage.setItem('lumina_orders', JSON.stringify(updatedOrders));
-                              toast.success('Tracking number saved');
-                            }}
-                            className="flex-1 px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
-                          />
+                          <div className="flex-1 flex items-center gap-2">
+                            <input
+                              type="text"
+                              placeholder="Tracking number"
+                              value={(order as any).trackingNumber || ''}
+                              onChange={(e) => {
+                                setStaffOrders(prev => prev.map(o => 
+                                  o.id === order.id ? { ...o, trackingNumber: e.target.value } : o
+                                ));
+                              }}
+                              className="flex-1 px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
+                            />
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                                let result = '';
+                                for (let i = 0; i < 10; i++) {
+                                  result += chars.charAt(Math.floor(Math.random() * chars.length));
+                                }
+                                const newTracking = `TRK-${result}`;
+                                setStaffOrders(prev => prev.map(o => 
+                                  o.id === order.id ? { ...o, trackingNumber: newTracking } : o
+                                ));
+                              }}
+                              className="px-3 py-2 text-xs text-blue-600 hover:text-blue-800 font-medium bg-blue-50 rounded-xl"
+                            >
+                              Generate
+                            </button>
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                const trackingVal = (order as any).trackingNumber;
+                                if (!trackingVal) {
+                                  toast.error('Enter tracking number first');
+                                  return;
+                                }
+                                try {
+                                  await api.put(`/staff/orders/${order.orderId}`, { tracking_number: trackingVal });
+                                  toast.success('Tracking number saved');
+                                } catch {
+                                  toast.error('Failed to save tracking number');
+                                }
+                              }}
+                              className="px-4 py-2 bg-orange-600 text-white text-sm font-bold rounded-xl hover:bg-orange-700 transition-all"
+                            >
+                              Save
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -3935,7 +4164,6 @@ export default function StaffDashboard() {
                         className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
                       />
                     </div>
-
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Hero Description</label>
                       <textarea
@@ -3945,43 +4173,12 @@ export default function StaffDashboard() {
                         className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none resize-none"
                       />
                     </div>
-
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Our Story</label>
-                      <textarea
-                        rows={6}
-                        value={aboutForm.our_story}
-                        onChange={(e) => setAboutForm(prev => ({ ...prev, our_story: e.target.value }))}
-                        className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none resize-none"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Our Mission</label>
-                      <textarea
-                        rows={4}
-                        value={aboutForm.our_mission}
-                        onChange={(e) => setAboutForm(prev => ({ ...prev, our_mission: e.target.value }))}
-                        className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none resize-none"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Our Values</label>
-                      <textarea
-                        rows={4}
-                        value={aboutForm.our_values}
-                        onChange={(e) => setAboutForm(prev => ({ ...prev, our_values: e.target.value }))}
-                        className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none resize-none"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-gray-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Contact Email</label>
                         <input
                           type="email"
-                          value={aboutForm.contact_email}
+                          value={aboutForm.contact_email || ''}
                           onChange={(e) => setAboutForm(prev => ({ ...prev, contact_email: e.target.value }))}
                           className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
                         />
@@ -3990,31 +4187,232 @@ export default function StaffDashboard() {
                         <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Contact Phone</label>
                         <input
                           type="text"
-                          value={aboutForm.contact_phone}
+                          value={aboutForm.contact_phone || ''}
                           onChange={(e) => setAboutForm(prev => ({ ...prev, contact_phone: e.target.value }))}
                           className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Contact Address</label>
-                        <input
-                          type="text"
-                          value={aboutForm.contact_address}
-                          onChange={(e) => setAboutForm(prev => ({ ...prev, contact_address: e.target.value }))}
-                          className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
-                        />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Contact Address</label>
+                      <input
+                        type="text"
+                        value={aboutForm.contact_address || ''}
+                        onChange={(e) => setAboutForm(prev => ({ ...prev, contact_address: e.target.value }))}
+                        className="w-full p-4 bg-gray-50 border border-transparent rounded-2xl focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 transition-all outline-none"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={aboutSaving}
+                      className="w-full py-4 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-2xl font-bold hover:shadow-lg transition-all disabled:opacity-50"
+                    >
+                      {aboutSaving ? 'Saving...' : 'Save Changes'}
+                    </button>
+                  </form>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'payments' && (
+              <motion.div
+                key="payments"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="space-y-6"
+              >
+                <h3 className="text-3xl font-serif font-bold text-gray-900 mb-8">Payment Settings</h3>
+                <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8">
+                  <form
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      setPaymentSaving(true);
+                      try {
+                        const res = await api.put('/staff/site-settings', paymentSettings);
+                        if (res) {
+                          toast.success('Payment settings updated successfully');
+                        }
+                      } catch (err: any) {
+                        console.error('Payment settings error:', err);
+                        toast.error(err?.message || 'Failed to update payment settings');
+                      } finally {
+                        setPaymentSaving(false);
+                      }
+                    }}
+                    className="space-y-8"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                            <Phone className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <h4 className="text-xl font-bold text-gray-900">bKash Payment</h4>
+                            <p className="text-sm text-gray-500">Configure bKash payment options</p>
+                          </div>
+                        </div>
+                        <div className="bg-gradient-to-br from-purple-50 to-white rounded-2xl p-6 border border-purple-100 space-y-4">
+                          <div className="space-y-2">
+                            <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">bKash Number</label>
+                            <input
+                              type="tel"
+                              value={paymentSettings.bkash_number}
+                              onChange={(e) => {
+                                const val = e.target.value.replace(/\D/g, '').slice(0, 11);
+                                setPaymentSettings(prev => ({ ...prev, bkash_number: val }));
+                              }}
+                              placeholder="01XXXXXXXXX"
+                              maxLength={11}
+                              className="w-full px-4 py-3 bg-white border-2 border-purple-100 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 transition-all outline-none font-mono text-lg"
+                            />
+                            <p className="text-xs text-gray-500 flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                              Enter 11 digit mobile number (e.g., 017XXXXXXXX)
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-bold text-gray-700 uppercase tracking-wider flex items-center gap-2">
+                              <Percent className="w-4 h-4 text-purple-500" /> Discount Percentage
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                value={paymentSettings.bkash_discount_percent}
+                                onChange={(e) => {
+                                  let val = parseFloat(e.target.value) || 0;
+                                  if (val > 100) val = 100;
+                                  if (val < 0) val = 0;
+                                  setPaymentSettings(prev => ({ ...prev, bkash_discount_percent: val }));
+                                }}
+                                className="w-full px-4 py-3 bg-white border-2 border-purple-100 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 transition-all outline-none font-semibold text-lg"
+                              />
+                              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">%</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 h-2 bg-purple-100 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-gradient-to-r from-purple-500 to-purple-600 transition-all"
+                                  style={{ width: `${Math.min(paymentSettings.bkash_discount_percent, 100)}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-xs font-medium text-purple-600">{paymentSettings.bkash_discount_percent}% off</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/20">
+                            <Phone className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <h4 className="text-xl font-bold text-gray-900">Nagad Payment</h4>
+                            <p className="text-sm text-gray-500">Configure Nagad payment options</p>
+                          </div>
+                        </div>
+                        <div className="bg-gradient-to-br from-orange-50 to-white rounded-2xl p-6 border border-orange-100 space-y-4">
+                          <div className="space-y-2">
+                            <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">Nagad Number</label>
+                            <input
+                              type="tel"
+                              value={paymentSettings.nagad_number}
+                              onChange={(e) => {
+                                const val = e.target.value.replace(/\D/g, '').slice(0, 11);
+                                setPaymentSettings(prev => ({ ...prev, nagad_number: val }));
+                              }}
+                              placeholder="01XXXXXXXXX"
+                              maxLength={11}
+                              className="w-full px-4 py-3 bg-white border-2 border-orange-100 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none font-mono text-lg"
+                            />
+                            <p className="text-xs text-gray-500 flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 bg-orange-500 rounded-full"></span>
+                              Enter 11 digit mobile number (e.g., 017XXXXXXXX)
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-bold text-gray-700 uppercase tracking-wider flex items-center gap-2">
+                              <Percent className="w-4 h-4 text-orange-500" /> Discount Percentage
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                value={paymentSettings.nagad_discount_percent}
+                                onChange={(e) => {
+                                  let val = parseFloat(e.target.value) || 0;
+                                  if (val > 100) val = 100;
+                                  if (val < 0) val = 0;
+                                  setPaymentSettings(prev => ({ ...prev, nagad_discount_percent: val }));
+                                }}
+                                className="w-full px-4 py-3 bg-white border-2 border-orange-100 rounded-xl focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none font-semibold text-lg"
+                              />
+                              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">%</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 h-2 bg-orange-100 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-gradient-to-r from-orange-500 to-orange-600 transition-all"
+                                  style={{ width: `${Math.min(paymentSettings.nagad_discount_percent, 100)}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-xs font-medium text-orange-600">{paymentSettings.nagad_discount_percent}% off</span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex gap-4 pt-4">
-                      <button
-                        type="submit"
-                        disabled={aboutSaving}
-                        className="px-8 py-3 bg-orange-600 text-white rounded-2xl font-bold hover:bg-orange-700 transition-all disabled:opacity-50"
-                      >
-                        {aboutSaving ? 'Saving...' : 'Save Changes'}
-                      </button>
+                    <div className="border-t border-gray-200 pt-8">
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg shadow-green-500/20">
+                          <CreditCard className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="text-xl font-bold text-gray-900">Cash on Delivery</h4>
+                          <p className="text-sm text-gray-500">Configure COD charges for orders</p>
+                        </div>
+                      </div>
+                      <div className="bg-gradient-to-br from-green-50 to-white rounded-2xl p-6 border border-green-100 space-y-4">
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">COD Additional Charge</label>
+                          <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-lg">৳</span>
+                            <input
+                              type="number"
+                              min="0"
+                              step="1"
+                              value={paymentSettings.cod_charge}
+                              onChange={(e) => {
+                                let val = parseFloat(e.target.value) || 0;
+                                if (val < 0) val = 0;
+                                setPaymentSettings(prev => ({ ...prev, cod_charge: val }));
+                              }}
+                              className="w-full pl-8 pr-4 py-3 bg-white border-2 border-green-100 rounded-xl focus:border-green-500 focus:ring-4 focus:ring-green-500/10 transition-all outline-none font-semibold text-lg"
+                            />
+                          </div>
+                          <div className="flex items-center gap-2 p-3 bg-green-100/50 rounded-lg">
+                            <Info className="w-4 h-4 text-green-600 flex-shrink-0" />
+                            <p className="text-sm text-green-700">This charge will be added on top of the order total when customers select Cash on Delivery</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
+
+                    <button
+                      type="submit"
+                      disabled={paymentSaving}
+                      className="w-full py-4 bg-gradient-to-r from-orange-600 to-amber-500 text-white rounded-2xl font-bold hover:shadow-lg transition-all disabled:opacity-50"
+                    >
+                      {paymentSaving ? 'Saving...' : 'Save Payment Settings'}
+                    </button>
                   </form>
                 </div>
               </motion.div>
@@ -5108,6 +5506,53 @@ export default function StaffDashboard() {
               </div>
             )}
           </motion.div>
+        </div>
+      )}
+
+      {/* Restock Modal */}
+      {restockModal.open && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Restock Book</h3>
+            <p className="text-sm text-gray-600 mb-4">Enter the new stock quantity for <span className="font-semibold">{restockModal.book?.title}</span></p>
+            <input
+              type="number"
+              value={restockModal.value}
+              onChange={(e) => setRestockModal({ ...restockModal, value: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-lg font-bold focus:border-orange-500/20 focus:ring-2 focus:ring-orange-500/10 outline-none"
+              placeholder="Enter quantity"
+              autoFocus
+            />
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setRestockModal({ open: false, book: null, value: '0' })}
+                className="flex-1 py-3 border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  const newStock = Number(restockModal.value);
+                  if (isNaN(newStock) || newStock < 0) {
+                    toast.error('Please enter a valid number');
+                    return;
+                  }
+                  try {
+                    await api.put(`/staff/books/${restockModal.book?.id}`, { stock: newStock });
+                    loadInventoryBooks();
+                    setLowStockBooks(prev => prev.filter(b => b.id !== restockModal.book?.id));
+                    toast.success(`Restocked to ${newStock} units`);
+                    setRestockModal({ open: false, book: null, value: '50' });
+                  } catch {
+                    toast.error('Failed to restock book');
+                  }
+                }}
+                className="flex-1 py-3 bg-orange-600 text-white rounded-xl font-bold hover:bg-orange-700 transition-all"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

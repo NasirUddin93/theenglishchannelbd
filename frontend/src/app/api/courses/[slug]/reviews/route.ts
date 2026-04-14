@@ -52,14 +52,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ slug: string; id: string }> }) {
-  const { id } = await params;
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const body = await request.json();
-  
+
   try {
-    const res = await fetch(`${LARAVEL_API}/reviews/${id}`, {
+    const res = await fetch(`${LARAVEL_API}/courses/${slug}/reviews`, {
       method: 'PUT',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
