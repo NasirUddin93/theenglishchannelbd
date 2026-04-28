@@ -58,7 +58,7 @@ export default function CourseCard({ course, className, index = 0 }: CourseCardP
       animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       transition={{ duration: 0.6, delay: index * 0.1, ease: 'easeOut' }}
       className={cn(
-        'group relative bg-white rounded-3xl border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/10',
+        'group relative bg-white rounded-3xl border border-gray-100 shadow-[0_0_20px_rgba(255,167,38,0.2)] hover:shadow-2xl hover:shadow-orange-500/25 overflow-hidden transition-all duration-300',
         className
       )}
       onMouseMove={handleMouseMove}
@@ -100,7 +100,7 @@ export default function CourseCard({ course, className, index = 0 }: CourseCardP
           )}>
             {course.level.toUpperCase()}
           </span>
-          <span className="text-[10px] font-medium text-gray-400 uppercase tracking-tight">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-blue-50 text-blue-600 border-blue-200">
             {course.category}
           </span>
         </div>
@@ -129,16 +129,25 @@ export default function CourseCard({ course, className, index = 0 }: CourseCardP
           {/* Average Rating Stars */}
           <div className="flex items-center gap-2 mb-2">
             <div className="flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={`w-3.5 h-3.5 ${
-                    star <= Math.round(course.average_rating || 0)
-                      ? 'fill-orange-500 text-orange-500'
-                      : 'fill-gray-300 text-gray-300'
-                  }`}
-                />
-              ))}
+              {[1, 2, 3, 4, 5].map((star) => {
+                const rating = course.average_rating || 0;
+                const filled = star <= Math.floor(rating);
+                const partial = !filled && star === Math.ceil(rating) && rating % 1 !== 0;
+
+                return (
+                  <span key={star} className="relative inline-block">
+                    <Star className="w-3.5 h-3.5 fill-gray-200 text-gray-200" />
+                    {(filled || partial) && (
+                      <span
+                        className="absolute inset-0 overflow-hidden"
+                        style={{ width: filled ? '100%' : `${(rating % 1) * 100}%` }}
+                      >
+                        <Star className="w-3.5 h-3.5 fill-orange-500 text-orange-500" />
+                      </span>
+                    )}
+                  </span>
+                );
+              })}
             </div>
             <span className="text-sm font-bold text-gray-900">
               {(course.average_rating || 0).toFixed(1)}

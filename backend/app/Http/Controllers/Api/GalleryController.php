@@ -17,20 +17,14 @@ class GalleryController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return response()->json([
-            'data' => $photos->map(function ($photo) {
-                return [
-                    'id' => $photo->id,
-                    'title' => $photo->title,
-                    'description' => $photo->description,
-                    'image' => $photo->image_path 
-                        ? url('storage/' . $photo->image_path) 
-                        : null,
-                    'order' => $photo->order,
-                    'created_at' => $photo->created_at,
-                ];
-            })
-        ]);
+        $photos->transform(function ($photo) {
+            $photo->image = $photo->image_path 
+                ? url('storage/' . $photo->image_path) 
+                : null;
+            return $photo;
+        });
+
+        return response()->json($photos);
     }
 
     // Staff endpoints
@@ -48,6 +42,13 @@ class GalleryController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate($request->input('per_page', 20));
 
+        $photos->getCollection()->transform(function ($photo) {
+            $photo->image = $photo->image_path 
+                ? url('storage/' . $photo->image_path) 
+                : null;
+            return $photo;
+        });
+
         return response()->json($photos);
     }
 
@@ -59,11 +60,15 @@ class GalleryController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'order' => 'nullable|integer',
             'is_active' => 'nullable',
+            'date' => 'nullable|date',
         ]);
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('gallery', 'public');
+            $image = $request->file('image');
+            $fileName = uniqid() . '_' . time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('storage/gallery'), $fileName);
+            $imagePath = 'gallery/' . $fileName;
         }
 
         $photo = GalleryPhoto::create([
@@ -72,6 +77,7 @@ class GalleryController extends Controller
             'image_path' => $imagePath,
             'order' => $request->order ?? 0,
             'is_active' => filter_var($request->is_active ?? 'true', FILTER_VALIDATE_BOOLEAN),
+            'date' => $request->date,
         ]);
 
         return response()->json([
@@ -92,7 +98,7 @@ class GalleryController extends Controller
             'is_active' => 'sometimes',
         ]);
 
-        $data = $request->only(['title', 'description', 'order']);
+        $data = $request->only(['title', 'description', 'order', 'date']);
         
         // Handle boolean conversion for is_active
         if ($request->has('is_active')) {
@@ -102,10 +108,16 @@ class GalleryController extends Controller
         if ($request->hasFile('image')) {
             // Delete old image
             if ($photo->image_path) {
-                Storage::disk('public')->delete($photo->image_path);
+                $oldPath = public_path('storage/' . $photo->image_path);
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
             }
             
-            $data['image_path'] = $request->file('image')->store('gallery', 'public');
+            $image = $request->file('image');
+            $fileName = uniqid() . '_' . time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('storage/gallery'), $fileName);
+            $data['image_path'] = 'gallery/' . $fileName;
         }
 
         $photo->update($data);

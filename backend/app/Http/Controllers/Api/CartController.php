@@ -4,112 +4,184 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Book;
+use App\Models\Course;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
     public function index(Request $request)
     {
-        $cart = $request->session()->get('cart', []);
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['items' => [], 'total' => 0, 'count' => 0]);
+        }
 
-        $cartItems = [];
+        $cartItems = DB::table('cart_items')
+            ->where('user_id', $user->id)
+            ->get();
+
+        $items = [];
         $total = 0;
 
-        foreach ($cart as $bookId => $quantity) {
-            $book = Book::find($bookId);
-            if ($book) {
-                $subtotal = $book->price * $quantity;
-                $cartItems[] = [
-                    'book' => $book,
-                    'quantity' => $quantity,
-                    'subtotal' => $subtotal,
-                ];
-                $total += $subtotal;
+        foreach ($cartItems as $item) {
+            if ($item->book_id) {
+                $book = Book::find($item->book_id);
+                if ($book) {
+                    $subtotal = $book->price * $item->quantity;
+                    $items[] = [
+                        'type' => 'book',
+                        'book' => $book,
+                        'quantity' => $item->quantity,
+                        'subtotal' => $subtotal,
+                    ];
+                    $total += $subtotal;
+                }
+            } elseif ($item->course_id) {
+                $course = Course::find($item->course_id);
+                if ($course) {
+                    $items[] = [
+                        'type' => 'course',
+                        'course' => $course,
+                        'quantity' => $item->quantity,
+                        'subtotal' => $course->price,
+                    ];
+                    $total += $course->price;
+                }
             }
         }
 
         return response()->json([
-            'items' => $cartItems,
+            'items' => $items,
             'total' => $total,
-            'count' => count($cartItems),
+            'count' => count($items),
         ]);
     }
 
     public function add(Request $request)
     {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
         $validated = $request->validate([
-            'book_id' => 'required|exists:books,id',
+            'book_id' => 'nullable|exists:books,id',
+            'course_id' => 'nullable|exists:courses,id',
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $book = Book::findOrFail($validated['book_id']);
+        $bookId = $validated['book_id'] ?? null;
+        $courseId = $validated['course_id'] ?? null;
 
-        if ($book->stock < $validated['quantity']) {
-            return response()->json([
-                'message' => 'Not enough stock available',
-            ], 400);
+        if ($bookId) {
+            $book = Book::findOrFail($bookId);
+            if ($book->stock < $validated['quantity']) {
+                return response()->json(['message' => 'Not enough stock available'], 400);
+            }
         }
 
-        $cart = $request->session()->get('cart', []);
-        $bookId = $validated['book_id'];
+        $existing = DB::table('cart_items')
+            ->where('user_id', $user->id)
+            ->where(function ($query) use ($bookId, $courseId) {
+                if ($bookId) {
+                    $query->where('book_id', $bookId);
+                } elseif ($courseId) {
+                    $query->where('course_id', $courseId);
+                }
+            })
+            ->first();
 
-        if (isset($cart[$bookId])) {
-            $cart[$bookId] += $validated['quantity'];
+        if ($existing) {
+            DB::table('cart_items')
+                ->where('id', $existing->id)
+                ->update(['quantity' => $existing->quantity + $validated['quantity']]);
         } else {
-            $cart[$bookId] = $validated['quantity'];
+            DB::table('cart_items')->insert([
+                'user_id' => $user->id,
+                'book_id' => $bookId,
+                'course_id' => $courseId,
+                'quantity' => $validated['quantity'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
 
-        $request->session()->put('cart', $cart);
+        $count = DB::table('cart_items')->where('user_id', $user->id)->count();
 
         return response()->json([
             'message' => 'Item added to cart',
-            'cart_count' => count($cart),
+            'cart_count' => $count,
         ]);
     }
 
     public function update(Request $request)
     {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
         $validated = $request->validate([
-            'book_id' => 'required|integer',
+            'book_id' => 'nullable|integer',
+            'course_id' => 'nullable|integer',
             'quantity' => 'required|integer|min:0',
         ]);
 
-        $cart = $request->session()->get('cart', []);
-        $bookId = $validated['book_id'];
+        $bookId = $validated['book_id'] ?? null;
+        $courseId = $validated['course_id'] ?? null;
 
         if ($validated['quantity'] === 0) {
-            unset($cart[$bookId]);
+            DB::table('cart_items')
+                ->where('user_id', $user->id)
+                ->where(function ($query) use ($bookId, $courseId) {
+                    if ($bookId) {
+                        $query->where('book_id', $bookId);
+                    } elseif ($courseId) {
+                        $query->where('course_id', $courseId);
+                    }
+                })
+                ->delete();
         } else {
-            $cart[$bookId] = $validated['quantity'];
+            DB::table('cart_items')
+                ->where('user_id', $user->id)
+                ->where(function ($query) use ($bookId, $courseId) {
+                    if ($bookId) {
+                        $query->where('book_id', $bookId);
+                    } elseif ($courseId) {
+                        $query->where('course_id', $courseId);
+                    }
+                })
+                ->update(['quantity' => $validated['quantity']]);
         }
 
-        $request->session()->put('cart', $cart);
-
-        return response()->json([
-            'message' => 'Cart updated',
-        ]);
+        return response()->json(['message' => 'Cart updated']);
     }
 
-    public function remove(Request $request, $bookId)
+    public function remove(Request $request, $itemId)
     {
-        $cart = $request->session()->get('cart', []);
-
-        if (isset($cart[$bookId])) {
-            unset($cart[$bookId]);
-            $request->session()->put('cart', $cart);
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        return response()->json([
-            'message' => 'Item removed from cart',
-        ]);
+        DB::table('cart_items')
+            ->where('id', $itemId)
+            ->where('user_id', $user->id)
+            ->delete();
+
+        return response()->json(['message' => 'Item removed from cart']);
     }
 
     public function clear(Request $request)
     {
-        $request->session()->forget('cart');
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 
-        return response()->json([
-            'message' => 'Cart cleared',
-        ]);
+        DB::table('cart_items')->where('user_id', $user->id)->delete();
+
+        return response()->json(['message' => 'Cart cleared']);
     }
 }

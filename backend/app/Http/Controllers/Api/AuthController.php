@@ -16,7 +16,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'required|string|max:20',
             'address' => 'nullable|string|max:500',
         ]);
 
@@ -72,7 +72,11 @@ class AuthController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'avatar' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'phone' => 'sometimes|string|max:20',
+            'address' => 'sometimes|string|max:500',
+            'city' => 'sometimes|string|max:100',
+            'zip_code' => 'sometimes|string|max:20',
+            'avatar' => 'sometimes|image|max:2048',
         ]);
 
         if ($request->hasFile('avatar')) {

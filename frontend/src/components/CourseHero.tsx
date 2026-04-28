@@ -164,7 +164,7 @@ export default function CourseHero({ courses, autoRotateInterval = 8000 }: Cours
                 </div>
                 <div className="flex items-center gap-2 text-gray-300">
                   <Star className="w-5 h-5 text-orange-400 fill-orange-400" />
-                  <span>4.9 rating</span>
+                  <span>{(currentCourse.average_rating || 0).toFixed(1)} rating</span>
                 </div>
               </div>
 

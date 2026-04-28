@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import BackgroundAnimation from "@/components/BackgroundAnimation";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { WishlistProvider } from "@/context/WishlistContext";
@@ -22,13 +23,16 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
-              <Toaster position="top-center" richColors />
-              <div className="min-h-screen bg-[#FDFCFB] text-gray-900 font-sans">
-                <Navbar />
-                <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                  {children}
-                </main>
-                <Footer />
+              <Toaster position="top-center" richColors duration={2000} />
+              <div className="relative min-h-screen text-gray-900 font-sans">
+                <BackgroundAnimation />
+                <div className="relative z-10">
+                  <Navbar />
+                  <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    {children}
+                  </main>
+                  <Footer />
+                </div>
               </div>
             </WishlistProvider>
           </CartProvider>

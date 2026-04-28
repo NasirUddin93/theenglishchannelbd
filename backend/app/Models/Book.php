@@ -16,12 +16,15 @@ class Book extends Model
         'description',
         'price',
         'stock',
+        'stock_threshold',
         'isbn',
         'publisher',
         'image',
         'pages',
         'language',
+        'format',
         'is_featured',
+        'average_rating',
         'status',
         'preview_content',
         'preview_images',
@@ -29,6 +32,7 @@ class Book extends Model
 
     protected $casts = [
         'price' => 'decimal:2',
+        'average_rating' => 'decimal:1',
         'is_featured' => 'boolean',
         'preview_content' => 'array',
         'preview_images' => 'array',
@@ -42,5 +46,10 @@ class Book extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 }

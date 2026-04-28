@@ -7,27 +7,18 @@ use App\Models\Book;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class BookController extends Controller
 {
     public function index(Request $request)
     {
-        // Build a cache key from request parameters
-        $cacheKey = 'books_' . md5(serialize($request->query()));
-        
-        // Only cache when there's no pagination (i.e., no 'page' param)
-        if (!$request->has('page')) {
-            return Cache::remember($cacheKey, now()->addMinutes(5), function () use ($request) {
-                return $this->buildBookQuery($request);
-            });
-        }
-        
         return $this->buildBookQuery($request);
     }
     
     private function buildBookQuery($request)
     {
-        $query = Book::select('id', 'title', 'author', 'price', 'stock', 'image', 'preview_images', 'status', 'is_featured', 'category_id', 'created_at')
+        $query = Book::select('id', 'title', 'author', 'description', 'price', 'stock', 'stock_threshold', 'image', 'preview_images', 'status', 'is_featured', 'category_id', 'average_rating', 'created_at')
             ->with(['category' => function($q) {
                 $q->select('id', 'name', 'slug');
             }]);
@@ -82,18 +73,21 @@ class BookController extends Controller
         $books = $query->paginate(12);
 
         $books->getCollection()->transform(function ($book) {
+            $book->average_rating = round($book->reviews()->where('is_approved', true)->avg('rating') ?? 0, 1);
+            $book->reviews_count = $book->reviews()->where('is_approved', true)->count();
+            $book->purchase_count = DB::table('order_items')
+                ->where('book_id', $book->id)
+                ->whereNotNull('book_id')
+                ->count();
             if ($book->image) {
                 // If image is already a full URL, leave it; otherwise prefix storage path.
                 if (!preg_match('#^https?://#i', $book->image)) {
                     $book->image = asset('storage/' . ltrim($book->image, '/'));
                 }
             }
-            if ($book->preview_images) {
+            if ($book->preview_images && is_array($book->preview_images)) {
                 $book->preview_images = array_map(function ($img) {
-                    if (!preg_match('#^https?://#i', $img)) {
-                        return asset('storage/' . ltrim($img, '/'));
-                    }
-                    return $img;
+                    return asset('storage/' . ltrim($img, '/'));
                 }, $book->preview_images);
             }
             return $book;
@@ -105,18 +99,21 @@ class BookController extends Controller
     public function show($id)
     {
         $book = Book::with('category')->where('id', (int)$id)->firstOrFail();
+        $book->average_rating = round($book->reviews()->where('is_approved', true)->avg('rating') ?? 0, 1);
+        $book->reviews_count = $book->reviews()->where('is_approved', true)->count();
+        $book->purchase_count = DB::table('order_items')
+            ->where('book_id', $book->id)
+            ->whereNotNull('book_id')
+            ->count();
 
         if ($book->image) {
             if (!preg_match('#^https?://#i', $book->image)) {
                 $book->image = asset('storage/' . ltrim($book->image, '/'));
             }
         }
-        if ($book->preview_images) {
+        if ($book->preview_images && is_array($book->preview_images)) {
             $book->preview_images = array_map(function ($img) {
-                if (!preg_match('#^https?://#i', $img)) {
-                    return asset('storage/' . ltrim($img, '/'));
-                }
-                return $img;
+                return asset('storage/' . ltrim($img, '/'));
             }, $book->preview_images);
         }
 
@@ -125,9 +122,7 @@ class BookController extends Controller
 
     public function categories()
     {
-        $categories = Cache::remember('categories_with_count', now()->addMinutes(30), function () {
-            return Category::where('type', 'book')->withCount('books')->get();
-        });
+        $categories = Category::withCount('books')->get();
 
         return response()->json($categories);
     }

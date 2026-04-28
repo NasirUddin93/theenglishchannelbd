@@ -8,7 +8,11 @@ use App\Models\Course;
 use App\Models\Book;
 use App\Models\User;
 use App\Models\Category;
+use App\Models\CourseLevel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class StaffController extends Controller
 {
@@ -81,7 +85,14 @@ class StaffController extends Controller
 
     public function orders()
     {
-        $orders = Order::with(['user', 'items.book'])
+        $orders = Order::select('id', 'order_number', 'user_id', 'total', 'status', 'tracking_number', 'payment_method', 'payment_mobile', 'transaction_id', 'discount_amount', 'cod_charge', 'shipping_address', 'city', 'state', 'postal_code', 'phone', 'notes', 'created_at', 'updated_at')
+            ->with(['user', 'items' => function($query) {
+                $query->select('id', 'order_id', 'book_id', 'course_id', 'quantity', 'price', 'isbn', 'tra_number');
+            }, 'items.book' => function($query) {
+                $query->select('id', 'title', 'author', 'price', 'image');
+            }, 'items.course' => function($query) {
+                $query->select('id', 'title', 'instructor', 'image');
+            }])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
@@ -90,6 +101,11 @@ class StaffController extends Controller
                 if ($item->book && $item->book->image) {
                     if (!preg_match('#^https?://#i', $item->book->image)) {
                         $item->book->image = asset('storage/' . ltrim($item->book->image, '/'));
+                    }
+                }
+                if ($item->course && $item->course->image) {
+                    if (!preg_match('#^https?://#i', $item->course->image)) {
+                        $item->course->image = asset('storage/' . ltrim($item->course->image, '/'));
                     }
                 }
             }
@@ -102,15 +118,112 @@ class StaffController extends Controller
     public function updateOrderStatus(Request $request, $id)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
+            'status' => 'nullable|in:pending,processing,shipped,delivered,cancelled',
+            'tracking_number' => 'nullable|string|max:100',
+            'generate_tracking' => 'nullable|boolean',
+            'items' => 'nullable|array',
+            'items.*.item_id' => 'required_with:items|integer',
+            'items.*.isbn' => 'nullable|string|max:50',
         ]);
 
         $order = Order::findOrFail($id);
-        $order->update(['status' => $validated['status']]);
+        
+        $newStatus = $validated['status'] ?? null;
+        
+        if ($newStatus && $newStatus === 'shipped') {
+            $orderItems = \App\Models\OrderItem::where('order_id', $id)->get();
+            
+            $hasBookItems = $orderItems->whereNotNull('book_id')->isNotEmpty();
+            
+            if ($hasBookItems) {
+                $bookItemsWithoutISBN = $orderItems->whereNotNull('book_id')->filter(function ($item) {
+                    return empty($item->isbn);
+                });
+                
+                if ($bookItemsWithoutISBN->isNotEmpty()) {
+                    $bookTitles = $bookItemsWithoutISBN->map(function ($item) {
+                        return $item->book->title ?? 'Unknown Book';
+                    })->toArray();
+                    
+                    return response()->json([
+                        'error' => 'ISBN numbers are required for book items before updating order status.',
+                        'missing_isbn_books' => $bookTitles,
+                    ], 422);
+                }
+            }
+            
+            if (empty($order->tracking_number)) {
+                return response()->json([
+                    'error' => 'Tracking number is required before updating order status.',
+                ], 422);
+            }
+        }
+        
+        $updateData = [];
+        
+        if (isset($validated['status']) && !empty($validated['status'])) {
+            $updateData['status'] = $validated['status'];
+        }
+        
+        if (isset($validated['tracking_number']) && !empty($validated['tracking_number'])) {
+            $updateData['tracking_number'] = $validated['tracking_number'];
+        }
+        
+        if (!empty($updateData)) {
+            $order->update($updateData);
+        }
+
+        if (isset($validated['items'])) {
+            foreach ($validated['items'] as $itemUpdate) {
+                $orderItem = \App\Models\OrderItem::where('id', $itemUpdate['item_id'])
+                    ->where('order_id', $id)
+                    ->first();
+                
+                if ($orderItem && isset($itemUpdate['isbn'])) {
+                    $orderItem->update(['isbn' => $itemUpdate['isbn']]);
+                }
+            }
+        }
 
         return response()->json([
-            'order' => $order,
-            'message' => 'Order status updated',
+            'order' => $order->fresh(['items']),
+            'message' => 'Order updated',
+        ]);
+    }
+
+    private function generateTrackingNumber(): string
+    {
+        $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $length = 10;
+        
+        do {
+            $trackingNumber = '';
+            for ($i = 0; $i < $length; $i++) {
+                $trackingNumber .= $characters[random_int(0, strlen($characters) - 1)];
+            }
+            $trackingNumber = 'TRK-' . $trackingNumber;
+        } while (\App\Models\Order::where('tracking_number', $trackingNumber)->exists());
+        
+        return $trackingNumber;
+    }
+
+    public function generateTrackingForOrder(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+        
+        if ($order->tracking_number) {
+            return response()->json([
+                'tracking_number' => $order->tracking_number,
+                'message' => 'Tracking number already exists',
+            ]);
+        }
+        
+        $trackingNumber = $this->generateTrackingNumber();
+        $order->update(['tracking_number' => $trackingNumber]);
+        
+        return response()->json([
+            'tracking_number' => $trackingNumber,
+            'message' => 'Tracking number generated',
         ]);
     }
 
@@ -189,10 +302,18 @@ class StaffController extends Controller
 
     public function batchBooks()
     {
-        // Returns all books in a single response for batch operations
         $books = Book::with('category')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->get()
+            ->map(function ($book) {
+                $reviews = $book->reviews()->where('is_approved', true);
+                $book->average_rating = round($reviews->avg('rating') ?? 0, 1);
+                $book->reviews_count = $reviews->count();
+                $book->purchase_count = DB::table('order_items')
+                    ->where('book_id', $book->id)
+                    ->count();
+                return $book;
+            });
 
         return response()->json([
             'data' => $books,
@@ -209,23 +330,37 @@ class StaffController extends Controller
             'category_id' => 'sometimes|exists:categories,id',
             'price' => 'sometimes|numeric|min:0',
             'stock' => 'sometimes|integer|min:0',
+            'stock_threshold' => 'sometimes|integer|min:0',
             'image' => 'nullable|string',
             'isbn' => 'nullable|string',
             'publisher' => 'nullable|string',
             'pages' => 'nullable|integer',
             'language' => 'nullable|string',
+            'format' => 'nullable|string',
             'is_featured' => 'sometimes|boolean',
             'status' => 'sometimes|string|in:draft,approved',
             'preview_content' => 'nullable|array',
             'preview_images' => 'nullable|array',
         ]);
 
-        $validated['status'] = 'approved';
+        // Only set default status if not provided in request
+        if (!$request->has('status')) {
+            $validated['status'] = 'approved';
+        }
 
-        // Do not store large base64 image payloads in preview_images.
-        // If preview_images is present, drop it to avoid bloating the DB row.
-        if (isset($validated['preview_images'])) {
-            unset($validated['preview_images']);
+        // Normalize preview_images to store paths only (not URLs)
+        if (!empty($validated['preview_images']) && is_array($validated['preview_images'])) {
+            $validated['preview_images'] = array_map(function ($img) {
+                if (str_starts_with($img, 'http')) {
+                    $parsed = parse_url($img);
+                    $pathParts = explode('/', ltrim($parsed['path'] ?? '', '/'));
+                    $storageIndex = array_search('storage', $pathParts);
+                    if ($storageIndex !== false) {
+                        return implode('/', array_slice($pathParts, $storageIndex + 1));
+                    }
+                }
+                return $img;
+            }, $validated['preview_images']);
         }
 
         if (!empty($validated['image']) && str_starts_with($validated['image'], 'http')) {
@@ -264,11 +399,13 @@ class StaffController extends Controller
             'category_id' => 'sometimes|exists:categories,id',
             'price' => 'sometimes|numeric|min:0',
             'stock' => 'sometimes|integer|min:0',
+            'stock_threshold' => 'sometimes|integer|min:0',
             'image' => 'nullable|string',
             'isbn' => 'nullable|string',
             'publisher' => 'nullable|string',
             'pages' => 'nullable|integer',
             'language' => 'nullable|string',
+            'format' => 'nullable|string',
             'is_featured' => 'sometimes|boolean',
             'status' => 'sometimes|string|in:draft,approved',
             'preview_content' => 'nullable|array',
@@ -285,9 +422,19 @@ class StaffController extends Controller
             }
         }
 
-        // Do not store large preview_images payloads on update either.
-        if (isset($validated['preview_images'])) {
-            unset($validated['preview_images']);
+        // Normalize preview_images to store paths only (not URLs)
+        if (!empty($validated['preview_images']) && is_array($validated['preview_images'])) {
+            $validated['preview_images'] = array_map(function ($img) {
+                if (str_starts_with($img, 'http')) {
+                    $parsed = parse_url($img);
+                    $pathParts = explode('/', ltrim($parsed['path'] ?? '', '/'));
+                    $storageIndex = array_search('storage', $pathParts);
+                    if ($storageIndex !== false) {
+                        return implode('/', array_slice($pathParts, $storageIndex + 1));
+                    }
+                }
+                return $img;
+            }, $validated['preview_images']);
         }
 
         $book->update($validated);
@@ -338,6 +485,20 @@ class StaffController extends Controller
         ]);
     }
 
+    public function uploadPreviewImage(Request $request)
+    {
+        $validated = $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp',
+        ]);
+
+        $path = $request->file('image')->store('book-previews', 'public');
+
+        return response()->json([
+            'path' => $path,
+            'message' => 'Preview image uploaded successfully',
+        ]);
+    }
+
     public function storeCategory(Request $request)
     {
         $validated = $request->validate([
@@ -376,9 +537,34 @@ class StaffController extends Controller
 
     public function courseCategories()
     {
-        $categories = Category::where('type', 'course')
-            ->orderBy('name')
-            ->get(['id', 'name', 'slug']);
+        $categories = Category::select('categories.id', 'categories.name', 'categories.slug')
+            ->leftJoin('courses', 'categories.slug', '=', 'courses.category')
+            ->where('categories.type', 'course')
+            ->groupBy('categories.id', 'categories.name', 'categories.slug')
+            ->orderBy('categories.name')
+            ->selectRaw('COUNT(courses.id) as count')
+            ->get()
+            ->map(function ($category) {
+                $latestCourse = Course::where('category', $category->slug)
+                    ->orderBy('created_at', 'desc')
+                    ->first(['id', 'title', 'image']);
+                
+                return [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'slug' => $category->slug,
+                    'count' => $category->count,
+                    'last_course' => $latestCourse ? [
+                        'id' => $latestCourse->id,
+                        'title' => $latestCourse->title,
+                        'image' => $latestCourse->image ? 
+                            (str_starts_with($latestCourse->image, 'http') ? 
+                                $latestCourse->image : 
+                                asset('storage/' . ltrim($latestCourse->image, '/'))
+                            ) : null
+                    ] : null
+                ];
+            });
         return response()->json($categories);
     }
 
@@ -388,16 +574,17 @@ class StaffController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        $exists = Category::where('name', $validated['name'])
-            ->where('type', 'course')
-            ->exists();
+        $slug = \Str::slug($validated['name']);
+        
+        // Check if category with this slug already exists (any type)
+        $exists = Category::where('slug', $slug)->exists();
         if ($exists) {
-            return response()->json(['message' => 'Course category already exists'], 422);
+            return response()->json(['message' => 'Category already exists'], 422);
         }
 
         $category = Category::create([
             'name' => $validated['name'],
-            'slug' => \Str::slug($validated['name']),
+            'slug' => $slug,
             'type' => 'course',
         ]);
 
@@ -417,38 +604,161 @@ class StaffController extends Controller
         ]);
     }
 
+    public function courseLevels()
+    {
+        $levels = CourseLevel::orderBy('order', 'asc')->get();
+        return response()->json($levels);
+    }
+
+    public function storeCourseLevel(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:500',
+            'order' => 'nullable|integer|min:0',
+        ]);
+
+        $validated['slug'] = \Str::slug($validated['name']);
+
+        $exists = CourseLevel::where('slug', $validated['slug'])->first();
+        if ($exists) {
+            return response()->json(['message' => 'Level already exists'], 422);
+        }
+
+        $level = CourseLevel::create($validated);
+
+        return response()->json([
+            'level' => $level,
+            'message' => 'Level created successfully',
+        ], 201);
+    }
+
+    public function deleteCourseLevel($id)
+    {
+        $level = CourseLevel::findOrFail($id);
+        $level->delete();
+
+        return response()->json([
+            'message' => 'Level deleted successfully',
+        ]);
+    }
+
     public function allQuestions(Request $request)
     {
         $perPage = $request->query('per_page', 50);
         $page = $request->query('page', 1);
+        $filter = $request->query('filter', 'all');
 
-        $questions = \App\Models\Question::with(['book' => function($q) {
+        $totalAll = \App\Models\Question::count();
+        $totalAnswered = \App\Models\Question::whereNotNull('answer')->count();
+        $totalUnanswered = \App\Models\Question::whereNull('answer')->count();
+
+        $query = \App\Models\Question::with(['book' => function($q) {
             $q->select('id', 'title', 'image');
-        }])
-            ->orderBy('created_at', 'desc')
+        }]);
+
+        if ($filter === 'answered') {
+            $query->whereNotNull('answer');
+        } elseif ($filter === 'unanswered') {
+            $query->whereNull('answer');
+        }
+
+        $questions = $query->orderBy('created_at', 'desc')
             ->paginate((int) $perPage, ['*'], 'page', (int) $page);
 
-        return response()->json($questions);
+        return response()->json([
+            'data' => $questions->items(),
+            'total' => $questions->total(),
+            'current_page' => $questions->currentPage(),
+            'last_page' => $questions->lastPage(),
+            'per_page' => $questions->perPage(),
+            'counts' => [
+                'all' => $totalAll,
+                'answered' => $totalAnswered,
+                'unanswered' => $totalUnanswered,
+            ]
+        ]);
     }
 
     public function allCourseQuestions(Request $request)
     {
         $perPage = $request->query('per_page', 50);
         $page = $request->query('page', 1);
+        $filter = $request->query('filter', 'all');
 
-        $questions = \App\Models\CourseQuestion::with(['course' => function($q) {
+        $totalAll = \App\Models\CourseQuestion::count();
+        $totalAnswered = \App\Models\CourseQuestion::whereNotNull('answer')->count();
+        $totalUnanswered = \App\Models\CourseQuestion::whereNull('answer')->count();
+
+        $query = \App\Models\CourseQuestion::with(['course' => function($q) {
             $q->select('id', 'title', 'image');
-        }])
-            ->orderBy('created_at', 'desc')
+        }]);
+
+        if ($filter === 'answered') {
+            $query->whereNotNull('answer');
+        } elseif ($filter === 'unanswered') {
+            $query->whereNull('answer');
+        }
+
+        $questions = $query->orderBy('created_at', 'desc')
             ->paginate((int) $perPage, ['*'], 'page', (int) $page);
 
-        return response()->json($questions);
+        return response()->json([
+            'data' => $questions->items(),
+            'total' => $questions->total(),
+            'current_page' => $questions->currentPage(),
+            'last_page' => $questions->lastPage(),
+            'per_page' => $questions->perPage(),
+            'counts' => [
+                'all' => $totalAll,
+                'answered' => $totalAnswered,
+                'unanswered' => $totalUnanswered,
+            ]
+        ]);
     }
 
     public function courses(Request $request)
     {
-        $courses = \App\Models\Course::with(['sections.lessons.quizzes.questions', 'sections.lessons.resources', 'quizzes.questions'])->orderBy('created_at', 'desc')->get();
+        $courses = \App\Models\Course::with(['sections.lessons.quizzes.questions', 'sections.lessons.resources', 'quizzes.questions'])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($course) {
+                $reviews = \App\Models\CourseReview::where('course_id', $course->id)->where('is_approved', true);
+                $course->reviews_count = $reviews->count();
+                $course->average_rating = round($reviews->avg('rating') ?? 0, 1);
+                $course->enrolled_count = \App\Models\OrderItem::where('course_id', $course->id)
+                    ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                    ->whereIn('orders.status', ['delivered', 'completed'])
+                    ->count();
+                return $course;
+            });
         return response()->json($courses);
+    }
+
+    public function draftCourses(Request $request)
+    {
+        $perPage = $request->get('per_page', 10);
+        $page = $request->get('page', 1);
+
+        $courses = \App\Models\Course::with(['sections.lessons.quizzes.questions', 'sections.lessons.resources', 'quizzes.questions'])
+            ->where('status', 'draft')
+            ->orderBy('created_at', 'desc')
+            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+
+        return response()->json([
+            'data' => $courses->items(),
+            'total' => $courses->total(),
+            'current_page' => $courses->currentPage(),
+            'last_page' => $courses->lastPage(),
+            'per_page' => $courses->perPage(),
+        ]);
+    }
+
+    public function publishCourse(Request $request, $id)
+    {
+        $course = \App\Models\Course::findOrFail($id);
+        $course->update(['status' => 'published', 'is_active' => true]);
+        return response()->json($course->load(['sections.lessons', 'quizzes.questions']));
     }
 
     public function storeCourse(Request $request)
@@ -467,7 +777,10 @@ class StaffController extends Controller
             'preview_video' => 'nullable|string',
             'is_featured' => 'boolean',
             'is_active' => 'boolean',
+            'status' => 'string|in:draft,published',
             'category' => 'required|string',
+            'language' => 'nullable|string',
+            'access_time' => 'nullable|string',
             'sections' => 'nullable|array',
             'sections.*.title' => 'required|string',
             'sections.*.lessons' => 'nullable|array',
@@ -510,7 +823,10 @@ class StaffController extends Controller
                 'preview_video' => $validated['preview_video'] ?? null,
                 'is_featured' => $validated['is_featured'] ?? false,
                 'is_active' => $validated['is_active'] ?? true,
+                'status' => $validated['status'] ?? 'published',
                 'category' => $validated['category'],
+                'language' => $validated['language'] ?? 'English',
+                'access_time' => $validated['access_time'] ?? 'Lifetime',
             ]);
 
             if (!empty($validated['sections'])) {
@@ -616,6 +932,7 @@ class StaffController extends Controller
             'preview_video' => 'nullable|string',
             'is_featured' => 'boolean',
             'is_active' => 'boolean',
+            'status' => 'string|in:draft,published',
             'category' => 'sometimes|string',
             'sections' => 'sometimes|array',
             'sections.*.id' => 'nullable|integer',
@@ -855,27 +1172,78 @@ class StaffController extends Controller
 
     public function uploadCourseFile(Request $request)
     {
-        $request->validate([
-            'file' => 'required|file|max:512000',
+        \Log::info('Upload Course File Request:', [
+            'has_file' => $request->hasFile('file'),
+            'file_info' => $request->file('file') ? [
+                'original_name' => $request->file('file')->getClientOriginalName(),
+                'mime_type' => $request->file('file')->getMimeType(),
+                'size' => $request->file('file')->getSize(),
+                'extension' => $request->file('file')->getClientOriginalExtension(),
+            ] : null,
+            'type' => $request->input('type'),
+        ]);
+
+        $validated = $request->validate([
+            'file' => 'required|file',
             'type' => 'required|in:video,document,image',
         ]);
-        
+
         $file = $request->file('file');
         $type = $request->input('type');
-        $directory = match($type) {
-            'video' => 'courses/videos',
-            'document' => 'courses/documents',
-            'image' => 'courses/thumbnails',
-            default => 'courses/misc',
-        };
 
-        // Generate a short unique filename (20 chars + extension) to keep URLs small
+        // Additional validation for images
+        if ($type === 'image') {
+            $request->validate([
+                'file' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB max for images
+            ]);
+        }
+
+        $directory = 'courses/misc';
+        if ($type === 'video') {
+            $directory = 'courses/videos';
+        } elseif ($type === 'document') {
+            $directory = 'courses/documents';
+        } elseif ($type === 'image') {
+            $directory = 'courses/thumbnails';
+        }
+
         $extension = $file->getClientOriginalExtension();
+        if (!$extension) {
+            $extension = $type === 'image' ? 'jpg' : ($type === 'video' ? 'mp4' : 'pdf');
+        }
         $shortName = \Illuminate\Support\Str::random(20) . '.' . $extension;
+
         $path = $file->storeAs($directory, $shortName, 'public');
-        
+
+        $url = url('storage/' . $path);
+        $assetUrl = asset('storage/' . $path);
+
+        // Try different URL formats to ensure accessibility
+        $directUrl = config('app.url') . '/storage/' . $path;
+
+        \Log::info('File uploaded successfully:', [
+            'path' => $path,
+            'url' => $url,
+            'asset_url' => $assetUrl,
+            'direct_url' => $directUrl,
+            'full_path' => storage_path('app/public/' . $path),
+            'file_exists' => file_exists(storage_path('app/public/' . $path)),
+            'app_url' => config('app.url'),
+        ]);
+
+        // Return URL that works with the storage API route
+        // The route is at /api/storage/{path} (defined in api.php outside auth middleware)
+        $baseUrl = rtrim(config('app.url'), '/');
+        $url = $baseUrl . '/api/storage/' . $path;
+
+        \Log::info('Returning URL to frontend:', [
+            'url' => $url,
+            'base_url' => $baseUrl,
+            'path' => $path,
+        ]);
+
         return response()->json([
-            'url' => asset('storage/' . $path),
+            'url' => $url,
             'path' => $path,
             'size' => $file->getSize(),
             'name' => $shortName,

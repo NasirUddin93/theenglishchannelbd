@@ -33,7 +33,35 @@ class CourseController extends Controller
             $query->where('is_featured', true);
         }
 
-        $courses = $query->orderBy('is_featured', 'desc')->orderBy('created_at', 'desc')->paginate(12);
+        $sortBy = $request->get('sort', 'newest');
+        switch ($sortBy) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'featured':
+                $query->orderBy('is_featured', 'desc')->orderBy('created_at', 'desc');
+                break;
+            case 'price_low':
+                $query->orderByRaw('CAST(price AS DECIMAL) ASC');
+                break;
+            case 'price_high':
+                $query->orderByRaw('CAST(price AS DECIMAL) DESC');
+                break;
+            case 'popular':
+                $query->orderByDesc(\DB::raw('(SELECT COUNT(*) FROM order_items WHERE order_items.course_id = courses.id)'));
+                break;
+            case 'rating':
+                $query->orderByDesc(\DB::raw('(SELECT AVG(rating) FROM course_reviews WHERE course_reviews.course_id = courses.id)'));
+                break;
+            case 'newest':
+                $query->orderBy('created_at', 'desc');
+                break;
+            default:
+                $query->orderBy('is_featured', 'desc')->orderBy('created_at', 'desc');
+        }
+
+        $perPage = min((int) $request->query('per_page', 100), 200);
+        $courses = $query->paginate($perPage);
 
         // Add review stats and enrollment count
         $courses->getCollection()->transform(function ($course) {
@@ -85,5 +113,11 @@ class CourseController extends Controller
             });
 
         return response()->json($categories);
+    }
+
+    public function levels()
+    {
+        $levels = \App\Models\CourseLevel::orderBy('order', 'asc')->get(['id', 'name', 'slug']);
+        return response()->json($levels);
     }
 }

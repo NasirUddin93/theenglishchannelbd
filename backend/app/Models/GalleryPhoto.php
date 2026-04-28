@@ -15,10 +15,12 @@ class GalleryPhoto extends Model
         'image_path',
         'order',
         'is_active',
+        'date',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'order' => 'integer',
+        'date' => 'date',
     ];
 }

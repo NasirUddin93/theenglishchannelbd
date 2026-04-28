@@ -98,7 +98,7 @@ function BenefitCard({ benefit, index, inView }: { benefit: BenefitCard; index: 
       initial={{ opacity: 0, y: 40 }}
       animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
       transition={{ duration: 0.6, delay: index * 0.1, ease: 'easeOut' }}
-      className="group relative bg-white rounded-3xl border border-gray-100 overflow-hidden hover:border-orange-200 transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/10"
+      className="group relative bg-white rounded-3xl border border-gray-100 shadow-[0_0_20px_rgba(255,167,38,0.2)] overflow-hidden hover:border-orange-200 transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/25"
     >
       {/* Front of card */}
       <div className="p-8 min-h-[280px] flex flex-col justify-between">

@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Book;
+use App\Models\PromoCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class OrderController extends Controller
 {
@@ -15,9 +17,9 @@ class OrderController extends Controller
     {
         // Return all orders for the user (needed for profile to show all course enrollments)
         $orders = $request->user()->orders()
-            ->select('id', 'user_id', 'total', 'status', 'payment_method', 'shipping_address', 'city', 'state', 'postal_code', 'phone', 'notes', 'created_at', 'updated_at')
+            ->select('id', 'order_number', 'user_id', 'total', 'status', 'tracking_number', 'payment_method', 'payment_mobile', 'transaction_id', 'discount_amount', 'cod_charge', 'shipping_address', 'city', 'state', 'postal_code', 'phone', 'notes', 'created_at', 'updated_at')
             ->with(['items' => function($query) {
-                $query->select('id', 'order_id', 'book_id', 'course_id', 'quantity', 'price');
+                $query->select('id', 'order_id', 'book_id', 'course_id', 'quantity', 'price', 'isbn');
             }, 'items.book' => function($query) {
                 $query->select('id', 'title', 'author', 'price', 'image');
             }, 'items.course' => function($query) {
@@ -49,6 +51,12 @@ class OrderController extends Controller
         // Validate for course enrollments (simplified - no shipping needed)
         $validated = $request->validate([
             'payment_method' => 'required|string',
+            'payment_mobile' => 'nullable|string|max:20',
+            'transaction_id' => 'nullable|string|max:100',
+            'discount_amount' => 'nullable|numeric|min:0',
+            'cod_charge' => 'nullable|numeric|min:0',
+            'promo_code_id' => 'nullable|integer|exists:promo_codes,id',
+            'promo_discount_amount' => 'nullable|numeric|min:0',
             'items' => 'required|array',
             'items.*.type' => 'required|string|in:book,course',
             'items.*.book_id' => 'nullable|integer',
@@ -128,14 +136,26 @@ class OrderController extends Controller
                 }
             }
 
+            // Clear book cache after stock update
+            Cache::flush();
+
             // Determine status based on order type
             $status = $hasOnlyCourses ? 'completed' : 'pending';
 
+            do {
+                $orderNumber = 'ORD-' . strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 10));
+            } while (Order::where('order_number', $orderNumber)->exists());
+
             $order = Order::create([
+                'order_number' => $orderNumber,
                 'user_id' => $request->user()->id,
                 'total' => $total,
                 'status' => $status,
                 'payment_method' => $validated['payment_method'],
+                'payment_mobile' => $validated['payment_mobile'] ?? null,
+                'transaction_id' => $validated['transaction_id'] ?? null,
+                'discount_amount' => $validated['discount_amount'] ?? 0,
+                'cod_charge' => $validated['cod_charge'] ?? 0,
                 'shipping_address' => $validated['shipping_address'] ?? null,
                 'city' => $validated['city'] ?? null,
                 'state' => $validated['state'] ?? null,
@@ -147,6 +167,18 @@ class OrderController extends Controller
             foreach ($orderItems as $item) {
                 $item['order_id'] = $order->id;
                 OrderItem::create($item);
+            }
+
+            // Record promo code usage if provided
+            if (!empty($validated['promo_code_id'])) {
+                $promoCode = PromoCode::find($validated['promo_code_id']);
+                if ($promoCode) {
+                    $promoCode->recordUsage(
+                        $request->user()->id,
+                        $order->id,
+                        $validated['promo_discount_amount'] ?? $validated['discount_amount'] ?? 0
+                    );
+                }
             }
 
             DB::commit();
@@ -168,7 +200,8 @@ class OrderController extends Controller
     public function show(Request $request, $id)
     {
         $order = $request->user()->orders()
-            ->with('items.book')
+            ->select('id', 'order_number', 'user_id', 'total', 'status', 'payment_method', 'payment_mobile', 'transaction_id', 'discount_amount', 'cod_charge', 'shipping_address', 'city', 'state', 'postal_code', 'phone', 'notes', 'created_at', 'updated_at')
+            ->with(['items.book', 'items.course'])
             ->findOrFail($id);
 
         return response()->json($order);

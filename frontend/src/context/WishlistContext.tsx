@@ -14,8 +14,9 @@ interface WishlistContextType {
 const WishlistContext = createContext<WishlistContextType | null>(null);
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [wishlistMap, setWishlistMap] = useState<Record<string, boolean>>({});
+  const [pendingBookIds, setPendingBookIds] = useState<string[]>([]);
 
   // Listen for logout event and clear wishlist
   useEffect(() => {
@@ -26,28 +27,62 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     window.addEventListener('wishlist-clear', handleClearWishlist);
     return () => window.removeEventListener('wishlist-clear', handleClearWishlist);
   }, []);
-  
+
+  // Retry pending wishlist check when user finishes loading
+  useEffect(() => {
+    if (!loading && !user && pendingBookIds.length > 0) {
+      setWishlistMap({});
+      setPendingBookIds([]);
+    } else if (!loading && user && pendingBookIds.length > 0) {
+      const fetchWishlist = async () => {
+        try {
+          const res = await api.post<{ wishlist: Record<string, boolean> }>('/wishlist/check-batch', {
+            book_ids: pendingBookIds.map(id => parseInt(id))
+          });
+          setWishlistMap(prev => ({ ...prev, ...(res.wishlist || {}) }));
+          setPendingBookIds([]);
+        } catch (err: any) {
+          if (err?.message?.includes('401') || err?.message?.includes('Unauthenticated')) {
+            setWishlistMap({});
+          }
+          console.error('Failed to check wishlist:', err);
+          setPendingBookIds([]);
+        }
+      };
+      fetchWishlist();
+    }
+  }, [user, loading]);
+
   const checkWishlist = useCallback(async (bookIds: string[]) => {
+    if (loading) {
+      // Store the request to retry later
+      setPendingBookIds(bookIds);
+      return;
+    }
+
     if (!user || bookIds.length === 0) {
       // Clear wishlist when user is not logged in
       setWishlistMap({});
+      setPendingBookIds([]);
       return;
     }
 
     try {
-      const res = await api.get<{ wishlist: Record<string, boolean> }>('/wishlist/check-batch', {
-        book_ids: bookIds.join(',')
+      const res = await api.post<{ wishlist: Record<string, boolean> }>('/wishlist/check-batch', {
+        book_ids: bookIds.map(id => parseInt(id))
       });
       setWishlistMap(prev => ({ ...prev, ...(res.wishlist || {}) }));
+      setPendingBookIds([]);
     } catch (err: any) {
       // Silently handle 401 errors (user logged out)
       if (err?.message?.includes('401') || err?.message?.includes('Unauthenticated')) {
         setWishlistMap({});
+        setPendingBookIds([]);
         return;
       }
       console.error('Failed to check wishlist:', err);
     }
-  }, [user]);
+  }, [user, loading]);
 
   const toggleWishlist = useCallback(async (bookId: string): Promise<boolean> => {
     try {

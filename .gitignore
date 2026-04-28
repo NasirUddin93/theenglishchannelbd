@@ -10,6 +10,7 @@ nul
 .env
 .env.*
 !.env.example
+.env.local
 
 # Backend (Laravel)
 backend/public/build/

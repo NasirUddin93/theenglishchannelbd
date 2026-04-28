@@ -21,6 +21,9 @@ class Course extends Model
         'is_featured',
         'is_active',
         'category',
+        'language',
+        'access_time',
+        'status',
     ];
 
     protected $casts = [

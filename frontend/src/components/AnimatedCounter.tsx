@@ -12,6 +12,7 @@ interface AnimatedCounterProps {
   duration?: number;
   label: string;
   icon: React.ReactNode;
+  decimals?: number;
 }
 
 export default function AnimatedCounter({
@@ -21,6 +22,7 @@ export default function AnimatedCounter({
   duration = 2,
   label,
   icon,
+  decimals = 0,
 }: AnimatedCounterProps) {
   const [hasAnimated, setHasAnimated] = useState(false);
   const { ref, inView } = useInView({
@@ -53,7 +55,7 @@ export default function AnimatedCounter({
       {/* Counter */}
       <div className="text-4xl md:text-5xl font-black text-gray-900 mb-3">
         {hasAnimated ? (
-          <CountUp end={end} duration={duration} suffix={suffix} prefix={prefix} />
+          <CountUp end={end} duration={duration} suffix={suffix} prefix={prefix} decimals={decimals} />
         ) : (
           <span>0{suffix}</span>
         )}

@@ -24,7 +24,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { useInView } from 'react-intersection-observer';
 import { cn } from '@/lib/utils';
-import { api, ApiBook, mapApiBookToBook, ApiCategory } from '@/lib/api';
+import { api, ApiBook, mapApiBookToBook, ApiCategory, getBookPlaceholder } from '@/lib/api';
 import { useWishlist } from '@/context/WishlistContext';
 
 interface ApiCourse {
@@ -54,68 +54,137 @@ export default function Home() {
   const [featuredCourses, setFeaturedCourses] = useState<Course[]>([]);
   const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [categories, setCategories] = useState<ApiCategory[]>([]);
+  const [courseCategories, setCourseCategories] = useState<{ id: number; name: string; slug: string; count: number; last_course?: { id: number; title: string; image: string } }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ total_books: 0, total_courses: 0, total_students: 0, book_average_rating: 0, course_average_rating: 0 });
   const { checkWishlist } = useWishlist();
 
   useEffect(() => {
-    Promise.all([
+    Promise.allSettled([
       api.get<{ data: ApiBook[] }>('/books', { featured: 'true' }),
       api.get<{ data: ApiBook[] }>('/books', { sort: 'newest' }),
-      api.get<ApiCategory[]>('/categories'),
+      api.get<ApiCategory[]>('/categories'), // Note: Backend should return newest book cover per category
       api.get<{ data: ApiCourse[] }>('/courses', { featured: 'true' }),
       api.get<{ data: ApiCourse[] }>('/courses'),
+      api.get<{ total_books: number; total_courses: number; total_students: number; book_average_rating: number; course_average_rating: number }>('/stats'),
+      api.get<{ id: number; name: string; slug: string; count: number }[]>('/staff/course-categories'),
     ])
-      .then(([featuredRes, allRes, catRes, featuredCoursesRes, allCoursesRes]) => {
-        const featured = (featuredRes.data || []).map(mapApiBookToBook);
-        const newArr = (allRes.data || []).slice(0, 4).map(mapApiBookToBook);
-        const featCourses = (featuredCoursesRes.data || []).map((c) => ({
-          id: c.id,
-          title: c.title,
-          slug: c.slug,
-          instructor: c.instructor,
-          description: c.description,
-          price: parseFloat(c.price),
-          duration_hours: c.duration_hours,
-          lessons_count: c.lessons_count,
-          level: c.level,
-          category: c.category,
-          image: c.image,
-          is_featured: c.is_featured,
-          average_rating: c.average_rating,
-          reviews_count: c.reviews_count,
-          enrolled_count: c.enrolled_count,
-        }));
-        const allCour = (allCoursesRes.data || []).map((c) => ({
-          id: c.id,
-          title: c.title,
-          slug: c.slug,
-          instructor: c.instructor,
-          description: c.description,
-          price: parseFloat(c.price),
-          duration_hours: c.duration_hours,
-          lessons_count: c.lessons_count,
-          level: c.level,
-          category: c.category,
-          image: c.image,
-          is_featured: c.is_featured,
-          average_rating: c.average_rating,
-          reviews_count: c.reviews_count,
-          enrolled_count: c.enrolled_count,
-        }));
+      .then((results) => {
+        const [featuredRes, allRes, catRes, featuredCoursesRes, allCoursesRes, statsRes, courseCatRes] = results;
+        
+        const featured = featuredRes.status === 'fulfilled' 
+          ? (featuredRes.value.data || []).map(mapApiBookToBook) 
+          : [];
+          
+        const allBooks = allRes.status === 'fulfilled' 
+          ? (allRes.value.data || []).map(mapApiBookToBook) 
+          : [];
+          
+        const newArr = allBooks.slice(0, 6);
+        
+        const featCourses = featuredCoursesRes.status === 'fulfilled' 
+          ? (featuredCoursesRes.value.data || []).map((c) => ({
+              id: c.id,
+              title: c.title,
+              slug: c.slug,
+              instructor: c.instructor,
+              description: c.description,
+              price: parseFloat(c.price),
+              duration_hours: c.duration_hours,
+              lessons_count: c.lessons_count,
+              level: c.level,
+              category: c.category,
+              image: c.image,
+              is_featured: c.is_featured,
+              average_rating: c.average_rating,
+              reviews_count: c.reviews_count,
+              enrolled_count: c.enrolled_count,
+              createdAt: c.created_at,
+            })) 
+          : [];
+          
+        const allCour = allCoursesRes.status === 'fulfilled' 
+          ? (allCoursesRes.value.data || []).map((c) => ({
+              id: c.id,
+              title: c.title,
+              slug: c.slug,
+              instructor: c.instructor,
+              description: c.description,
+              price: parseFloat(c.price),
+              duration_hours: c.duration_hours,
+              lessons_count: c.lessons_count,
+              level: c.level,
+              category: c.category,
+              image: c.image,
+              is_featured: c.is_featured,
+              average_rating: c.average_rating,
+              reviews_count: c.reviews_count,
+              enrolled_count: c.enrolled_count,
+              createdAt: c.created_at,
+            })) 
+          : [];
 
         setFeaturedBooks(featured);
         setNewArrivals(newArr);
         setFeaturedCourses(featCourses);
         setAllCourses(allCour);
-        setCategories(catRes || []);
+        
+        // Group books by category and find newest book for each category
+        const newestBooksByCategory: Record<string, Book> = {};
+        allBooks.forEach(book => {
+          if (book.category) {
+            if (!newestBooksByCategory[book.category] || 
+                new Date(book.createdAt) > new Date(newestBooksByCategory[book.category].createdAt)) {
+              newestBooksByCategory[book.category] = book;
+            }
+          }
+        });
+        
+         // Enhance categories with newest book cover
+        const categoriesData = catRes.status === 'fulfilled' ? catRes.value : [];
+        const enhancedCategories = (categoriesData || []).map(cat => ({
+          ...cat,
+          last_book: newestBooksByCategory[cat.name] ? {
+            id: Number(newestBooksByCategory[cat.name].id),
+            title: newestBooksByCategory[cat.name].title,
+            cover_url: newestBooksByCategory[cat.name].coverUrl
+          } : undefined
+        }));
+        
+        setCategories(enhancedCategories);
+
+        // Group courses by category and find newest course for each category
+        const newestCoursesByCategory: Record<string, Course> = {};
+        allCour.forEach(course => {
+          if (course.category) {
+            if (!newestCoursesByCategory[course.category] || 
+                new Date(course.createdAt) > new Date(newestCoursesByCategory[course.category].createdAt)) {
+              newestCoursesByCategory[course.category] = course;
+            }
+          }
+        });
+
+        // Enhance course categories with newest course preview
+        const courseCategoriesData = courseCatRes.status === 'fulfilled' ? courseCatRes.value : [];
+        const enhancedCourseCategories = (courseCategoriesData || []).map(cat => ({
+          ...cat,
+          last_course: newestCoursesByCategory[cat.slug] ? {
+            id: newestCoursesByCategory[cat.slug].id,
+            title: newestCoursesByCategory[cat.slug].title,
+            image: newestCoursesByCategory[cat.slug].image
+          } : undefined
+        }));
+
+        setCourseCategories(enhancedCourseCategories);
+        
+        if (statsRes.status === 'fulfilled' && statsRes.value) {
+          setStats(statsRes.value);
+        }
 
         const allBookIds = [...featured, ...newArr].map(b => b.id);
         if (allBookIds.length > 0) {
           checkWishlist(allBookIds);
         }
-      })
-      .catch((err) => {
-        console.error('Failed to load homepage data:', err);
       })
       .finally(() => {
         setLoading(false);
@@ -177,7 +246,8 @@ export default function Home() {
         width = track.scrollWidth / 2;
       };
 
-      const onPointerDown = (e: PointerEvent) => {
+       const onPointerDown = (e: PointerEvent) => {
+        e.preventDefault();
         isDraggingRef.current = true;
         pointerIdRef.current = e.pointerId;
         startXRef.current = e.clientX;
@@ -185,11 +255,9 @@ export default function Home() {
         lastXRef.current = e.clientX;
         lastTimeRef.current = performance.now();
         velocityRef.current = 0;
-        try {
-          (container as Element).setPointerCapture(e.pointerId);
-        } catch (err) {}
-        // visual feedback
+        try { container.setPointerCapture(e.pointerId); } catch (err) {}
         track.style.cursor = 'grabbing';
+        track.classList.add('pointer-events-none');
       };
 
       const onPointerMove = (e: PointerEvent) => {
@@ -207,7 +275,7 @@ export default function Home() {
         velocityRef.current = Math.max(-300, Math.min(300, v));
       };
 
-      const onPointerUp = (e: PointerEvent) => {
+       const onPointerUp = (e: PointerEvent) => {
         if (pointerIdRef.current !== e.pointerId) return;
         // detect tap (small movement & short time)
         const dxTotal = Math.abs(e.clientX - startXRef.current);
@@ -216,28 +284,21 @@ export default function Home() {
 
         isDraggingRef.current = false;
         pointerIdRef.current = null;
-        try {
-          (container as Element).releasePointerCapture(e.pointerId);
-        } catch (err) {}
+        try { container.releasePointerCapture(e.pointerId); } catch (err) {}
         track.style.cursor = 'grab';
+        track.classList.remove('pointer-events-none');
 
-        // consider it a click/tap if movement small
+        // Only navigate if it's a click/tap (not a drag)
         if (dxTotal < 6 && dyTotal < 6 && timeElapsed < 500) {
           const el = document.elementFromPoint(e.clientX, e.clientY) as Element | null;
           const anchor = el?.closest && el.closest('a');
           if (anchor) {
             const href = anchor.getAttribute('href');
-            if (href && href.startsWith('/book')) {
-              // use next/navigation router for SPA nav
+            if (href) {
               router.push(href);
-            } else if (anchor instanceof HTMLAnchorElement && anchor.href) {
-              window.location.href = anchor.href;
             }
-            return;
           }
         }
-
-        // momentum will be applied by RAF loop
       };
 
       window.addEventListener('resize', onResize);
@@ -273,7 +334,7 @@ export default function Home() {
   }
 
   // Category ticker: similar seamless ticker for categories
-  function CategoryTicker({ cats, speed = 30 }: { cats: ApiCategory[]; speed?: number }) {
+  function CategoryTicker({ cats, speed = 30, router }: { cats: ApiCategory[]; speed?: number; router: any }) {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const trackRef = useRef<HTMLDivElement | null>(null);
     const isDraggingRef = useRef(false);
@@ -371,10 +432,227 @@ export default function Home() {
       <div ref={containerRef} className="overflow-hidden" style={{ touchAction: 'pan-y', userSelect: 'none' }}>
         <div ref={trackRef} className="flex items-center gap-6 will-change-transform" style={{ transform: 'translateX(0)', cursor: 'grab' }}>
           {cats.concat(cats).map((c, i) => (
-            <Link key={`${c.id}-${i}`} href={`/shop?category=${encodeURIComponent(c.name)}`} className="flex-shrink-0 w-48 p-6 rounded-2xl bg-blue-50 text-blue-600 hover:scale-105 transition-transform text-center shadow-sm">
-              <div className="text-3xl mb-2">📖</div>
-              <div className="font-bold">{c.name}</div>
-              <div className="text-xs text-gray-500 mt-1">{c.books_count || 0} Books</div>
+             <Link
+              key={`${c.id}-${i}`}
+              href={`/shop?category=${encodeURIComponent(c.name)}`}
+              className="flex-shrink-0 w-56 h-72 rounded-2xl overflow-hidden relative group hover:scale-105 transition-transform shadow-lg cursor-grab active:cursor-grabbing"
+              onClick={(e) => e.preventDefault()}
+              draggable={false}
+            >
+              {/* Background Image */}
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80">
+                <img
+                  src={c.last_book?.cover_url || getBookPlaceholder(c.name)}
+                  alt={c.name}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+              
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+              
+              {/* Category Name Tag */}
+              <div className="absolute top-3 left-3">
+                <span className="px-3 py-1.5 bg-white/95 rounded-full text-xs font-bold text-gray-900 shadow-lg">
+                  {c.name}
+                </span>
+              </div>
+              
+              {/* Book Count Tag */}
+              <div className="absolute bottom-4 left-4 right-4">
+                <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-white font-bold text-lg">{c.name}</p>
+                      <p className="text-white/70 text-sm">{c.books_count || 0} Books</p>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/shop?category=${encodeURIComponent(c.name)}`);
+                      }}
+                      className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center group-hover:translate-x-1 transition-transform hover:bg-orange-600 z-30 cursor-pointer"
+                    >
+                      <ArrowRight className="w-4 h-4 text-white" />
+                    </button>
+                  </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Course Category ticker: seamless ticker for course categories
+  function CourseCategoryTicker({ cats, speed = 30, router }: { 
+    cats: { id: number; name: string; slug: string; count: number; last_course?: { id: number; title: string; image: string } }[]; 
+    speed?: number; 
+    router: any 
+  }) {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const trackRef = useRef<HTMLDivElement | null>(null);
+    const isDraggingRef = useRef(false);
+    const pointerIdRef = useRef<number | null>(null);
+    const startXRef = useRef(0);
+    const startYRef = useRef(0);
+    const lastXRef = useRef(0);
+    const lastTimeRef = useRef(0);
+    const velocityRef = useRef(0);
+    const rafRef = useRef<number | null>(null);
+
+    useEffect(() => {
+      const container = containerRef.current;
+      const track = trackRef.current;
+      if (!container || !track || !cats || cats.length === 0) return;
+
+      let width = track.scrollWidth / 2;
+      let x = 0;
+      let last = performance.now();
+
+      const step = (now: number) => {
+        const dt = now - last;
+        last = now;
+
+        if (!isDraggingRef.current) {
+          x -= (speed * dt) / 1000;
+          if (Math.abs(velocityRef.current) > 0.5) {
+            x += velocityRef.current * (dt / 16);
+            velocityRef.current *= 0.92;
+          } else {
+            velocityRef.current = 0;
+          }
+        }
+
+        if (x <= -width) x += width;
+        if (x >= 0) x -= width;
+
+        track.style.transform = `translateX(${x}px)`;
+        rafRef.current = requestAnimationFrame(step);
+      };
+
+      const onResize = () => {
+        width = track.scrollWidth / 2;
+      };
+
+      const onPointerDown = (e: PointerEvent) => {
+        e.preventDefault();
+        isDraggingRef.current = true;
+        pointerIdRef.current = e.pointerId;
+        startXRef.current = e.clientX;
+        startYRef.current = e.clientY;
+        lastXRef.current = e.clientX;
+        lastTimeRef.current = performance.now();
+        velocityRef.current = 0;
+        try { container.setPointerCapture(e.pointerId); } catch (err) {}
+        track.style.cursor = 'grabbing';
+        track.classList.add('pointer-events-none');
+      };
+
+      const onPointerMove = (e: PointerEvent) => {
+        if (!isDraggingRef.current || pointerIdRef.current !== e.pointerId) return;
+        const nowMove = performance.now();
+        const dtMove = Math.max(1, nowMove - lastTimeRef.current);
+        const dx = e.clientX - lastXRef.current;
+        lastXRef.current = e.clientX;
+        lastTimeRef.current = nowMove;
+        x += dx;
+        const v = (dx / dtMove) * 16;
+        velocityRef.current = Math.max(-300, Math.min(300, v));
+      };
+
+      const onPointerUp = (e: PointerEvent) => {
+        if (pointerIdRef.current !== e.pointerId) return;
+        const dxTotal = Math.abs(e.clientX - startXRef.current);
+        const dyTotal = Math.abs(e.clientY - startYRef.current);
+        const timeElapsed = performance.now() - lastTimeRef.current;
+
+        isDraggingRef.current = false;
+        pointerIdRef.current = null;
+        try { container.releasePointerCapture(e.pointerId); } catch (err) {}
+        track.style.cursor = 'grab';
+        track.classList.remove('pointer-events-none');
+
+        // Only navigate if it's a click/tap (not a drag)
+        if (dxTotal < 6 && dyTotal < 6 && timeElapsed < 500) {
+          const el = document.elementFromPoint(e.clientX, e.clientY) as Element | null;
+          const anchor = el?.closest && el.closest('a');
+          if (anchor) {
+            const href = anchor.getAttribute('href');
+            if (href) {
+              router.push(href);
+            }
+          }
+        }
+      };
+
+      window.addEventListener('resize', onResize);
+      container.addEventListener('pointerdown', onPointerDown);
+      window.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('pointerup', onPointerUp);
+
+      rafRef.current = requestAnimationFrame(step);
+
+      return () => {
+        if (rafRef.current) cancelAnimationFrame(rafRef.current);
+        window.removeEventListener('resize', onResize);
+        container.removeEventListener('pointerdown', onPointerDown);
+        window.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('pointerup', onPointerUp);
+      };
+    }, [cats, speed, router]);
+
+    if (!cats || cats.length === 0) return <div className="h-40 grid place-items-center">No course categories</div>;
+
+    return (
+      <div ref={containerRef} className="overflow-hidden" style={{ touchAction: 'pan-y', userSelect: 'none' }}>
+        <div ref={trackRef} className="flex items-center gap-6 will-change-transform" style={{ transform: 'translateX(0)', cursor: 'grab' }}>
+          {cats.concat(cats).map((c, i) => (
+            <Link
+              key={`${c.id}-${i}`}
+              href={`/courses?category=${encodeURIComponent(c.name)}`}
+              className="flex-shrink-0 w-56 h-72 rounded-2xl overflow-hidden relative group hover:scale-105 transition-transform shadow-lg cursor-grab active:cursor-grabbing"
+              onClick={(e) => e.preventDefault()}
+              draggable={false}
+            >
+              {/* Background Image */}
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80">
+                <img
+                  src={c.last_course?.image || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80'}
+                  alt={c.name}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+              
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+              
+              {/* Category Name Tag */}
+              <div className="absolute top-3 left-3">
+                <span className="px-3 py-1.5 bg-white/95 rounded-full text-xs font-bold text-gray-900 shadow-lg">
+                  {c.name}
+                </span>
+              </div>
+              
+              {/* Course Count and Arrow */}
+              <div className="absolute bottom-4 left-4 right-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-white font-bold text-lg">{c.name}</p>
+                    <p className="text-white/70 text-sm">{c.count || 0} Courses</p>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/courses?category=${encodeURIComponent(c.name)}`);
+                    }}
+                    className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center group-hover:translate-x-1 transition-transform hover:bg-orange-600 z-30 cursor-pointer"
+                  >
+                    <ArrowRight className="w-4 h-4 text-white" />
+                  </button>
+                </div>
+              </div>
             </Link>
           ))}
         </div>
@@ -392,7 +670,8 @@ export default function Home() {
 
   return (
     <div className="space-y-32 pb-20">
-      {/* 1. HERO SECTION - Enhanced with parallax and animations */}
+      <div className="space-y-8 bg-white/80 backdrop-blur-sm rounded-3xl  p-8">
+      {/* ====================================================== START: HERO SECTION ====================================================== */}
       <motion.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -495,38 +774,46 @@ export default function Home() {
           </motion.div>
         </div>
       </motion.section>
+      {/* ====================================================== END: HERO SECTION ====================================================== */}
 
-      {/* 2. STATS SECTION - Animated Counters */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* ====================================================== START: STATS SECTION ====================================================== */}
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 bg-white rounded-3xl shadow-sm p-8 ">
         <AnimatedCounter
-          end={featuredBooks.length > 0 ? featuredBooks.length : 500}
+          end={stats.total_books}
           suffix="+"
           label="Books Available"
           icon={<Library className="w-8 h-8" />}
         />
         <AnimatedCounter
-          end={allCourses.length > 0 ? allCourses.length : 50}
+          end={stats.total_courses}
           suffix="+"
           label="Expert Courses"
           icon={<GraduationCap className="w-8 h-8" />}
         />
         <AnimatedCounter
-          end={10}
-          suffix="K+"
+          end={stats.total_students}
+          suffix="+"
           label="Active Students"
           icon={<Users className="w-8 h-8" />}
         />
         <AnimatedCounter
-          end={5}
-          suffix=".0"
-          label="Average Rating"
+          end={stats.book_average_rating}
+          decimals={1}
+          label="Book Rating"
+          icon={<Star className="w-8 h-8" />}
+        />
+        <AnimatedCounter
+          end={stats.course_average_rating}
+          decimals={1}
+          label="Course Rating"
           icon={<Star className="w-8 h-8" />}
         />
       </section>
+      {/* ====================================================== END: STATS SECTION ====================================================== */}
 
-      {/* 3. FEATURED COURSES SECTION - Hero + Grid */}
+      {/* ====================================================== START: FEATURED COURSES SECTION ====================================================== */}
       {featuredCourses.length > 0 && (
-        <section>
+        <section className="bg-white rounded-3xl shadow-sm p-8 ">
           <div className="flex items-end justify-between mb-12">
             <div>
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full text-sm font-bold text-orange-600 uppercase tracking-wider mb-4">
@@ -553,23 +840,43 @@ export default function Home() {
           </div>
 
           {/* Course Grid */}
-          {allCourses.length > 4 && (
+          {featuredCourses.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {allCourses.slice(0, 6).map((course, index) => (
+              {featuredCourses.slice(0, 6).map((course, index) => (
                 <CourseCard key={course.id} course={course} index={index} />
               ))}
             </div>
           )}
         </section>
       )}
+      {/* ====================================================== END: FEATURED COURSES SECTION ====================================================== */}
 
-      {/* 4. COURSE BENEFITS SECTION */}
-      <section className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-3xl p-12 md:p-16">
+      {/* ====================================================== START: COURSE CATEGORIES SECTION ====================================================== */}
+      {courseCategories.length > 0 && (
+        <section className="bg-white rounded-3xl p-12 border border-gray-100">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full text-sm font-bold text-orange-600 uppercase tracking-wider mb-6">
+              <GraduationCap className="w-4 h-4" />
+              Browse by Course Category
+            </div>
+            <h2 className="font-serif text-4xl font-bold text-gray-900 mb-4">Explore Course Categories</h2>
+            <p className="text-gray-500">Find your perfect course category and start learning today.</p>
+          </div>
+          <div>
+            <CourseCategoryTicker cats={courseCategories} router={router} />
+          </div>
+        </section>
+      )}
+      {/* ====================================================== END: COURSE CATEGORIES SECTION ====================================================== */}
+
+      {/* ====================================================== START: COURSE BENEFITS SECTION ====================================================== */}
+      <section className="bg-white rounded-3xl shadow-sm p-12 md:p-16">
         <CourseBenefits />
       </section>
+      {/* ====================================================== END: COURSE BENEFITS SECTION ====================================================== */}
 
-      {/* 5. FEATURED BOOKS SECTION - Horizontal Scroll */}
-      <section>
+      {/* ====================================================== START: FEATURED BOOKS SECTION ====================================================== */}
+      <section className="bg-white rounded-3xl shadow-sm p-8 ">
         <div className="flex items-end justify-between mb-12">
           <div>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full text-sm font-bold text-orange-600 uppercase tracking-wider mb-4">
@@ -591,7 +898,7 @@ export default function Home() {
         </div>
 
         {featuredBooks.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
             {featuredBooks.slice(0, 10).map((book, index) => (
               <BookCard key={book.id} book={book} index={index} />
             ))}
@@ -604,8 +911,9 @@ export default function Home() {
           </div>
         )}
       </section>
+      {/* ====================================================== END: FEATURED BOOKS SECTION ====================================================== */}
 
-      {/* 6. CATEGORIES SECTION - Enhanced Ticker */}
+      {/* ====================================================== START: CATEGORIES SECTION ====================================================== */}
       {categories.length > 0 && (
         <section className="bg-white rounded-3xl p-12 border border-gray-100">
           <div className="text-center max-w-2xl mx-auto mb-16">
@@ -617,13 +925,14 @@ export default function Home() {
             <p className="text-gray-500">Find your favorite genre and dive into a new world.</p>
           </div>
           <div>
-            <CategoryTicker cats={categories} />
+            <CategoryTicker cats={categories} router={router} />
           </div>
         </section>
       )}
+      {/* ====================================================== END: CATEGORIES SECTION ====================================================== */}
 
-      {/* 7. NEW ARRIVALS SECTION - Grid Layout */}
-      <section>
+      {/* ====================================================== START: NEW ARRIVALS SECTION ====================================================== */}
+      <section className="bg-white rounded-3xl shadow-sm p-8 ">
         <div className="flex items-end justify-between mb-12">
           <div>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full text-sm font-bold text-blue-600 uppercase tracking-wider mb-4">
@@ -645,7 +954,7 @@ export default function Home() {
         </div>
 
         {newArrivals.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
             {newArrivals.map((book, index) => (
               <BookCard key={book.id} book={book} index={index} />
             ))}
@@ -658,9 +967,10 @@ export default function Home() {
           </div>
         )}
       </section>
+      {/* ====================================================== END: NEW ARRIVALS SECTION ====================================================== */}
 
-      {/* 8. CTA SECTION - Split Call to Action */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* ====================================================== START: CTA SECTION ====================================================== */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white rounded-3xl shadow-sm p-8 ">
         {/* Books CTA */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
@@ -711,6 +1021,8 @@ export default function Home() {
           </div>
         </motion.div>
       </section>
+      {/* ====================================================== END: CTA SECTION ====================================================== */}
+      </div>
     </div>
   );
 }

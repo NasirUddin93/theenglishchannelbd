@@ -78,13 +78,13 @@ class WishlistController extends Controller
 
     public function checkBatch(Request $request)
     {
-        $bookIds = $request->query('book_ids');
+        $bookIds = $request->input('book_ids', []);
 
-        if (!$bookIds) {
+        if (!is_array($bookIds) || empty($bookIds)) {
             return response()->json(['wishlist' => []]);
         }
 
-        $idsArray = array_filter(array_map('intval', explode(',', $bookIds)));
+        $idsArray = array_filter(array_map('intval', $bookIds));
 
         if (empty($idsArray)) {
             return response()->json(['wishlist' => []]);
@@ -102,22 +102,17 @@ class WishlistController extends Controller
         }
 
         $userId = $user->id;
-        $cacheKey = "wishlist_batch_{$userId}_" . md5(implode(',', $idsArray));
 
-        $wishlistData = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($userId, $idsArray) {
-            $wishlistItems = Wishlist::where('user_id', $userId)
-                ->whereIn('book_id', $idsArray)
-                ->pluck('book_id')
-                ->toArray();
+        $wishlistItems = Wishlist::where('user_id', $userId)
+            ->whereIn('book_id', $idsArray)
+            ->pluck('book_id')
+            ->toArray();
 
-            $result = [];
-            foreach ($idsArray as $id) {
-                $result[$id] = in_array($id, $wishlistItems);
-            }
+        $result = [];
+        foreach ($idsArray as $id) {
+            $result[$id] = in_array($id, $wishlistItems);
+        }
 
-            return $result;
-        });
-
-        return response()->json(['wishlist' => $wishlistData]);
+        return response()->json(['wishlist' => $result]);
     }
 }

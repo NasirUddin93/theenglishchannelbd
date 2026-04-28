@@ -2,10 +2,46 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 // Storage base URL for public assets. Can be overridden per env (e.g., Vercel, Netlify, .env).
 const STORAGE_BASE_URL = (typeof process !== 'undefined' && (process as any).env?.NEXT_PUBLIC_STORAGE_BASE) || 'http://localhost:8000/storage';
 
+export interface ApiCourse {
+  id: number;
+  title: string;
+  slug: string;
+  instructor: string;
+  image: string;
+  price: number;
+  description?: string;
+}
+
 export function joinStorage(base: string, path: string) {
   const b = base.endsWith('/') ? base.slice(0, -1) : base;
   const p = path.startsWith('/') ? path.slice(1) : path;
   return `${b}/${p}`;
+}
+
+export function getBookPlaceholder(title: string): string {
+  const colors = [
+    'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+    'linear-gradient(135deg, #84cc16 0%, #65a30d 100%)',
+    'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+    'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+    'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
+    'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
+    'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+    'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+  ];
+  const index = title.charCodeAt(0) % colors.length;
+  const letter = title.charAt(0).toUpperCase();
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600">
+    <defs>
+      <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#f97316;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#ea580c;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    <rect width="400" height="600" fill="${encodeURIComponent(colors[index])}"/>
+    <text x="200" y="320" font-family="Arial, sans-serif" font-size="200" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">${letter}</text>
+  </svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
 interface FetchOptions extends RequestInit {
@@ -89,11 +125,13 @@ export interface ApiBook {
   description: string;
   price: string;
   stock: number;
+  stock_threshold: number;
   isbn: string | null;
   publisher: string | null;
   image: string | null;
   pages: number | null;
   language: string;
+  format: string;
   is_featured: boolean;
   status: string;
   preview_content: string[] | null;
@@ -101,6 +139,9 @@ export interface ApiBook {
   created_at: string;
   updated_at: string;
   category?: ApiCategory;
+  average_rating?: number;
+  reviews_count?: number;
+  purchase_count?: number;
 }
 
 export interface ApiCategory {
@@ -109,6 +150,11 @@ export interface ApiCategory {
   slug: string;
   description: string | null;
   books_count?: number;
+  last_book?: {
+    id: number;
+    title: string;
+    cover_url: string;
+  };
   created_at: string;
   updated_at: string;
 }
@@ -121,15 +167,19 @@ export interface ApiUser {
   role: string;
   phone: string | null;
   address: string | null;
+  city: string | null;
+  zip_code: string | null;
   created_at: string;
   updated_at: string;
 }
 
 export interface ApiOrder {
   id: number;
+  order_number: string | null;
   user_id: number;
   total: string;
   status: string;
+  tracking_number: string | null;
   payment_method: string | null;
   shipping_address: string;
   city: string;
@@ -146,10 +196,13 @@ export interface ApiOrder {
 export interface ApiOrderItem {
   id: number;
   order_id: number;
-  book_id: number;
+  book_id: number | null;
+  course_id: number | null;
   quantity: number;
   price: string;
+  isbn: string | null;
   book?: ApiBook;
+  course?: ApiCourse;
 }
 
 export function mapApiBookToBook(apiBook: ApiBook) {
@@ -166,22 +219,30 @@ export function mapApiBookToBook(apiBook: ApiBook) {
     description: apiBook.description,
     price: parseFloat(apiBook.price),
     stock: apiBook.stock,
+    stockThreshold: apiBook.stock_threshold ?? 10,
     category: apiBook.category?.name || 'Unknown',
     coverUrl: apiBook.image
       ? (apiBook.image.startsWith('http')
           ? apiBook.image
           : joinStorage(STORAGE_BASE_URL, apiBook.image))
-      : `https://picsum.photos/seed/book${apiBook.id}/400/600`,
+      : '',
     previewContent: (apiBook.preview_content && apiBook.preview_content.length > 0)
       ? apiBook.preview_content
       : [fallbackPreview],
     previewImages: (apiBook.preview_images && apiBook.preview_images.length > 0)
       ? apiBook.preview_images.map(img => img.startsWith('http') ? img : joinStorage(STORAGE_BASE_URL, img))
       : undefined,
+    language: apiBook.language || 'English',
+    format: apiBook.format || 'Paperback',
+    pages: apiBook.pages || undefined,
+    isbn: apiBook.isbn || undefined,
+    publisher: apiBook.publisher || undefined,
     isFeatured: apiBook.is_featured,
     isNewArrival: false,
     createdAt: apiBook.created_at,
-    rating: 4.5,
+    rating: parseFloat(String(apiBook.average_rating || '0')) || 0,
+    reviews_count: apiBook.reviews_count || 0,
+    purchase_count: apiBook.purchase_count || 0,
     submittedBy: undefined,
     status: status as 'pending' | 'approved' | 'rejected' | 'draft' | 'pending_deletion',
   };
@@ -199,12 +260,18 @@ export function mapApiUserToUserProfile(apiUser: ApiUser) {
     photoUrl: avatarUrl,
     role: (apiUser.role === 'staff' ? 'staff' : 'user') as 'user' | 'staff',
     wishlist: [],
+    phone: apiUser.phone || '',
+    address: apiUser.address || '',
+    city: apiUser.city || '',
+    zipCode: apiUser.zip_code || '',
   };
 }
 
 export function mapApiOrderToOrder(apiOrder: ApiOrder) {
   return {
     id: String(apiOrder.id),
+    orderId: String(apiOrder.id),
+    orderNumber: apiOrder.order_number || String(apiOrder.id),
     userId: String(apiOrder.user_id),
     items: (apiOrder.items || []).map((item) => {
       // Check if this is a course item
@@ -240,12 +307,18 @@ export function mapApiOrderToOrder(apiOrder: ApiOrder) {
           coverUrl: item.book?.image
             ? (item.book.image.startsWith('http') ? item.book.image : `http://localhost:8000/storage/${item.book.image}`)
             : `https://picsum.photos/seed/book${item.book_id}/400/600`,
+          isbn: item.isbn || '',
         };
       }
     }),
     total: parseFloat(apiOrder.total),
     status: apiOrder.status as 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled',
+    trackingNumber: apiOrder.tracking_number || '',
     paymentMethod: apiOrder.payment_method || 'Unknown',
     createdAt: apiOrder.created_at,
+    shipping_address: apiOrder.shipping_address || '',
+    city: apiOrder.city || '',
+    postal_code: apiOrder.postal_code || '',
+    phone: apiOrder.phone || '',
   };
 }

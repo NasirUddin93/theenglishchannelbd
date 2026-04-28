@@ -267,7 +267,7 @@ export default function CustomVideoPlayer({ src, autoPlay = false, onEnded, onTi
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement) return;
+      if (document.activeElement instanceof HTMLInputElement || document.activeElement instanceof HTMLTextAreaElement) return;
       switch (e.key.toLowerCase()) {
         case ' ':
         case 'k':
@@ -336,6 +336,9 @@ export default function CustomVideoPlayer({ src, autoPlay = false, onEnded, onTi
         ref={videoRef}
         src={src}
         className="w-full h-full object-contain"
+        tabIndex={-1}
+        onFocus={(e) => e.target.blur()}
+        onKeyDown={(e) => e.preventDefault()}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onWaiting={handleWaiting}

@@ -929,6 +929,9 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
+        // Seed books
+        $this->call(\Database\Seeders\BooksSeeder::class);
+
         // Seed courses
         $this->call(\Database\Seeders\CoursesSeeder::class);
 

@@ -99,10 +99,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       localStorage.removeItem('auth_token');
       setUser(null);
-      // Clear wishlist on logout
+      localStorage.removeItem('lumina_cart');
+      // Clear wishlist and cart on logout
       try { 
         window.dispatchEvent(new Event('auth-change'));
         window.dispatchEvent(new CustomEvent('wishlist-clear'));
+        window.dispatchEvent(new CustomEvent('cart-clear'));
       } catch (err) {}
     }
   };

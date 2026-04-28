@@ -5,15 +5,24 @@ export interface Book {
   description: string;
   price: number;
   stock: number;
+  stockThreshold?: number;
   category: string;
   coverUrl: string;
   previewContent: string[];
   previewImages?: string[];
+  language?: string;
+  format?: string;
+  pages?: number;
+  isbn?: string;
+  publisher?: string;
   isFeatured: boolean;
   isNewArrival: boolean;
   rating: number;
-  submittedBy?: string; // userId of the staff who submitted
+  reviews_count?: number;
+  purchase_count?: number;
+  submittedBy?: string;
   status?: 'pending' | 'approved' | 'rejected' | 'draft' | 'pending_deletion';
+  createdAt: string;
 }
 
 export interface Course {
@@ -29,9 +38,12 @@ export interface Course {
   category: string;
   image?: string | null;
   is_featured: boolean;
+  language?: string;
+  access_time?: string;
   average_rating?: number;
   reviews_count?: number;
   enrolled_count?: number;
+  createdAt: string;
 }
 
 export interface CategoryRequest {
@@ -70,6 +82,10 @@ export interface UserProfile {
   photoUrl: string | null;
   role: 'user' | 'staff';
   wishlist?: string[];
+  phone?: string;
+  address?: string;
+  city?: string;
+  zipCode?: string;
 }
 
 export interface CartItem {
@@ -80,14 +96,17 @@ export interface CartItem {
   author: string;
   price: number;
   quantity: number;
-  coverUrl: string;
+  coverUrl?: string | null;
   stock: number;
   instructor?: string;
   slug?: string;
+  isbn?: string;
 }
 
 export interface Order {
   id: string;
+  orderId?: string;
+  orderNumber?: string;
   userId: string;
   items: CartItem[];
   total: number;
