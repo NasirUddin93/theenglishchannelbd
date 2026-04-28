@@ -24,6 +24,15 @@ backend/Homestead.json
 backend/Homestead.yaml
 backend/auth.json
 backend/.phpactor.json
+backend/storage/
+frontend/public/uploads/
+*.mp4
+*.jpg
+*.png
+*.jpeg
+backend/storage/*
+!backend/storage/app/public/
+!backend/storage/app/public/.gitignore
 
 # Frontend (Next.js)
 frontend/.next/
@@ -32,6 +41,10 @@ frontend/build/
 frontend/dist/
 frontend/coverage/
 frontend/tsconfig.tsbuildinfo
+frontend/public/uploads/
+*.mp4
+*.mov
+*.zip
 
 # IDEs / Editors
 .idea/
